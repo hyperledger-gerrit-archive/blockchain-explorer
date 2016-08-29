@@ -1,0 +1,33 @@
+{
+  "name": "explorer",
+  "version": "1.0.0",
+  "description": "This is the initial release of the Hyperledger explorer which provides a User Interface to explore and examine the current state of the Hyperledger blockchain in a convenient and easy to use manner. Similar to bitcoin explorers or crypto-currency explorers, information such as transaction information, network activity, recent blocks, visuals and search etc. are available that allows for information to be quickly found.",
+  "main": "exp-server.js",
+  "directories": {
+    "example": "examples"
+  },
+  "dependencies": {
+    "bower": "^1.7.9",
+    "dispatcher": "^0.0.2",
+    "dot": "^1.0.3",
+    "express": "^4.14.0",
+    "hfc": "^0.6.0",
+    "http": "^0.0.0",
+    "socket.io": "^1.4.8",
+    "websocket": "^1.0.23"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "scripts": {
+    "postinstall": "cd node_modules/hyperledgerpeerintf && npm install && cd ../../resources && ../node_modules/bower/bin/bower install && cd -"
+
+  },
+  "repository" :
+  { "type" : "git"
+  , "url" : "http://gerrit.hyperledger.org/r/blockchain-explorer"
+  }
+  "author": "Mahesh Gutala",
+  "license": "ISC"
+}
