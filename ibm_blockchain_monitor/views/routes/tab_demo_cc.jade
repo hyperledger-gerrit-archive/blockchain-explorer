@@ -1,0 +1,160 @@
+#demo_content
+	.mainContentWrap
+		// ============ Titles ============ //
+		.demoAppWrap
+			.demoAppName Application
+			.demoAppDescr Description
+			.demoDetails Links
+			.demoInteract Interact
+			.demoDeployWrap &nbsp;
+		
+		
+		// ============ Example02 ============ //
+		.demoAppWrap
+			.demoAppName Example02
+			.demoAppDescr Store two integers named A and B. Subtract from one and add to the other.
+			.demoDetails
+				a(href="https://github.com/hyperledger/fabric/blob/master/examples/chaincode/go/chaincode_example02/chaincode_example02.go" target="_blank").underline Chaincode
+			.demoInteract 
+				a(href="#").underline.showActions Show Actions
+			.demoDeployWrap
+				button(type="button" disabled="disabled" cc="example02").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				#example02Loading.loadingdiv.demoLoading
+					span
+					span
+					span
+					span
+					span
+					div
+			.demoActionWrap.example02
+				.demoCCSelectWrap
+					span.smallerFont Select the correct chaincode:
+					select(name="demo_chaincode_name" cc="example02").selectCC
+						option(disabled="disabled" selected="selected") invalid
+				.demoActionSelectWrap
+					span.smallerFont Select an action:
+					select(cc="example02").selectAction
+						option(disabled="disabled" value="invokeA2B").demoAction#invokeA2B Transfer from A to B
+						option(disabled="disabled" value="invokeB2A").demoAction#invokeB2A Transfer from B to A
+						option(disabled="disabled" selected="selected" value="queryA").demoAction#queryA Query A
+						option(disabled="disabled" value="queryB").demoAction#queryB Query B
+				.demoActionButtonWrap
+					span.smallerFont &nbsp;&nbsp;&nbsp;
+					button(type="button" disabled="disabled" cc="example02").bx--btn--secondary.executeAction Execute
+
+		
+		
+		// ============ Marbles ============ //
+		.demoAppWrap
+			.demoAppName Marbles
+			.demoAppDescr Create marble assets and trade them with your friend Leroy.
+			.demoDetails
+				a(href="https://github.com/ibm-blockchain/marbles" target="_blank").underline GitHub
+				span ,&nbsp;
+				a(href="https://github.com/IBM-Blockchain/marbles-chaincode/blob/master/hyperledger/part2/part2_chaincode.go" target="_blank").underline Chaincode
+				span ,&nbsp;
+				a(href="https://github.com/IBM-Blockchain/marbles/blob/master/tutorial_part1.md" target="_blank").underline Docs
+			.demoInteract 
+				a(href="#").underline.showActions Show Actions
+			.demoDeployWrap
+				button(type="button" disabled="disabled" cc="marbles").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				#marblesLoading.loadingdiv.demoLoading
+					span
+					span
+					span
+					span
+					span
+					div
+			.demoActionWrap.marbles
+				.demoCCSelectWrap
+					span.smallerFont Select the correct chaincode:
+					select(name="demo_chaincode_name" cc="marbles").selectCC
+						option(disabled="disabled" selected="selected") invalid
+				.demoActionSelectWrap
+					span.smallerFont Select an action:
+					select(cc="marbles").selectAction
+						option(disabled="disabled" selected="selected" value="createMarble").demoAction#createMarble Create marble
+						option(disabled="disabled" value="transferMarble").demoAction#transferMarble Trade away marble
+						option(disabled="disabled" value="delMarble").demoAction#delMarble Delete marble
+						option(disabled="disabled" value="queryMarble").demoAction#queryMarble Query marble
+				.demoActionButtonWrap
+					span.smallerFont &nbsp;&nbsp;&nbsp;
+					button(type="button" disabled="disabled" cc="marbles").bx--btn--secondary.executeAction Execute
+				
+			
+		// ============ Commerical Paper ============ //
+		.demoAppWrap
+			.demoAppName Commercial Paper
+			.demoAppDescr Buy and sell business to business monetary loans.
+			.demoDetails
+				a(href="https://github.com/IBM-Blockchain/cp-web" target="_blank").underline GitHub
+				span ,&nbsp;
+				a(href="https://github.com/IBM-Blockchain/cp-chaincode-v2/blob/master/cp_cc.go" target="_blank").underline Chaincode
+				span ,&nbsp;
+				a(href="https://github.com/IBM-Blockchain/cp-web/blob/master/README.md" target="_blank").underline Docs
+			.demoInteract 
+				a(href="#").underline.showActions Show Actions
+			.demoDeployWrap
+				button(type="button" disabled="disabled" cc="cp").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				#cpLoading.loadingdiv.demoLoading
+					span
+					span
+					span
+					span
+					span
+					div
+			.demoActionWrap.cp
+				.demoCCSelectWrap
+					span.smallerFont Select the correct chaincode:
+					select(name="demo_chaincode_name" cc="cp").selectCC
+						option(disabled="disabled" selected="selected") invalid
+				.demoActionSelectWrap
+					span.smallerFont Select an action:
+					select(cc="cp").selectAction
+						option(disabled="disabled" selected="selected" value="regAcount").demoAction#regAcount Register Accounts
+						option(disabled="disabled" value="issuePaper").demoAction#issuePaper Seed paper
+						option(disabled="disabled" value="buyPaper").demoAction#buyPaper Buy paper
+						option(disabled="disabled" value="queryAccount").demoAction#queryAccount Query account
+				.demoActionButtonWrap
+					span.smallerFont &nbsp;&nbsp;&nbsp;
+					button(type="button" disabled="disabled" cc="cp").bx--btn--secondary.executeAction Execute
+			
+		br
+
+		// ============ Log Panel ============ //
+		div(style="text-align:right;").logControls
+			label.apiDetailsCheck
+				input(type="checkbox" name="showAPIdetails" style="vertical-align: top;")
+				span Show API details&nbsp;
+		#logWrapper.logControls
+			svg(title="Clear Logs")#clearLogs
+				use(xlink:href="/img/icons/sprite.svg#common--close")
+			#demoLogs
+
+		// ============ Notification Panel ============ //
+		br
+		.demoNotifications
+			.notificationWrap.notifcationSuccess.deployHelperText
+				svg.notificationImg.notifcationSuccess
+					use(xlink:href="/img/icons/sprite.svg#notifications--success")
+				.notificationBody
+					strong Demo Chaincode successfully deployed:
+					div Now you can hit an action button below "Actions" to invoke a chaincode function.
+				svg.notificationClose
+					use(xlink:href="/img/icons/sprite.svg#common--close")
+			.notificationWrap.invokeHelperText
+				svg.notificationImg
+					use(xlink:href="/img/icons/sprite.svg#support--info-stroke-circle")
+				.notificationBody
+					strong Your invocation was sent:
+					div You can check out API details in the panel below.  Now click a Query button to query chaincode state.
+				svg.notificationClose
+					use(xlink:href="/img/icons/sprite.svg#common--close")
+			.notificationWrap.queryHelperText
+				svg.notificationImg
+					use(xlink:href="/img/icons/sprite.svg#support--info-stroke-circle")
+				.notificationBody
+					strong Your query was sent:
+					div You can check out API details in the panel below.
+				svg.notificationClose
+					use(xlink:href="/img/icons/sprite.svg#common--close")

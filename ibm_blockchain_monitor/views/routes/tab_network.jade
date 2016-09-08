@@ -1,0 +1,69 @@
+#network_content
+	// ============ Peer Table ============ //
+	.mainContentWrap
+		table
+			thead
+				tr
+					th(style="min-width: 90px;")#peerColumn Peer
+					th(style="min-width: 300px;") Routes
+					th#discoveryColumn Discovery
+					th#blockColumn Block Height
+					th(style="width: 120px;").centerTxt Status
+					
+					//-yeti networks do not get actions
+					if(ui_options.actions === true)
+						th(style="min-width: 110px;").centerTxt Actions
+
+			tbody#peerBody
+				tr.sample_peer.sample
+					td(style="text-align:left;").name Please wait... Loading
+					td.routes.smallerFont
+					td.discoveryCount.smallerFont -
+					td.blckheight.smallerFont -
+					td.peer_status.smallerFont.centerTxt
+
+					//-yeti networks do not get actions
+					if(ui_options.actions === true)
+						td.centerTxt
+							svg.stop_peer.actionButton(title="Stop Peer")
+								use(xlink:href="/img/icons/sprite.svg#common--stop")
+
+							svg.restart_peer.actionButton(title="Restart Peer")
+								use(xlink:href="/img/icons/sprite.svg#common--restart")
+
+							svg.start_peer.actionButton(title="Start Peer")
+								use(xlink:href="/img/icons/sprite.svg#common--start")
+
+	// ============ Notification Panel ============ //
+	#networkNotifications.mainContentWrap
+
+	// ============ Chaincode Table ============ //
+	if(ui_options.cc_api === true)
+		.mainContentWrap
+			table#chaincode
+				thead
+					tr
+						th(style="width:40%; min-width:200px;") ChainCode ID
+						th(style="width:5%;") Peers
+						th(style="width:35%;") Logs
+				tbody
+					tr.sample_cc.sample()
+						td.ccIdTd 1234
+						td.chaincode_peer_count 1
+						td
+							select.ccPeerSelect
+							.logs.cclogs.link.icon-icon-log(style='cursor:pointer' title="View ChainCode's Log")
+							span.upTime 69 seconds
+
+	// ============ Reset ============ -//
+	br
+	br
+	.mainContentWrap
+		if(ui_options.reset === true)
+			button#reset_network.bx--btn Reset Network
+		
+		a#jsonLink(href="/api/network/#{network_id}" target="_blank") 
+			span {
+			span#jsonLinkText Service Credentials
+			span }
+	br

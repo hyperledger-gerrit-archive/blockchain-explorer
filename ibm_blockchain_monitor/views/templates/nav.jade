@@ -1,0 +1,34 @@
+#navPanel
+	#navPanelContent
+		.tabs
+			a(href='/#{dash_ver}/network/#{network_id}' act="network").navLink 
+				span &nbsp;Network&nbsp;
+				span.selectedNavChevron
+
+			a(href='/#{dash_ver}/blockchain/#{network_id}' act="blockchain").navLink 
+				span &nbsp;Blockchain&nbsp;
+				span.selectedNavChevron
+
+			a(href='/#{dash_ver}/demo/#{network_id}' act="demo").navLink 
+				span &nbsp;Demo Chaincode&nbsp;
+				span.selectedNavChevron
+
+			a(href='/#{dash_ver}/apis/#{network_id}' act="apis").navLink
+				span  &nbsp;APIs&nbsp;
+				span.selectedNavChevron
+			
+			if(run_mode === 'IBM-BCS')
+				a(href='/#{dash_ver}/logs/#{network_id}' act="logs").navLink 
+					span &nbsp;Logs&nbsp;
+					span.selectedNavChevron
+
+			if(run_mode === 'IBM-BCS')
+				//z does not get status tab
+				if(ui_options.status_tab === true)
+					a(href='/#{dash_ver}/service/#{network_id}' act="service").navLink 
+						span &nbsp;Service Status&nbsp;
+						span.selectedNavChevron
+						
+			a(href='/#{dash_ver}/support/#{network_id}' act="support").navLink 
+				span &nbsp;Support&nbsp;
+				span.selectedNavChevron

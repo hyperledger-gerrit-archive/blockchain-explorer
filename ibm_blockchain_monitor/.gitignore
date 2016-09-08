@@ -1,0 +1,7 @@
+node_modules
+**/temp
+**/env/**
+/src/*.log
+**/.DS_Store
+certs
+/src/util/can-test/*.json

@@ -1,0 +1,905 @@
+@import '0_bluemix-colors-6.7.0';
+
+@font-face {
+	font-family: 'ibm-blockchain';
+	src:    url('/fonts/ibm-blockchain.eot?m0vzkg');
+	src:    url('/fonts/ibm-blockchain.eot?m0vzkg#iefix') format('embedded-opentype'),
+		url('/fonts/ibm-blockchain.ttf?m0vzkg') format('truetype'),
+		url('/fonts/ibm-blockchain.woff?m0vzkg') format('woff'),
+		url('/fonts/ibm-blockchain.svg?m0vzkg#ibm-blockchain') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	font-family: 'ibm-blockchain' !important;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: normal;
+	font-weight: 200;
+	src: url("/fonts/helvetica-neue-light.woff2") format("woff2"), url("/fonts/helvetica-neue-light.woff") format("woff")
+}
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: italic;
+	font-weight: 200;
+	src: url("/fonts/helvetica-neue-light-italic.woff2") format("woff2"), url("/fonts/helvetica-neue-light-italic.woff") format("woff")
+}
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: normal;
+	font-weight: 400;
+	src: url("/fonts/helvetica-neue-roman.woff2") format("woff2"), url("/fonts/helvetica-neue-roman.woff") format("woff")
+}
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: italic;
+	font-weight: 400;
+	src: url("/fonts/helvetica-neue-roman-italic.woff2") format("woff2"), url("/fonts/helvetica-neue-roman-italic.woff") format("woff")
+}
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: normal;
+	font-weight: 700;
+	src: url("/fonts/helvetica-neue-bold.woff2") format("woff2"), url("/fonts/helvetica-neue-bold.woff") format("woff")
+}
+@font-face {
+	font-family: 'IBM Helvetica';
+	font-style: italic;
+	font-weight: 700;
+	src: url("/fonts/helvetica-neue-bold-italic.woff2") format("woff2"), url("/fonts/helvetica-neue-bold-italic.woff") format("woff")
+}
+
+
+// ----------- Elements ----------- //
+h2{
+	padding-bottom: 6px;
+	margin-bottom: 12px;
+	font-size: 32px;
+	font-weight: 100;
+}
+select, input[type="text"], input[type="password"], textarea{
+	padding: 5px;
+	background: $color__navy-gray-2;
+	color: $color__white;
+	border: 1px $color__navy-gray-2 solid;
+	-webkit-transition: border .25s linear;
+	-moz-transition: border .25s linear;
+	-o-transition: border .25s linear;
+	transition: border .25s linear;
+	outline:none;
+	line-height: 17px;
+}
+select:hover, input[type="text"]:hover, input[type="password"]:hover{
+	border:1px #59AAF9 solid;
+}
+p{
+	font-size: 14px;
+	//color: $color__navy-gray-8;
+}
+input[type="checkbox"]{
+	display:inline-block;
+	width:16px;
+	height:16px;
+}
+
+strong{
+	font-weight:bold;
+}
+
+button:disabled, button:disabled:hover, .disabledButton{
+	opacity: 0.35;
+}
+
+tbody {
+	word-break: break-all;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	font-weight: 100;
+}
+
+th div {
+	display: inline-block;
+}
+
+td, th {
+	padding: 15px;
+	vertical-align: middle;
+	font-size: 14px;
+}
+
+th{
+	padding: 15px;
+	text-align: left;
+	font-weight: 600;
+	color: $color__navy-gray-8
+}
+
+td > div {
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+thead, tr:nth-child(odd){
+	background: $color__navy-gray-4;
+}
+
+tr:nth-child(even){
+	background: $color__navy-gray-5;
+}
+
+thead{
+	padding: 20px 0;
+}
+ul li.bulletMe, ol li.bulletMe {
+	font-weight:300;
+	line-height:1.5; 
+	list-style-type: disc;
+}
+ul ul li.bulletMe{
+	list-style-type: circle;
+}
+
+//default color for bluemix icons
+svg {
+	use {fill: $color__white;}
+	path {fill: inherit;}
+	g {fill: inherit;}
+	width: 38px;
+	height: 38px;
+	display: inline-block;
+	vertical-align: bottom;
+	padding: 6px 8px;
+	fill: $color__white;
+}
+
+svg.actionButton:hover{
+	background:$color__navy-gray-2;
+	use {fill: $color__blue-50;}
+	fill: $color__blue-50;
+}
+
+
+// ----------- Slider ----------- //
+input[type=range] {
+	-webkit-appearance: none; 	//removes default webkit styles
+	border: none;				//fix for FF unable to apply focus style bug
+	//width: 100%;				//required for proper track sizing in FF
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 10px;
+	background: -webkit-linear-gradient(left, #5AAAFA 0%, #5AAAFA 50%, #2B323A 50%);
+	background: -o-linear-gradient(left, #5AAAFA 0%, #5AAAFA 50%, #2B323A 50%);
+	background: linear-gradient(to right, #5AAAFA 0%, #5AAAFA 50%, #2B323A 50%);
+	border: 1px solid #6D7B8B;
+	border-radius: 3px;
+	height: 6.4px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	border: none;
+	height: 12px;
+	width: 12px;
+	border-radius: 50%;
+	background: $color__blue-20;
+	margin-top: -3px;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-moz-range-track {
+	width: 100%;
+	height: 10px;
+	border: 1px solid #6D7B8B;
+	border-radius: 3px;
+}
+
+input[type=range]::-moz-range-thumb {
+	-webkit-appearance: none;
+	border: none;
+	height: 16px;
+	width: 16px;
+	border-radius: 50%;
+	background: #2B323A;
+	margin-top: -3px;
+}
+
+input[type=range]:-moz-focusring {
+	outline: none;
+	outline-offset: -1px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+}
+
+input[type=range]::-ms-track {
+	width: 100%;
+	cursor: pointer;
+
+	/* Hides the slider so custom styles can be added */
+	background: transparent; 
+	border-color: transparent;
+	color: transparent;
+}
+
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 16px 0;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #2a6495;
+  border-radius: 2.6px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #3071a9;
+}
+input[type=range]::-ms-fill-upper {
+  background: #3071a9;
+  border-radius: 2.6px;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #367ebd;
+}
+
+
+// ----------- Common ----------- //
+.error {
+	color: #cc0000 !important; 
+}
+
+.valid {
+	color: green !important; 
+}
+
+.white {
+	color: $color__white !important; 
+}
+
+.link {
+	-webkit-transition: all .25s linear;
+	-moz-transition: all .25s linear;
+	-o-transition: all .25s linear;
+	transition: all .25s linear;
+	text-decoration: none;
+	margin: 0;
+	font-size: 32px;
+	cursor: pointer;
+	background-color: transparent;
+	color: #4177BD;
+	border-radius: 4px;
+}
+
+.link:hover{
+	background-color: #4177BD;
+	color: white;
+}
+
+.smallerFont{
+	font-size: 13px;
+}
+
+.copyButtonStyle{
+	background: $color__navy-gray-2;
+	color: $color__blue-20;
+	border: 0;
+	padding: 7px 13px;
+	display: inline-block;
+	height: 30px;
+	vertical-align: bottom;
+	font-size:12px;
+}
+
+.copyButtonStyle:hover{
+	-webkit-transition: all .25s linear;
+	-moz-transition: all .25s linear;
+	-o-transition: all .25s linear;
+	transition: all .25s linear;
+	cursor: pointer;
+	background: $color__navy-gray-1;
+}
+
+.test{
+	border:1px #000 solid;
+}
+
+.mainContentWrap {
+	margin: 0px;
+	margin-left: 15px;
+	transition: all .25s linear;
+}
+
+.large1x2Wrap{
+	text-align: center;
+	background: $color__navy-gray-4;
+}
+
+.large1x2Header{
+	text-align: left;
+	border-bottom: 2px $color__navy-gray-6 solid;
+	padding: 15px 30px;
+	font-weight: 600px;
+}
+
+.thinBorder{
+	border-bottom: 1px $color__navy-gray-6 solid;
+}
+
+.centerTxt{
+	text-align: center;
+}
+
+// ----------- Main Layout ----------- //
+#navPanel, #mainPanel{
+	display:inline-block;
+	vertical-align: top;
+}
+#navPanel {
+	width: 20%;
+	min-width: 200px;
+	max-width: 300px;
+	min-height: 500px;
+	z-index: 300;
+	min-width: 225px;
+}
+#navPanelContent{
+	padding: 30px;
+}
+
+.navLink{
+	padding: 10px;
+	font-size: 18px;
+	font-weight: 100;
+	display: block;
+	text-decoration: none;
+	color: $color__navy-gray-7;
+	-webkit-transition: background-color .25s linear;
+	-moz-transition: background-color .25s linear;
+	-o-transition: background-color .25s linear;
+	transition: background-color .25s linear;
+	border: 2px solid $color__navy-gray-3;
+	margin: 2px 0;
+	color: $color__navy-gray-8;
+}
+
+.selectedPage, .navLink:hover{
+	border: 2px solid $color__blue-30;
+	color: $color__blue-20;
+}
+
+#mainPanel, #mainPanel100 {
+	width: 76%;
+	margin-top:30px;
+	min-width: 435px;
+}
+#mainPanel100{
+	display:block;
+	width: 100%;
+}
+
+#planNameWrap{
+	font-size: 14px;
+}
+
+.selectedNavChev{
+	float: right;
+	height: 24px;
+	width: 24px;
+	margin-top: -2px;
+}
+svg.selectedNavChev{
+	use {
+		fill: $color__blue-20;		//this doesn't work on chevron!! fucking cunts
+		stroke: $color__blue-20;
+	};
+	fill: $color__blue-20;
+	stroke: $color__blue-20;
+}
+.networkIdText{
+	background: #273943;
+	vertical-align: bottom;
+	font-family: monospace;
+	min-width: 100px;
+	display: inline-block;
+	color: #fff;
+	margin: 0;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 8px;
+	font-size: 12px;
+	padding-right: 30px;
+}
+#logoHeader{
+	height: 50px;
+	background: $color__blue-90;
+}
+.nav-logo{
+	-webkit-transition: background-color .25s linear;
+	-moz-transition: background-color .25s linear;
+	-o-transition: background-color .25s linear;
+	transition: background-color .25s linear;
+	display: inline-block;;
+	background-color: #4178be;
+	width: 60px;
+	height: 100%;
+	background-size: 70%;
+	background-repeat: no-repeat;
+	background-position: center center;;
+	background-image: url(/img/IBM_Blockchain_BMX_icon.svg);
+}
+.nav-logo:hover{
+	background-color: #2D3F49;
+}
+#nav-txt{
+	-webkit-transition: color .25s linear;
+	-moz-transition: color .25s linear;
+	-o-transition: color .25s linear;
+	transition: color .25s linear;
+	vertical-align: top;
+	margin: 0;
+	padding: 20px;
+	height: 20px;
+	line-height: 50px;
+	color: #59AAF9;
+	font-size: 24px;
+	font-weight: 200;
+}
+
+// ----------- Refresh + Getting Started Link ----------- //
+.refreshTimer {
+	margin-right: 5px;
+}
+#refreshWrap{
+	color: $color__blue-20;
+	font-size: 12px;
+	float: right;
+	margin-top: 10px;
+}
+.refreshLegend{
+	color: $color__white;
+}
+#reBar {
+	display: inline-block;
+	height: 0px;
+	bottom: 3px;
+	position: relative;
+}
+#time_left, #time{
+	width: 26px;
+	display: inline-block;
+}
+#timer {
+	width: 8.33%;
+}
+#timer img {
+	height: 25px;
+	vertical-align: middle;
+}
+
+#helpIcon{
+	display: inline-block;
+	vertical-align: middle;
+	height: 32px;
+	padding-right: 0;
+}
+svg#helpIcon{
+	use{fill: $color__blue-20;}
+	fill: $color__blue-20;
+}
+#openTipsLink{
+	float:right;
+	font-size: 11px;
+	text-decoration: underline;
+	margin-right: 20px;
+	margin-left: 70px;
+}
+#singlePageSpinner{
+	display: inline-block;
+}
+#loadingPageWrapper{
+	text-align: center;
+}
+
+
+// ----------- generic pop up panel ----------- //
+
+#transactional-modal, #passive-modal{
+	display:none;
+	opacity: 1;
+	visibility: visible;
+	left: 34%;
+	top: 12%;
+	z-index: 992;
+	padding: 0;
+	background: none;
+}
+#passive-modal{
+	left: 28%;
+}
+.bx--modal__close--icon{
+	position: absolute;
+	right: 12px;
+	top: 12px;
+	width: 22px !important;
+	height: 22px !important;
+	margin: 0;
+	padding: 4px;
+	cursor: pointer;
+}
+svg.bx--modal__close--icon{
+	use {fill: $color__navy-gray-7;}
+	fill: $color__navy-gray-7;
+}
+.modal-icon{
+	padding:0px;
+	margin-right: 10px;
+}
+
+#reset_loading_bar_wrap, #reset_loading_bar{
+	border-radius: 20px;
+}
+#reset_loading_bar_wrap{
+	border: 1px #000 solid;
+	width: 80%;
+	display:inline-block;
+	height: 15px;
+	margin: 20px 0;
+	position: relative;
+}
+#reset_loading_bar{
+	background: $color__blue-30;
+	height: 15px;
+	position: absolute;
+}
+
+
+// ----------- closing time ----------- //
+#closingTimeWrap{
+	display:none;
+	padding: 0;
+	position: fixed;
+	left: 25%;
+	top: 25%;
+	width: 50%;
+	z-index: 1000;
+	padding: 0;
+	padding-bottom: 20px;
+}
+#closingHeader{
+	border-bottom: 2px $color__blue-50 solid;
+	width: 100%;
+}
+#closingHeaderText{
+	padding: 10px 10px;
+	font-size: 13px;
+}
+#closingTextWrap{
+	margin-top:20px;
+	text-align: center;
+}
+#closingButton{
+	background: $color__navy-gray-3;
+	color: $color__white;
+	border-radius: 5px;
+	border: 0;
+	width: 70%;
+	padding: 8px;
+}
+
+#closingButton:hover{
+	background: $color__blue-20;
+}
+
+#closingScreen, #modalScreen{
+	display:none;
+	z-index: 995;
+	opacity: 0.85;
+	background: #000;
+	width:100%;
+	height:100%;
+	position: fixed;
+}
+
+#modalScreen{
+	z-index: 990;
+}
+
+
+// ----------- notificatoins ----------- //
+.demoNotifications{
+	text-align: right;
+}
+.notificationWrap{
+	display: inline-block;
+	width: 75%;
+	border: 1px $color__blue-30 solid;
+	border-left-width: 5px;
+	padding: 0;
+	padding-left: 16px;
+	background: $color__navy-gray-3;
+	color: $color__white;
+	font-size: 12px;
+	margin: 5px 0px;
+	text-align: left;
+}
+
+.notificationImg, .notificationBody, .notificationClose, .peerNotificationClose{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.notificationBody{
+	line-height: 16px;
+}
+
+.notificationImg{
+	width: 30px;
+	padding: 12px 16px;
+	padding-left: 0;
+}
+
+.notificationClose, .peerNotificationClose{
+	float: right;
+	width: 28px;
+	cursor: pointer;
+}
+
+
+//notification colors
+svg.notificationImg{
+	use {fill: $color__blue-30;}
+	fill: $color__blue-30;
+}
+
+svg.notificationClose, svg.peerNotificationClose{
+	use {fill: $color__navy-gray-8;}
+	fill: $color__navy-gray-8;
+}
+
+.notifcationSuccess{
+	border-color: $color__green-30;
+}
+
+svg.notifcationSuccess{
+	use {fill: $color__green-30;}
+	fill: $color__green-30;
+}
+
+.notifcationWarning{
+	border-color: $color__yellow-20;
+}
+
+svg.notifcationWarning{
+	use{fill: $color__yellow-20;}
+	fill: $color__yellow-20;
+}
+
+svg.notifcationAlt{
+	use{fill: $color__navy-gray-5;}
+	fill: $color__navy-gray-5;
+}
+
+
+
+// ----------- bluemix buttons ----------- //
+.bx--btn--secondary, .bx--btn--secondary2{
+	margin: 0 8px;
+	padding: 10px 16px;
+	background: #22ABFA;
+	color: #294247;
+	font-weight: bold;
+	font-size: 14px;
+	border: 2px #22ABFA solid;		//invisible
+}
+
+.bx--btn--secondary{
+	background: inherit;
+	border: 2px #22ABFA solid;		//visible
+	color: #22ABFA;
+}
+
+.bx--btn--secondary2{
+	background: inherit;
+	border: 2px $color__navy-gray-5 solid;	//visible
+	color: $color__navy-gray-5;
+}
+
+
+//support page 
+.linkArrow, .linkArrowBack{
+	transform: rotate(180deg);
+	width: 22px;
+	height: 22px;
+	padding: 3px;
+	margin: 0 6px 0 10px;
+	border: 2px $color__blue-20 solid;
+	border-radius: 100px;
+	position: relative;
+	top: 0px;
+	use{fill: $color__blue-20;}
+	cursor: pointer;
+	fill: $color__blue-20;
+}
+.thinTxtWrap{
+	font-weight: 100;
+	margin-bottom:60px;
+	color: $color__navy-gray-8;
+}
+.thinTxtWrap span{
+	line-height: 24px;
+}
+
+
+//tip modal
+.leftTip, .rightTip{
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+	vertical-align: top;
+} 
+.leftTip{
+	width: 50%;
+	padding: 35px 0;
+}
+.rightTip{
+	width: 49%;
+}
+.tipHeadline{
+	margin-bottom: 30px;
+}
+.tipDescription{
+	font-weight: 600;
+	font-size: 14px;
+}
+.tipWrapper{
+	border-bottom: 1px #ccc solid;
+	cursor: pointer;
+	padding-bottom: 7px;
+	z-index: 10000;
+}
+.tipWrapper:first-of-type{
+	border-top: 1px #ccc solid;
+}
+.tipWrapper:last-of-type{
+	border-bottom: 0;
+}
+.videoWrap{
+	background:#ccc;
+	height: 130px;
+	width: 100%;
+	margin-top: 7px;
+	max-width: 210px;
+}
+.tipIcon{
+	use{fill: $color__navy-gray-5;}
+	width: 44px;
+	height: 44px;
+	vertical-align: middle;
+	fill: $color__navy-gray-5;
+}
+.bottomTip{
+	text-align: center;
+	margin-top:15px;
+}
+.videoNav{
+	margin: 15px 0;
+}
+.linkArrowBack{
+	transform: rotate(0deg);
+}
+.disabledArrow{
+	use{fill: #ccc;}
+	border-color: #ccc;
+	cursor: default;
+	fill: #ccc;
+}
+.helpLink{
+	margin-top: 30px;
+	font-size: 12px;
+	display:block;
+}
+
+
+// overide bluemix css
+#passive-modal-innter{
+	padding: 35px 15px!important;
+	width: 600px;
+}
+#passive-modal, #transactional-modal{
+	outline:none !important;
+	min-height: 615px !important;
+}
+
+
+//error page 
+.logoutWrap, .errorMsgWrap{
+	width: 60%;
+	margin: auto;
+}
+.errorMsgWrap, .otherErroMsgWrap{
+	padding: 10px;
+	background:$color__white;
+	color: $color__navy-gray-3;
+	border-radius: 10px;
+	margin-top: 20px;
+	text-align: center;
+}
+.otherErroMsgWrap{
+	position: relative;
+	max-width: 1000px;
+	margin: auto;
+}
+.logoutWrap{
+	font-size: 13px;
+}
+.emailId{
+	float: left;
+}
+.logoutLink{
+	float:right;
+}
+
+
+#blockchain_content, #network_content, #out_of_capacity_content, #demo_content, #logs_content, #service_content, #support_content{
+	display:none;
+}
+
+
+
+///welcome panel
+#welcomePanel{
+	padding: 10px 50px;
+}
+#welcomeTxt{
+	text-align: center;
+}
+#toplaunch button{
+	color: #fff !important;
+	font-size: 16px;
+	line-height: 35px;
+	padding-bottom: 40px;
+	margin: 40px 0;
+}
+.welcomeAlt{
+	color: $color__blue-50;
+	font-weight: 500;
+	font-size: 16px;
+}
+.half, .third {display:inline-block;}
+.half {width:49%; vertical-align: top;}
+.half:first-of-type{padding-right: 5%;}
+.half + .half {padding:0 0 0 20px;}

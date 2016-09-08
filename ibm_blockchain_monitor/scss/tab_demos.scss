@@ -1,0 +1,164 @@
+@import '0_bluemix-colors-6.7.0';
+
+.demoAppWrap{
+	display:block;
+	margin-bottom: 5px;
+	font-size: 14px;
+}
+
+.demoAppWrap:nth-child(odd){
+	background: $color__navy-gray-4;
+}
+
+.demoAppWrap:nth-child(even){
+	background: $color__navy-gray-5;
+}
+
+.demoAppName, .demoAppDescr, .demoDetails, .demoInteract, .demoDeployWrap{
+	display:inline-block;
+	padding: 5px 10px;
+	min-height: 25px;
+	vertical-align: middle;
+	-webkit-transition: all .25s linear;
+	-moz-transition: all .25s linear;
+	-o-transition: all .25s linear;
+	transition: all .25s linear;
+}
+
+.demoDeployWrap{
+	height: inherit;
+	vertical-align: bottom;
+	margin-bottom: 4px;
+	position: relative;
+	width: 145px;
+}
+
+.demoAppName{
+	width: 145px;
+	font-weight: bold;
+}
+
+.demoAppDescr{
+	margin-right: 5px;
+	width: 460px;
+}
+
+.demoDetails, .demoInteract{
+	font-size: 13px;
+	margin-right: 5px;
+	width:150px;
+}
+
+.demoInteract{
+	width: 125px;
+}
+
+.underline, .underline:visited{
+	text-decoration: underline;
+}
+
+#cpLoading, #marblesLoading, #example02Loading{
+	position: absolute;
+	right: 4px;
+	top: -3px;
+	display:none;
+}
+
+#deployWrap{
+	margin: auto; 
+	width: 550px;
+}
+
+.demoActionWrap{
+	display:none;
+	text-align: right;
+	width: 1003px;
+	padding:40px 10px;
+}
+
+.demoAction{
+	width: 175px;
+	margin: 7px;
+}
+
+.deployButton:hover{
+	background: $color__navy-gray-8;
+}
+
+.selectCC{
+	font-family: Lucida Console, 'Courier';
+	width: 365px;
+}
+
+.selectCC, .selectAction{
+	margin-top:5px;
+	margin-bottom:10px;
+	margin-right: 10px;
+}
+
+.selectCC:focus{
+	border: 1px $color__white solid;
+}
+
+#demoLogs{
+	font-family: Lucida Console, 'Courier';
+	background: $color__blue-90;
+	min-height: 150px;
+	margin-top: 4px;
+	color: $color__white;
+	font-size: 12px;
+	padding: 10px;
+	overflow: auto;
+	max-height: 550px;
+}
+
+//log api req/response
+.apiDetailsCheck{
+	font-size: 13px;
+	margin: 0;
+	padding: 0;
+	margin-bottom: 5px;
+	margin-top: 15px;
+	margin-right: 16px;
+}
+.apiDetails{
+	display:none;
+}
+
+#logWrapper{
+	margin: auto;
+	position: relative;
+}
+
+.logControls{
+	display: none;
+}
+
+#clearLogs{
+	position: absolute;
+	right: 10px;
+	top: 0;
+	cursor: pointer;
+}
+
+
+svg#clearLogs{
+	width: 30px;
+	use{fill: $color__white;}
+	fill: $color__white;
+}
+
+.demoCCSelectWrap, .demoActionSelectWrap, .demoActionButtonWrap{
+	display: inline-block;
+	text-align: left;
+	vertical-align: top;
+}
+.demoActionButtonWrap{
+	width: 95px;
+}
+.demoCCSelectWrap{
+	width: 390px;
+}
+.demoActionSelectWrap{
+	width: 170px;
+}

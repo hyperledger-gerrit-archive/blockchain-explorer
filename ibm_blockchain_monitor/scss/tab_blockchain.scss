@@ -1,0 +1,242 @@
+@import '0_bluemix-colors-6.7.0';
+
+//block stuff
+.deploy, .invoke{
+	font-size: 12px;
+	bottom: 5px;
+}
+.deploy{
+	position: absolute;
+	left: 10px;
+}
+.invoke{
+	position: absolute;
+	right: 10px;
+}
+#loadMore{
+	font-size: 14px;
+	background: $color__navy-gray-2;
+}
+
+
+//other
+.date{
+	border-radius: 200px;
+	border: 2px $color__blue-50 dashed;
+	width: 60px;
+	height: 60px;
+	font-size:10px;
+}
+.bar{
+	height:2px;
+	width: 105px;
+	position: absolute;
+	top: 35px;
+	left:70px;
+	border-top: 2px rgba(0,40,100,0.6) dashed;
+}
+.dateText{
+	margin-top:23px;
+}
+
+
+//circle stuff
+.statsBlock{
+	display: inline-block;
+	position: relative;
+	width: 100px;
+	height: 100px;
+	background: $color__navy-gray-6;
+	border-radius: 1000px;
+	font-size: 48px;
+	margin-bottom: 5px;
+	margin-top: 10px;
+	text-align: center;
+	line-height: 100px;
+	font-weight: 100;
+	color: $color__blue-20;
+}
+#blockHeight, #blockRate, #blockTrans, #blockDeploys, #blockInvokes{
+	vertical-align: top;
+}
+.statLegend{
+	font-size: 13px;
+	font-weight: 600;
+	color: $color__navy-gray-8;
+	display: block !important;
+	margin-top: 4px;
+}
+
+.hint{
+	position: absolute;
+	bottom:-50px;
+	text-align: center;
+	width: 100%;
+	left:0;
+	font-size:11px;
+}
+
+.height{
+	font-size: 14px;
+	cursor: default;
+}
+
+
+.statsBlockWrap{
+	display: inline-block;
+	width: 120px;
+	margin-right: 35px;
+	vertical-align: top;
+}
+
+.statIcon{
+	width: 47px;
+	height: 47px;
+	padding: 8px;
+	margin-top: 5px;
+}
+.blockTime{
+	font-size: 12px;
+}
+
+
+//table stuff
+.blockchainTabTable{
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+	vertical-align: top;
+	max-height: 550px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+#chainActivityTable{
+	width: 445px;
+	border-right: 1px $color__navy-gray-6 solid;
+	margin-right: 1px;
+}
+#blockDetailsTable{
+	width: 500px;
+}
+.blockchainTabRow:hover{
+	border:2px #59AAF9 solid;
+	cursor: pointer;
+}
+.blockchainTabTable, .blockchainTabTable th{
+	font-size: 14px;
+	font-weight: 100;
+}
+.blockchainTabTable th{
+	padding: 10px 20px;
+	text-align: center;
+}
+.blockchainTabTable td{
+	padding: 10px 0px;
+	text-align: center;
+	word-break: break-word;
+}
+#blockDetailsTable th, #blockDetailsTable td{
+	text-align: left;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+#detailsBody{
+	font-size: 12px;
+}
+.detailsIcon{
+	use{fill: $color__blue-40;}
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	fill: $color__blue-40;
+}
+
+.blockchainTabTable tr:nth-child(odd){
+	background: $color__navy-gray-5;
+}
+
+.blockchainTabTable th, .blockchainTabTable tr:nth-child(even){
+	background: $color__navy-gray-4;
+}
+
+
+.blockIcon{
+	width: 6px;
+	height: 6px;
+	background: $color__white;
+	padding: 0;
+	margin: 0;
+	-webkit-transition-property: -webkit-transform;
+	-webkit-transition-duration: 5s;
+	-moz-transition-property: -moz-transform;
+	-moz-transition-duration: 8s;
+	transition-property: transform;
+	transition-duration: 5s;
+	animation: rotate 2s infinite linear;
+}
+
+@keyframes rotate {
+	0% {
+		-webkit-transform: rotate(0deg)
+	}
+	50% {
+		-webkit-transform: rotate(360deg)
+	}
+	70% {
+		-webkit-transform: rotate(0deg)
+	}
+	100% {
+		-webkit-transform: rotate(0deg)
+	}
+}
+
+@-webkit-keyframes rotate {
+	0% {
+		-webkit-transform: rotate(0deg)
+	}
+	50% {
+		-webkit-transform: rotate(360deg)
+	}
+	70% {
+		-webkit-transform: rotate(0deg)
+	}
+	100% {
+		-webkit-transform: rotate(0deg)
+	}
+}
+
+@-moz-keyframes rotate {
+	0% {
+		-moz-transform: rotate(0deg)
+	}
+	50% {
+		-moz-transform: rotate(360deg)
+	}
+	70% {
+		-moz-transform: rotate(0deg)
+	}
+	100% {
+		-moz-transform: rotate(0deg)
+	}
+}
+
+.firstBlock{
+	background: $color__teal-30;
+}
+.selectedBlock{
+	background: $color__navy-gray-2 !important;
+}
+
+#blockchainPeer{
+	font-size: 14px;
+	font-weight: 100;
+	float: right;
+}
+
+.selectedBlock td .blockIcon{
+	background: $color__blue-40;
+	width: 14px;
+	height: 14px;
+	animation: none;
+	-webkit-animation: none;
+	-moz-animation: none;
+}

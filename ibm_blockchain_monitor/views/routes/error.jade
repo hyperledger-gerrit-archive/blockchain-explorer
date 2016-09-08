@@ -1,0 +1,35 @@
+extends ../templates/bare
+
+block js
+	script.
+			$(document).on('ready', function() {
+				console.log('debugging', '!{debugging}');
+			});
+
+block content
+	#mainPanel100
+		
+		br
+		br
+		
+		center
+			h1 Whoops
+		
+		.logoutWrap
+			if(email !== false)
+				.emailId #{email}
+			a.logoutLink(href="/logout") Logout
+		.errorMsgWrap
+			- for(var i = 0; i < lines.length; i++)
+				p= lines[i]
+		
+		p(style="text-align: left; width: 70%; margin: auto;  margin-top:20px;")
+			span Having issues? 
+			span Check the status, release notes, known issues/outages and general communication on our 
+			a(href="https://bluemix-service-status.blockchain.ibm.com/" target="_blank").underline service status 
+			span page. 
+			br
+			br
+			span To reach the team fill out a 
+			a(href="https://github.com/IBM-Blockchain/ibm-blockchain-issues/issues" target="_blank").underline GitHub issue
+					

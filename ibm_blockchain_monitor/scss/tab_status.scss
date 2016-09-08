@@ -1,0 +1,243 @@
+@import '0_bluemix-colors-6.7.0';
+
+#graphWrapper{
+	text-align: center;
+	padding-top: 25px;
+	margin-bottom: 50px;
+}
+.circleWrap{
+	display:inline-block;
+	width: 32%;
+	text-align:center;
+}
+.circleGraph svg {
+	use {fill: initial;}
+	path {fill: initial;}
+	g {fill: initial;}
+	width: 100%;
+	height: initial;
+	display: initial;
+	vertical-align: initial;
+	padding: initial;
+	border-radius: initial;
+	fill: initial;
+}
+
+#statusSpinner{
+	position: absolute;
+	right: 30px;
+	top: 5px;
+}
+
+.statsGraphWrap{
+	margin-top:15px;
+	background: $color__navy-gray-4;
+}
+
+.statsGraphContent{
+	padding:30px;
+}
+
+.circleGraph svg {
+	width: initial;
+}
+
+.circleGraph svg path{
+	stroke-width: 4;
+	fill: transparent;
+}
+.circleGraph .circles-maxValueStroke{
+	stroke: rgba(80, 94, 104, 0.52);
+	stroke-width: 2;
+}
+.circleGraph .circles-valueStroke{
+	stroke: #8AD400;
+}
+.statusWarning{
+	stroke: #EFC100 !important;
+}
+.statusFailing{
+	stroke: #FF5050 !important;
+}
+.circleGraph .circles-text{
+	color: $color__navy-gray-7 !important;
+	font-family: inherit !important;
+	font-weight: 100 !important;
+}
+.circleLegend{
+	font-weight:bold;
+	margin: 15px 0 10px 0;
+}
+.circleHint{
+	font-size: 13px;
+}
+.status_label {
+	margin-right: 8px;
+	font-size: 13px;
+}
+
+#statusChart{
+	margin: 20px 0;
+	text-align: center;
+}
+.halfPanel{
+	display:inline-block;
+	width: 49%;
+	margin-right: 1%;
+	background: $color__navy-gray-4;
+	vertical-align: top;
+	margin-top: 10px;
+}
+.halfPanel:first-of-type{
+	margin-right: 1%;
+}
+.halfPanelHeader{
+	border-bottom: 1px $color__navy-gray-6 solid;
+	padding: 15px 30px;
+	font-weight: bold;
+	font-size: 15px;
+}
+#messageWrap, #releaseNotesWrap{
+	padding: 15px 30px;
+}
+
+#envText{
+	margin-left: 30px;
+	font-size: 15px;
+}
+
+#infoIcon{
+	position: relative;
+	top: 6px;
+	padding: 0;
+	width: 16px;
+	margin: 0px 18px 8px 8px;
+}
+
+#infoIcon2{
+	padding: 0;
+	width: 16px;
+	height: 16px;
+	margin-left: 10px;
+}
+
+#envWrap{
+	line-height: 40px;
+}
+
+//-----------------------------
+// message classes
+//-----------------------------
+#messageWrap, #releaseNotesWrap{
+	height: 400px;
+	overflow: auto;
+	font-size: 14px;
+}
+.messagesWrap{
+	margin: 13px 0;
+}
+.messageEnv, .messageInnerWrap{
+	display: inline-block;
+}
+.messageEnv{
+	vertical-align: top;
+	padding: 3px;
+	width: 100px;
+	background: #3E5A71;
+	color: #75BBF0;
+	text-align: center;
+	border-radius: 100px;
+	margin-right: 3%;
+	margin-bottom:5px;
+}
+.messageInnerWrap{
+	width: 65%;
+}
+.notes{
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+.altStatus{
+	background: #436B6E;
+	color: #6BE5D2;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) { //IE 10+ only css
+	.circleGraph .circles-text span{
+		position: relative !important;
+		left: 44px;
+	}
+	.circleLegend{
+		position: relative !important;
+		top: 100px;
+		left:45px;
+	}
+	.circleHint{
+		position: relative !important;
+		top: 100px;
+		left:45px;
+	}
+}
+
+//-----------------------------
+// release notes
+//-----------------------------
+.releaseVer, .releaseNotes{
+	display: inline-block;
+	vertical-align: top;
+}
+.releaseVer{
+	width:50px;
+	margin-left: -15px;
+	margin-right: 10px;
+	text-align: center;
+	font-weight: 100;
+}
+.releaseNotes{
+	width: 82%;
+	margin-left: 5px;
+}
+.releaseNotesWrap{
+	border-top: $color__navy-gray-6 solid 1px;
+	padding: 15px 0;
+}
+.releaseNotesWrap:first-of-type{
+	border: 0;
+}
+.releaseHeader{
+	font-weight: bold;
+	margin-top: 15px;
+}
+.releaseHeader:first-of-type{
+	margin:0;
+}
+.releaseNotes p a, .releaseNotes p a:visited{
+	color: #569be3
+}
+.releaseNotes p{
+	font-size: 13px;
+}
+.release_date{
+	font-size: 11px;
+	margin-top: 4px;
+}
+.prerelease{
+	background: #525974;
+	color: #CDB2EA;
+	padding: 3px 10px;
+	border-radius: 10px;
+	width: 80px;
+	text-align: center;
+}
+
+.selectRelease{
+	background:#fff;
+	padding: 3px 10px;
+	text-align: center;
+	color: #406e9e;
+	border-radius: 10px;
+}
+
+.circles-percentage, .circles-fraction{
+	font-size: 22px;
+}

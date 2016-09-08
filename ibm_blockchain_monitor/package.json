@@ -1,0 +1,39 @@
+{
+	"name": "bluemix-passenger",
+	"version": "0.4.1",
+	"private": true,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"async": "1.5.0",
+		"basic-auth": "1.0.3",
+		"body-parser": "1.15.0",
+		"cookie-parser": "1.4.0",
+		"cors": "2.7.1",
+		"compression": "1.4.4",
+		"cradle": "0.6.9",
+		"express": "4.13.3",
+		"express-winston": "*",
+		"express-session": "1.13.0",
+		"jade": "1.9.1",
+		"nano": "6.1.3",
+		"node-uuid": "1.4.3",
+		"oauth-bluemix":"*",
+		"passport":"0.3.2",
+		"passport-bluemix-obc":"*",
+		"request": "2.69.0",
+		"sessionstore-cloudant": "1.2.16",
+		"winston": "^2.2.0"
+	},
+	"devDependencies": {
+		"gulp": "^3.9.0",
+		"gulp-sass": "^2.0.4",
+		"gulp-concat": "*",
+		"gulp-clean-css": "*",
+		"gulp-rename": "*",
+		"gulp-buster": "*",
+		"gulp-uglify": "*",
+		"gulp-strip-comments": "*"
+	}
+}

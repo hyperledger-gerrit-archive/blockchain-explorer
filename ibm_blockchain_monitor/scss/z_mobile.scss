@@ -1,0 +1,197 @@
+@import '0_bluemix-colors-6.7.0';
+
+@media (max-width: 1400px) {
+	// !
+	.demoAppDescr{
+		width: 310px;
+	}
+	.demoActionWrap {
+		width: 852px;
+	}
+	#navPanelContent{
+		padding: 40px 15px;
+	}
+	.helpfulHints{
+		width: 285px;
+	}
+}
+
+@media (max-width: 1200px) {
+	//!
+	.demoAppDescr{
+		width: 190px;
+	}
+	.demoActionWrap {
+		width: 733px;
+	}
+	.mainContentWrap{
+		margin: 0 20px;
+	}
+	#refreshWrap{
+		margin-bottom:20px;
+	}
+	.messageInnerWrap{
+		width: 59%;
+	}
+	.blockchainTabTable{
+		display: table;
+	}
+	#chainActivityTable{
+		border: 0;
+		width: 100%;
+	}
+	#blockDetailsTable{
+		width: 100% !important;
+		margin-top: 10px;
+		border-top: 1px $color__navy-gray-6 solid;
+	}
+	.helpfulHints{
+		width: 190px;
+	}
+}
+
+@media (max-width: 1100px){
+	//!
+	.demoDetails{
+		display:none;
+	}
+	#urlFullPath, .peerOptionWrap{							//swagger field
+		margin-left:5px;
+	}
+	.releaseNotes{
+		width: 80%;
+	}
+	.demoActionWrap {
+		width: 579px;
+	}
+	.helpfulHints{
+		display: block;
+		width: 100%;
+		margin: 15px 0;
+	}
+}
+
+@media (max-width: 1000px) {
+	//!
+	.demoAppDescr{
+		width: 150px;
+	}
+	.demoActionWrap {
+		text-align: center;
+		width: 570px;
+	}
+	.selectedNavChev {
+		margin-top: -5px;
+	}
+	#navPanelContent{
+		padding: 40px 5px;
+	}
+	#navPanel{
+		min-width: 165px;
+	}
+	.navLink{
+		font-size: 13px;
+	}
+	.mainContentWrap{
+		margin: 0 10px;
+	}
+	.halfPanel, .mainContentWrap{
+		width:99%;
+		margin-left: 0.5%;
+		transition: all .25s linear;
+	}
+}
+
+@media (max-width: 900px) {
+	.swagger-section center {
+		margin: 20px 0;
+		transition: all .25s linear;
+	}
+
+	//!
+	.demoAppWrap:first-of-type{
+		display:none;
+	}
+	#openTipsLink{							//getting started link
+		margin-top: -50px;
+	}
+	.mainContentWrap tr td:nth-of-type(2), .mainContentWrap tr th:nth-of-type(2){
+		display:none;
+	}
+	#passive-modal, #transactional-modal {
+		left: 10%;
+	}
+	.mainContentWrap{
+		margin: 0;
+		margin-left: 8px;
+	}
+}
+
+@media (max-width: 800px) {
+	.upTime{
+		display: none;
+	}
+	#blockColumn{
+		width: 88px;
+	}
+
+	//!
+	.demoAppWrap{
+		text-align: center;
+	}
+	#cpLoading, #marblesLoading, #example02Loading{
+		right: -20px;
+	}
+	#mainPanel {
+		width: 70%;
+	}
+	.navLink {
+		display: block;
+		text-align: left;
+	}
+	#passive-modal-innter, embed {
+		width: 500px;
+	}
+	.demoAppName, .demoAppDescr, .demoDetails, .demoInteract, .demoActionWrap{
+		display: block;
+		width: 100% !important;
+		text-align: center;
+	}
+}
+
+@media (max-width: 700px) {
+	#transactional-modal, #passive-modal, #closingTimeWrap{
+		left: 5%;
+		width: 90%;
+	}
+	.navLink{
+		margin-right: 5px !important;
+		font-size: 14px;
+	}
+
+	//! super mobile view here
+	#navPanel{
+		display: block;
+		margin: 0 auto;
+		max-width: 100%;
+		width: 100%;
+		min-height: 0;
+	}
+	#navPanelContent{
+		padding: 0px;
+		padding-top: 5px;
+	}
+	.navLink {
+		display: none;
+		text-align: center;
+	}
+	.selectedPage{
+		display: block;
+	}
+	.selectedNavChevron{
+		display: none;
+	}
+	#mainPanel{
+		width: 100%;
+	}
+}

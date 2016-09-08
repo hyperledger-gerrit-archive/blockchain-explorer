@@ -1,0 +1,86 @@
+#blockchain_content
+	.mainContentWrap
+		// ============ Blockchain Stats Section ============ //
+		.large1x2Wrap
+			.large1x2Header 
+				span Blockchain Overview
+				span#blockchainPeer [ loading... ]
+
+			br
+			br
+
+			//# total number of blocks
+			.statsBlockWrap
+				.statsBlock
+					span#blockHeight 0
+				svg.statIcon(style="width:43px;")
+					use(xlink:href="/img/icons/bcs_sprite.svg#blocks")
+				.statLegend.bx--tooltip__top(data-tooltip="total # of blocks including genesis") &nbsp;BLOCKS
+			
+			//# blocks per hour
+			.statsBlockWrap
+				.statsBlock
+					span#blockRate 0
+				svg.statIcon(style="width:42px;")
+					use(xlink:href="/img/icons/bcs_sprite.svg#hour-glass")
+				.statLegend.bx--tooltip__top(data-tooltip="# blocks per hour in the Block Activity") &nbsp;BLOCKS SPEED
+				
+			//# transactions per block
+			.statsBlockWrap
+				.statsBlock
+					span#blockTrans 0
+				svg.statIcon(style="width:43px;")
+					use(xlink:href="/img/icons/bcs_sprite.svg#round-time")
+				.statLegend.bx--tooltip__top(data-tooltip="avg # transactions per block in the Block Activity") &nbsp; TRANSACTION ACTIVITY
+			
+			//# total deployments
+			.statsBlockWrap
+				.statsBlock
+					span#blockDeploys 0
+				svg.statIcon(style="width:39px;")
+					use(xlink:href="/img/icons/bcs_sprite.svg#space-ship")
+				.statLegend.bx--tooltip__top(data-tooltip="# of deploys in the Block Activity") &nbsp; DEPLOYMENTS
+				
+			//# total inovcations
+			.statsBlockWrap
+				.statsBlock
+					span#blockInvokes 0
+				svg.statIcon(style="width:47px;")
+					use(xlink:href="/img/icons/bcs_sprite.svg#tag")
+				.statLegend.bx--tooltip__top(data-tooltip="# of invokes in the Block Activity") &nbsp; INVOCATIONS
+			
+			br
+			br
+			br
+		
+		br
+
+		// ============ Block Details Table ============ //
+		.large1x2Wrap.blockWrap
+			.large1x2Header Block Activity
+
+			div(style="text-align: left;")
+				table.blockchainTabTable#chainActivityTable
+					thead
+						tr
+							th &nbsp;
+							th(style="min-width:85px;") Time
+							th(style="min-width:75px;") Block #
+							th Deployments
+							th Invocations
+					tbody#activityBody
+						tr#loadingRow
+							td(colspan="5")#loadingTxt loading...
+
+				table.blockchainTabTable#blockDetailsTable
+					thead
+						tr
+							th(style="min-width:85px;") Date
+							th(style="width:80px;") Type
+							th UUID
+							th(style="min-width:135px;") Chaincode ID
+							th Payload
+					tbody#detailsBody
+						//user tip text - ya.. don't ask!
+						tr#userTipRow
+							td(colspan="6") click a block to see its contents &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

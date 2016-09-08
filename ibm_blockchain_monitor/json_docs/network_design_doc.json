@@ -1,0 +1,15 @@
+{
+	"_id": "_design/passenger",
+	"views": {
+		"_networks_by_status": {
+			"map": "function(doc){if(doc.type && doc.type=='network'){var swarm_name='none'; var net_use='in_use';var validity='valid'; if(doc.deleted && doc.deleted.timestamp) validity='deleted'; if(doc._id.indexOf('exceeding_limit') >= 0) validity='limit_exceeded'; if(doc.failed_health_check) validity='failed_health_check'; if(doc.swarm && doc.swarm.name) swarm_name = doc.swarm.name; if(doc.instance == null) net_use='in_pool'; emit([swarm_name,net_use,validity],1);}}",
+			"reduce": "_sum"
+		},
+		"_networks": {
+			"map": "function(doc) {if (doc.type && doc.type == 'network') { emit(doc.timestamp, doc._id);}}"
+		},
+		"_networks_by_instance": {
+			"map": "function(doc) {if (doc.type && doc.type == 'network' && doc.instance) {emit(doc.instance.instance_id, doc._id);}}"
+		}
+	}
+}

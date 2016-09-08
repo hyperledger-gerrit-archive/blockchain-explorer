@@ -1,0 +1,64 @@
+doctype html
+html
+	head
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1.0")
+		title= title
+		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
+		link(rel='stylesheet' href='/css/main.min.css?v=#{csshash}')
+		
+		//- Custom CSS Block
+		block css
+
+		//- Custom Head Block
+		block head
+
+	//- Body
+	body
+		//load image asap
+		img(src="/img/IBM_Blockchain_BMX_icon.svg" hidden)
+		#closingTimeWrap
+			#closingHeader
+				#closingHeaderText Session Ended
+			#closingTextWrap
+				p Are you still there?
+				br
+				button()#closingButton Resume
+
+		#closingScreen
+
+		#modalScreen
+
+		#transactional-modal.bx--modal(data-modal="" tabindex="-1")
+			#transactional-modal-innter.bx--modal-inner
+		
+		#passive-modal.bx--modal(data-modal="" tabindex="-1")
+			#passive-modal-innter.bx--modal-inner
+				
+		#logoHeader
+			a(href="/v2/network/!{network_id}").nav-logo
+			span#nav-txt IBM Blockchain
+
+		//- Main Content Block
+		block content
+
+
+		//- Footer
+		div(style="height: 80px;")#footer_spacer &nbsp;
+		#footer
+
+		//- JavaScript
+		script.
+			var network_id = '#{network_id}';						//throw jade json over to JS
+			var dash_ver = '#{dash_ver}';							//throw jade var over to JS
+			var network_timestamp = Number('#{timestamp}');			//throw jade var over to JS
+			var broker_ver = '#{broker_ver}';						//throw jade var over to JS
+			var ZONE = '#{ZONE}'
+			if(ZONE === 'local') ZONE = 'prod';
+			console.log('network_id', network_id, dash_ver, network_timestamp, broker_ver, ZONE);
+
+
+		script(src="/js/concat/js_libs.min.js")
+
+		//- Custom JS Block
+		block js

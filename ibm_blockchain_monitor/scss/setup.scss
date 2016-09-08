@@ -1,0 +1,298 @@
+@import '0_bluemix-colors-6.7.0';
+
+.setupContent{
+	width: 90%;
+	padding-top: 20px;
+	margin-left: 60px;
+	padding-left: 30px;
+}
+
+.setuph1{
+	border-bottom: 1px solid $color__navy-gray-7;
+	font-size: 26px;
+	line-height: 1;
+	margin: 0;
+	margin-bottom: 20px;
+	padding: 0 10px 7px 0;
+}
+
+.helpButtons{
+	padding: 50px;
+	font-size: 30px;
+	display: inline-block;
+	margin: 15px;
+	height: 140px;
+	border-radius: 2px;
+	vertical-align: top;
+	cursor: pointer;
+	transition: all .25s linear;
+	font-weight: 100;
+}
+.setupBorder{
+	color: $color__navy-gray-7;
+	background: $color__navy-gray-7;
+	margin-top: 10px;
+	height: 1px;
+	border: 0;
+}
+
+.buttonHint{
+	display: block;
+	font-size: 16px;
+}
+
+.setupNavLogo{
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+.optionLabel{
+	font-size: 60px;
+	display: inline-block;
+	color: $color__navy-gray-7;
+	line-height: 150px;
+}
+
+.sideLegend{
+	color: $color__navy-gray-7;
+	font-size: 24px;
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 20px;
+	width: 75px;
+}
+
+.setupLegend{
+	width: 130px;
+	margin: 8px;
+	display: inline-block;
+}
+
+.inputWrap{
+	display: inline-block;
+	margin-left: 20px;
+	margin-top: 20px;
+}
+
+.setupWrap{
+	display: none;
+}
+
+.setupSelBox{
+	width: 75px;
+	padding: 8px;
+	border: 1px solid $color__navy-gray-1;
+	background: $color__navy-gray-1;
+	color: #fff;
+	margin-top: -2px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	display: inline-block;
+	text-align: center;
+	height: 34px;
+	vertical-align: bottom;
+}
+
+.setupSelBox:hover{
+	border: 1px $color__navy-gray-7 solid;
+	cursor: pointer;
+	border-bottom: 0;
+}
+
+.statusIcon, .statusIconValid{
+	display: inline-block;
+	padding: 0;
+	height: 20px;
+	width: 20px;
+}
+
+.statusIcon{
+	use{fill: $color__red-50;}
+	fill: $color__red-50;
+}
+
+.statusIconValid{
+	display: none;
+	use{fill: $color__blue-30;}
+	fill: $color__blue-30;
+}
+
+#addEnrollFields{
+	display: inline-block;
+}
+
+#jsonDump{
+	width: 900px;
+	height: 500px;
+}
+
+.nextButton{
+	padding: 5px 80px;
+	font-size: 16px;
+	background: $color__blue-30;
+	color: #fff;
+	font-weight: normal;
+}
+
+.buttonWrap{
+	width: 100%;
+	text-align: center;
+}
+
+.statusResults{
+	background: $color__navy-gray-6;
+	color: $color__white;
+	margin: 5px;
+	font-size: 12px;
+	font-family: monospace;
+	padding: 5px;
+	text-align: left;
+}
+
+.statusHint{
+	font-size: 12px;
+	color: $color__blue-30;
+}
+
+.stepPanel{
+	display: none;
+}
+
+.halfInput{
+	width: 70px;
+	margin: 2px;
+}
+
+.doubleInput{
+	width: 475px;
+	margin: 2px;
+}
+
+.toggleButtonOn, .toggleButtonOn:hover{
+	border-width: 1px;
+	background: $color__blue-30 !important;
+	color: #fff;
+}
+
+.toggleButtonOff, .toggleButtonOff:hover{
+	border: 1px $color__navy-gray-7 solid;
+	background: $color__navy-gray-6;
+	color: #b5b0b0;
+}
+
+
+#configWrap{
+	display: inline-block;
+}
+.setupName{
+	margin-bottom: 15px;
+}
+.sideButton{
+	color: #fff;
+	border: 0;
+	margin-top:3px;
+	margin: 2px;
+	height: inherit;
+	padding: 5px;
+	width: 85px;
+}
+.sideButton:hover{
+	background: #ddd;
+	color:#000;
+}
+
+.inputError{
+	background: rgba(247, 15, 15, 0.22) !important;
+	border-color: #F98A8A !important;
+}
+
+.setupSelBox:first-of-type{
+	margin-left: 80px;
+}
+
+.helpfulHints{
+	display: inline-block;
+	vertical-align: top;
+	margin-left: 30px;
+	font-size: 13px;
+	width: 400px;
+}
+
+.helphint{
+	margin-top: 6px;
+}
+
+.saveButton{
+	border: 1px solid $color__navy-gray-7;
+}
+
+.registerPanel{
+	display: none;
+}
+
+#registerEnrollID{
+	width: 100%;
+	height: 25px;
+	margin-top: 10px;
+}
+
+#warningSetupWrap{
+	position: absolute;
+	left: 20px;
+	top: 26px;
+}
+
+#warningSetup{
+	display: inline-block;
+	vertical-align: middle;
+	height: 55px;
+	width: 55px;
+	use{fill: $color__orange-20;}
+	fill: $color__orange-20;
+}
+
+
+#clearButton{
+	width: 100%;
+}
+
+.hintSetupLegend{
+	color: $color__navy-gray-7;
+}
+
+.required{
+	color: $color__red-50;
+	width: 5px;
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.setupTabNav{
+	margin-top: 10px;
+	border-bottom: 1px $color__navy-gray-7 solid;
+}
+
+#copyFromLeft, #testPeer{
+	display: none;
+}
+
+/*
+.copyUp, .copyDown{
+	use{fill: #000}
+	border: 2px #000 solid;
+	cursor: pointer;
+	border-radius: 100px;
+	width: 30px;
+	height: 30px;
+	margin-bottom: 3px;
+	padding: 6px;
+}
+
+.copyUp{
+	transform: rotate(90deg);
+}
+
+.copyDown{
+	transform: rotate(270deg);
+}*/

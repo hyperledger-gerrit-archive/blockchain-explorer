@@ -1,0 +1,242 @@
+@import '0_bluemix-colors-6.7.0';
+
+#health_data table tbody tr {
+	border: 4px solid #333C47;
+}
+
+#health_data table th {
+	cursor: pointer;
+}
+
+.sample {
+	display: none;
+}
+
+.ccPeerSelect{
+	width: initial;
+}
+
+.cclogs{
+	position: relative;
+	top:10px;
+}
+
+.ccUpTime{
+	margin-left:10px;
+}
+
+#loadingSpinner{
+	display: none;
+	position: absolute;
+	right: 20px;
+	z-index:305;
+	top: 0px;
+}
+
+.name{
+	font-weight: 500;
+}
+
+.status, .name{
+	word-break: break-word;
+}
+
+// svg button disabled
+.disabledButton:hover{
+	background: inherit !important;
+	cursor: default !important;
+	use {fill: #fff !important};
+	fill: #fff !important;
+}
+
+.navLinkHelp, a.navLinkHelp, a.navLinkHelp:visited{
+	padding: 10px;
+	display: inline-block;
+	margin: 10px;
+	text-align: center;
+	color: $color__blue-20;
+}
+
+.navLinkHelpWrap{
+	width: 200px;
+	padding: 5px;
+	background: #fff;
+	color: #555;
+	display:inline-block;
+	text-align: center;
+	margin: 1px;
+	height: 120px;
+	vertical-align: top;
+}
+
+.navLinkDescription{
+	display:block;
+	text-align: center;
+	font-size: 13px;
+}
+
+.accColor{
+  color: $color__blue-20;
+}
+
+#deployInstWrap{
+	width: 75%;
+	margin: auto;
+	text-align: left;
+	margin-top: 30px;
+}
+
+.actionButton{
+	cursor: pointer;
+}
+
+.stop_peer{
+	vertical-align: middle;
+	margin-top: -5px;
+}
+
+.blckheight{
+	text-align: center;
+}
+
+.peerStatus{
+	//border-radius:100px;
+	height: 7px;
+	width: 7px;
+	background: #8CD211;
+	display:inline-block;
+	margin-bottom: 1px;
+
+	-webkit-transition-property: -webkit-transform;
+	-webkit-transition-duration: 5s;
+	-moz-transition-property: -moz-transform;
+	-moz-transition-duration: 8s;
+	transition-property: transform;
+	transition-duration: 5s;
+
+	animation: rotate360 1.2s infinite linear;
+	-webkit-animation: rotate360 1.2s infinite linear;
+	-moz-animation: rotate360 3s infinite linear;
+}
+
+@keyframes rotate360 {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@-webkit-keyframes rotate360 {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@-webkit-keyframes rotate360 {
+	from {
+		transform: rotate(360deg);
+	}
+	to {
+		transform: rotate(0deg);
+	}
+}
+
+.peerStatusError{
+	background: #8C9BA5;
+	animation: none;
+	-webkit-animation: none;
+	-moz-animation: none;
+}
+
+.routeWrap, .ccidWrap, .routeSelect{
+	background: #273943;
+	vertical-align: bottom;
+	font-family: monospace;
+	min-width: 100px;
+	display: inline-block;
+	color: #fff;
+	margin: 0;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 8px;
+	margin-left: 5px;
+	font-size: 12px;
+}
+
+.routeWrap {
+	max-width: 650px;
+}
+
+.routeDiscovery{
+	display:none;
+}
+
+.highlightName{
+	display: line-block;
+	font-weight: bold;
+	margin-right: 4px;
+	font-size: 14px;
+}
+
+#networkNotifications{
+	height: 55px;
+	text-align: right;
+}
+
+.peerNotification{
+	opacity: 0;
+	width: 50%;
+	padding: 5px 10px;
+	margin: 2px 0;
+	font-size: 14px;
+	z-index: 400;
+	position: relative;
+}
+.peerNotification:first-of-type{
+	margin-top: 10px;
+}
+
+.peerNotificationFix{
+	padding:0;
+	margin-right: 5px;
+}
+
+#jsonLink{
+	color: $color__blue-20;
+	float: right;
+	font-size: 20px;
+	text-decoration: none;
+}
+
+#jsonLinkText{
+	color: $color__white;
+	font-size: 13px;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+#jsonLinkText:hover{
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.networkIdWrap{
+	margin: 10px 0;
+}
+
+.restart_peer{
+	display: none;
+}
+
+.discoveryCount{
+	text-align: center;
+}
+
+.discoveryCount .bx--tooltip__top{
+	font-size: 13px;
+}

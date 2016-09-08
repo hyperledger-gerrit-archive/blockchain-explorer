@@ -1,0 +1,20 @@
+.mainContentWrap
+	div#planNameWrap &nbsp;!{display_name}
+	.networkIdWrap
+		span.networkIdText#networkId !{network_id}
+		button.copyButton.copyButtonStyle(data-clipboard-text="#{network_id}") Copy
+
+		#openTipsLink
+			svg(title="Help ME!")#helpIcon
+				use(xlink:href="/img/icons/sprite.svg#common--help")
+			a(href="") Tips
+
+		// ============ Refresh Timer Panel ============ //
+		#refreshWrap(hidden)
+			span &nbsp;&nbsp;-&nbsp;
+			input(type='range' min = '0' max = '100' value='50')#reBar
+			span &nbsp;+&nbsp;&nbsp;&nbsp;&nbsp;
+			span.refreshLegend Refresh In&nbsp;&nbsp;
+			span#time_left 03:00
+			span &nbsp;/&nbsp;
+			span#time 3:00

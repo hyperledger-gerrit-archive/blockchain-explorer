@@ -1,0 +1,67 @@
+extends ../templates/bare
+
+block js
+	script(src='/js/concat/swagger_lib.min.js' type='text/javascript')
+	script(src='/js/0_helper.js?v=#{jshash}')
+	script(src='/js/0_common.js?v=#{jshash}')
+	script(src='/js/tips.js?v=#{jshash}')
+	script(src='/js/tab_apis.js?v=#{jshash}')
+
+block content
+	include ../templates/nav
+
+	#mainPanel
+	
+		// ============ Top of Page ============ //
+		include ../templates/header
+
+		br
+
+		.mainContentWrap
+
+			.main.swagger-section
+			
+				#apiTxtWrap
+					// ============ URL Selection Panel ============ //
+					p 
+						span Welcome to the HTTP Peer API Swagger documentation. 
+						span You can use this page to interact with your peers using their HTTP interface. 
+						span If you are looking for gRPC API documentation then check out the 
+						a(href="https://github.com/hyperledger/fabric/tree/master/sdk/node" target="_blank") Hyperledger Fabric Client
+						span .
+					br
+					br
+
+					div
+						p &nbsp;Select Peer:
+						select.peerOptionWrap
+							option#badPeerOption loading...
+
+						input(type="text" id="urlFullPath" value= "...")
+
+					p(style="font-size:13px; float:left; margin-left: 195px;") (feel free to change the peer url above)
+					
+					
+				// ============ Enroll IDs Panel ============ //
+				if(ui_options.api_enroll_ids === true)
+					div
+						h2#enrollWrapToggle.thinBorder
+							span Network's Enroll IDs 
+							span.smallerFont#enrollWrapStatus Expand
+						#enrollIDsWrap 
+							span.small(style="margin-top:5px; margin-right:15px;") (click ID to copy to clipboard)
+							span.small note that an ID can only be registered against 1 peer
+							
+							#enrollIDsGoHere loading...
+							br
+
+				
+				br
+				br
+
+				h2.thinBorder IBM Blockchain HTTP APIs 
+				
+				
+				// ============ Swagger UI ============ //
+				div(id="message-bar" class="swagger-ui-wrap" data-sw-translate) &nbsp;
+				div(id="swagger-ui-container" class="swagger-ui-wrap")

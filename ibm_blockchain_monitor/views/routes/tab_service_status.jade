@@ -1,0 +1,74 @@
+#service_content
+	// ============ Loading Spinner ============ //
+	#statusSpinner.loadingdiv
+		span
+		span
+		span
+		span
+		span
+		div
+
+	.mainContentWrap
+		.thinBorder
+			h2(style="font-weight: 100; display:inline-block; margin-right: 50px;") Service Status
+
+			// ============ Date Range Radios ============ //
+			input(type="radio" name="status_range" checked="checked" value="today")#status_today
+			label(for="status_today").status_label Today
+			input(type="radio" name="status_range" value="week")#status_week
+			label(for="status_week").status_label  This Week
+			input(type="radio" name="status_range" value="month")#status_month
+			label(for="status_month").status_label  This Month
+			input(type="radio" name="status_range" value="lastMonth")#status_lastmonth
+			label(for="status_lastmonth").status_label  Last Month
+
+			br
+			br
+
+		.statsGraphWrap
+			// ============ Env Label ============ //
+			#envWrap.thinBorder
+				span(data-tooltip="Your network's environment version").bx--tooltip__top
+					span#envText Production
+					svg#infoIcon
+						use(xlink:href="/img/icons/sprite.svg#notifications--info")
+					span#statusVer.smallerFont v0.0.0
+					span &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				span(style="float:right; margin-top: 4px;") IBM Blockchain Service Status &nbsp;&nbsp;
+			
+			.statsGraphContent
+				// ============ Circle Status Graphs ============ //
+				#graphWrapper
+					.circleWrap
+						#serviceCircle.circleGraph
+						.circleLegend Service Uptime
+						.circleHint % Running
+					.circleWrap
+						#networkCircle.circleGraph
+						.circleLegend Network Uptime
+						.circleHint % Running
+					.circleWrap
+						#testingCircle.circleGraph
+						.circleLegend Automated Testing
+						.circleHint Successful tests
+
+				// ============ Status Line Chart ============ //
+				h2(style="font-size:14px; font-style:italic;") % of successful self-test over 24 hours
+				center
+					canvas(width="900")#statusChart
+
+		// ============ Messages ============ //
+		.halfPanel
+			.halfPanelHeader 
+				span(data-tooltip="Communication messages from the support team").bx--tooltip__top Announcements
+					svg#infoIcon2
+						use(xlink:href="/img/icons/sprite.svg#notifications--info")
+				
+			#messageWrap
+				p loading...
+
+		// ============ Release Notes ============ //
+		.halfPanel
+			.halfPanelHeader Release Notes
+			#releaseNotesWrap
+				p loading...

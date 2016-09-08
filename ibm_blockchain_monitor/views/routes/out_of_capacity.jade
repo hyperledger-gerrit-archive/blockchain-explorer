@@ -1,0 +1,23 @@
+#out_of_capacity_content
+	#mainPanel100
+		
+		br
+		br
+				
+		center
+			h1 Sorry!
+		
+		.errorMsgWrap
+			if(Number(inPool) ===  0)
+				#welcomeheader.capacityError(style="text-align:center;")
+					| Due to overwhelming demand, we are currently at maximum capacity for our service.
+					| We will be adding additional capacity to keep up. Please try again soon.
+					br
+					br
+					span Return to the Bluemix dashboard and delete this service instance.
+			else
+				#welcomeheader.capacityError(style="text-align:center;")
+					| When you attempted to create this service we had no networks to hand out. 
+					br
+					br
+					span You should delete this service from the Bluemix dashboard and try again.

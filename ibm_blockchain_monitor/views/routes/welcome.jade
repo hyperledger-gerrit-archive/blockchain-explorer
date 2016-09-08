@@ -1,0 +1,48 @@
+extends ../templates/bare
+
+block js
+	script.
+			$(document).on('ready', function() {
+				console.log('debugging', '!{debugging}');
+			});
+
+block content
+	#mainPanel100
+		
+		#welcomePanel
+		
+			#welcomeTxt
+				h1 
+					span Welcome to the IBM Blockchain Service 
+					span.welcomeAlt (beta)
+			
+				// launch link
+				a#toplaunch.launch(href="/#{dash_ver}/network/#{network_id}", target='_blank' style="padding: 6px 18px;")
+					button.bx--btn
+						span Launch Dashboard
+						svg(style="width: 30px; padding:4px;")
+							use(xlink:href="/img/icons/sprite.svg#app-actions--go_to_icon" style="fill: #fff !important;")
+			
+			if(email != null)
+				p= "Welcome, " + email + "!"
+			else
+				p Welcome!
+			p
+				span This service is intended for developers who consider themselves early adopters and want to get
+				span  involved with  IBM's approach to business networks that maintain, secure and share a replicated
+				span ledger using blockchain technology.
+
+
+			br
+			br
+
+			// ============ Intro Panel ============ //
+			.welcomeAlt What it IS good for today:
+			div
+				.half
+					ul.bulletMe
+						li.bulletMe Deploying and invoking transactions to test out IBM's approach to blockchain technology
+						li.bulletMe Using non-sensitive information and processes.
+				.half
+					ul.bulletMe
+						li.bulletMe Learning and testing out IBM's novel contributions to the blockchain open source community, including the concept of confidential transactions and containerized code execution.

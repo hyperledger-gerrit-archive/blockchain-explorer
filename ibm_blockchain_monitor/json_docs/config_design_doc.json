@@ -1,0 +1,11 @@
+{
+  "_id": "_design/all",
+  "views": {
+    "_blockchain_configs": {
+      "map": "function(doc){ if(doc.type && (doc.type === 'swarm' || doc.type === 'lpar')){ emit(doc.arch, doc._id); }}"
+    },
+    "_env_configs": {
+      "map": "function(doc){ if(doc.type && doc.type === 'config'){ emit(null, doc._id); }}"
+    }
+  }
+}
