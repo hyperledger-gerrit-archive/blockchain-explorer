@@ -1,0 +1,846 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "API IBM Blockchain",
+		"description": "Ouvrir une section ci-dessous pour interagir avec votre réseau Blockchain",
+		"version": "1.0.0"
+	},
+	"host": "127.0.0.1:3000",
+	"schemes": [
+		"http"
+	],
+	"produces": [
+		"application/json"
+	],
+	"paths": {
+		"/chain": {
+			"get": {
+				"summary": "Informations Blockchain",
+				"description": "Le noeud final Chaîne retourne des informations sur l'état actuel de la chaîne de blocs (hauteur, hachage de bloc en cours et hachage de bloc précédent, par exemple).",
+				"tags": [
+					"Blockchain"
+				],
+				"operationId": "getChain",
+				"responses": {
+					"200": {
+						"description": "Informations Blockchain",
+						"schema": {
+							"$ref": "#/definitions/BlockchainInfo"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chain/blocks/{Block}": {
+			"get": {
+				"summary": "Informations de bloc individuel",
+				"description": "Le noeud final {Block} retourne des informations sur un bloc spécifique au sein de la chaîne de blocs. Notez que le bloc d'origine est le bloc zéro.",
+				"tags": [
+					"Block"
+				],
+				"operationId": "getBlock",
+				"parameters": [{
+					"name": "Block",
+					"in": "path",
+					"description": "Numéro de bloc à extraire",
+					"type": "integer",
+					"format": "uint64",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Contenu de bloc individuel",
+						"schema": {
+							"$ref": "#/definitions/Block"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/transactions/{UUID}": {
+			"get": {
+				"summary": "Contenu de transaction individuelle",
+				"description": "Le noeud final /transactions/{UUID} retourne la transaction qui correspond à l'UUID spécifié.",
+				"tags": [
+					"Transactions"
+				],
+				"operationId": "getTransaction",
+				"parameters": [{
+					"name": "UUID",
+					"in": "path",
+					"description": "Transaction à extraire de la chaîne de blocs.",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Contenu de transaction individuelle",
+						"schema": {
+							"$ref": "#/definitions/Transaction"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chaincode": {
+			"post": {
+				"summary": "Noeud final de service pour les opérations Chaincode",
+				"description": "Le noeud final /chaincode reçoit des demandes pour le déploiement, l'appel et l'interrogation d'un code chaîné cible. Ce noeud final de service implémente la spécification JSON RPC 2.0 avec le contenu identifiant l'opération Chaincode souhaitée au sein de la zone 'method'. <strong>Sélectionnez l'une des 3 spécifications body qui correspond à votre type de demande parmi les 3 ci-dessous.</strong>",
+				"tags": [
+					"Code chaîné"
+				],
+				"operationId": "chaincodeOp",
+				"parameters": [{
+					"name": "QuerySpec",
+					"in": "body",
+					"description": "Spécification body pour requête",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/QuerySpec"
+					}
+				},
+				{
+					"name": "DeploySpec",
+					"in": "body",
+					"description": "Spécification body pour déploiement",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/DeploySpec"
+					}
+				},
+				{
+					"name": "InvokeSpec",
+					"in": "body",
+					"description": "Spécification body pour appel",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/InvokeSpec"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Opération Chaincode réussie",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpSuccess"
+						}
+					},
+					"default": {
+						"description": "Echec de l'opération Chaincode",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpFailure"
+						}
+					}
+				}
+			}
+		},
+		"/registrar": {
+			"post": {
+				"summary": "Enregistrer un utilisateur auprès de l'autorité de certification",
+				"description": "Le noeud final /registrar reçoit des demandes pour l'enregistrement d'un utilisateur auprès de l'autorité de certification. La demande doit fournir l'ID et le mot de passe d'enregistrement dans le contenu. Si l'enregistrement aboutit, les certificats de transaction requis sont reçus et stockés en local. Sinon, une erreur s'affiche avec indication du motif de l'échec.",
+				"tags": [
+					"Secrétaire"
+				],
+				"operationId": "registerUser",
+				"parameters": [{
+					"name": "Secret",
+					"in": "body",
+					"description": "Données d'identification d'enregistrement de l'utilisateur",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Secret"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Utilisateur enregistré avec succès auprès de l'autorité de certification",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}": {
+			"get": {
+				"summary": "Confirmer que l'utilisateur est enregistré auprès de l'autorité de certification",
+				"description": "Le noeud final /registrar/{enrollmentID} indique si l'utilisateur spécifié est enregistré auprès de l'autorité de certification. Si l'utilisateur est enregistré, un message de confirmation est retourné. Sinon, un échec d'autorisation se produit.",
+				"tags": [
+					"Secrétaire"
+				],
+				"operationId": "getUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "Nom d'utilisateur pour lequel l'enregistrement doit être confirmé",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmer l'enregistrement pour l'utilisateur cible",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Supprimer les jetons de connexion utilisateur de la mémoire locale",
+				"description": "Le noeud final /registrar/{enrollmentID} supprime les jetons de connexion client existants de la mémoire locale. Une fois cette demande traitée, l'utilisateur cible ne peut plus exécuter des transactions.",
+				"tags": [
+					"Secrétaire"
+				],
+				"operationId": "deleteUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "Nom d'utilisateur pour lequel les jetons de connexion doivent être supprimés",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmer la suppression des jetons de connexion utilisateur",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/ecert": {
+			"get": {
+				"summary": "Extraire le certificat d'enregistrement utilisateur",
+				"description": "Le noeud final /registrar/{enrollmentID}/ecert extrait le certificat d'enregistrement pour un utilisateur donné qui s'est enregistré auprès de l'autorité de certification. Si l'utilisateur est enregistré, un message de confirmation est retourné ; il contient le certificat d'enregistrement codé URL. Sinon, une erreur se produit.",
+				"tags": [
+					"Secrétaire"
+				],
+				"operationId": "getUserEnrollmentCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "ID d'enregistrement pour lequel le certificat est demandé",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmer l'enregistrement pour l'utilisateur cible et retourner le certificat d'enregistrement codé URL",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/tcert": {
+			"get": {
+				"summary": "Extraire les certificats de transaction utilisateur",
+				"description": "Le noeud final /registrar/{enrollmentID}/tcert extrait les certificats de transaction pour un utilisateur donné qui s'est enregistré auprès de l'autorité de certification. Si l'utilisateur est enregistré, un message de confirmation est retourné ; il contient un tableau de certificats de transaction codés URL. Sinon, une erreur se produit. Le nombre souhaité de certificats de transaction est spécifié avec le paramètre de requête facultatif 'count'. Le nombre par défaut de certificats de transaction retournés est de 1 et 500 est le nombre maximum de certificats pouvant être extraits avec une seule requête.",
+				"tags": [
+					"Secrétaire"
+				],
+				"operationId": "getUserTransactionCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "ID d'enregistrement pour lequel le certificat est demandé",
+					"type": "string",
+					"required": true
+				}, {
+					"name": "count",
+					"in": "query",
+					"description": "Nombre souhaité de certificats de transaction. Le nombre par défaut de certificats de transaction retournés est de 1 et 500 est le nombre maximum de certificats pouvant être extraits avec une seule requête.",
+					"type": "string"
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmer l'enregistrement pour l'utilisateur cible et retourner le nombre souhaité de certificats de transactions codés URL",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/network/peers": {
+			"get": {
+				"summary": "Liste des homologues réseau",
+				"description": "Le noeud final /network/peers retourne une liste de toutes les connexions réseau existantes pour le noeud homologue cible. La liste inclut à la fois les homologues de validation et de non validation.",
+				"tags": [
+					"Réseau"
+				],
+				"operationId": "getPeers",
+				"responses": {
+					"200": {
+						"description": "Liste des homologues réseau",
+						"schema": {
+							"$ref": "#/definitions/PeersMessage"
+						}
+					},
+					"default": {
+						"description": "Erreur inattendue.",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"BlockchainInfo": {
+			"type": "object",
+			"properties": {
+				"height": {
+					"type": "integer",
+					"format": "uint64",
+					"description": "Hauteur actuelle de la chaîne de blocs."
+				},
+				"currentBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hachage du dernier bloc dans la chaîne de blocs."
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hachage du bloc précédent dans la chaîne de blocs."
+				}
+			}
+		},
+		"Block": {
+			"type": "object",
+			"properties": {
+				"proposerID": {
+					"type": "string",
+					"description": "Créateur/émetteur du bloc."
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "Heure de création du bloc."
+				},
+				"transactions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Transaction"
+					}
+				},
+				"stateHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hachage de l'état global après exécution de toutes les transactions dans le bloc."
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hachage du bloc précédent dans la chaîne de blocs."
+				},
+				"consensusMetadata": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Métadonnées requises pour le consensus."
+				},
+				"nonHashData": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Données stockées dans le bloc, mais exclues du calcul du hachage de bloc."
+				}
+			}
+		},
+		"Transaction": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"CHAINCODE_DEPLOY",
+						"CHAINCODE_INVOKE",
+						"CHAINCODE_QUERY",
+						"CHAINCODE_TERMINATE"
+					],
+					"description": "Type de transaction."
+				},
+				"chaincodeID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Identificateur du code chaîne sous forme d'octets."
+				},
+				"payload": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Contenu fourni pour l'exécution de la fonction Chaincode."
+				},
+				"uuid": {
+					"type": "string",
+					"description": "Identificateur unique de la transaction"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "Heure à laquelle le code chaîné devient exécutable."
+				},
+				"confidentialityLevel": {
+					"$ref": "#/definitions/ConfidentialityLevel",
+					"description": "Niveau de confidentialité du code chaîné."
+				},
+				"nonce": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Valeur Nonce générée pour cette transaction."
+				},
+				"cert": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Certificat du client qui envoie la transaction."
+				},
+				"signature": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Signature du client qui envoie la transaction."
+				}
+			}
+		},
+		"ChaincodeID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Identificateur de nom du code chaîné. Cette valeur est requise par les transactions d'appel (invoke) et de requête (query)."
+				}
+			}
+		},
+		"DeployParamChaincodeSpec": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "string",
+					"description": "Emplacement du code chaîné sur le système de fichiers. Cette valeur est requise par la transaction de déploiement (deploy)."
+				}
+			}
+		},
+		"InvokeQueryParamSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Langage du code chaîné"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/ChaincodeID",
+					"description": "Identificateur de code chaîné unique."
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "Nom d'utilisateur lorsque la sécurité est activée."
+				}
+			}
+		},
+		"DeployParamsSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Langage de spécification du code chaîné."
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/DeployParamChaincodeSpec",
+					"description": "Identificateur de code chaîné unique."
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput",
+					"description": "Fonction spécifique à exécuter au sein du code chaîné."
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "Nom d'utilisateur lorsque la sécurité est activée."
+				}
+			}
+		},
+		"ChaincodeInvocationSpec": {
+			"type": "object",
+			"properties": {
+				"InvokeQueryParamSpec": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Message de spécification du code chaîné."
+				}
+			}
+		},
+		"QuerySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "Chaîne indiquant la version du protocole JSON-RPC. Il doit s'agir exactement de '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "query",
+					"description": "Chaîne contenant le nom de la méthode à appeler. Il doit s'agir de 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Message de spécification du code chaîné requis qui identifie le code chaîné cible."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Nombre entier utilisé pour corréler les objets de demande et de réponse. S'il n'est pas inclus, la demande est supposée être une notification et le serveur ne générera pas de réponse."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"InvokeSpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "Chaîne indiquant la version du protocole JSON-RPC. Il doit s'agir exactement de '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "invoke",
+					"description": "Chaîne contenant le nom de la méthode à appeler. Il doit s'agir de 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Message de spécification du code chaîné requis qui identifie le code chaîné cible."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Nombre entier utilisé pour corréler les objets de demande et de réponse. S'il n'est pas inclus, la demande est supposée être une notification et le serveur ne générera pas de réponse."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"DeploySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "Chaîne indiquant la version du protocole JSON-RPC. Il doit s'agir exactement de '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "deploy",
+					"description": "Chaîne contenant le nom de la méthode à appeler. Il doit s'agir de 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/DeployParamsSpec",
+					"description": "Message de spécification du code chaîné requis qui identifie le code chaîné cible."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Nombre entier utilisé pour corréler les objets de demande et de réponse. S'il n'est pas inclus, la demande est supposée être une notification et le serveur ne générera pas de réponse."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"ConfidentialityLevel": {
+			"type": "string",
+			"default": "PUBLIC",
+			"example": "PUBLIC",
+			"enum": [
+				"PUBLIC",
+				"CONFIDENTIAL"
+			],
+			"description": "Niveau de confidentialité du code chaîné."
+		},
+		"ChaincodeInput": {
+			"type": "object",
+			"properties": {
+				"function": {
+					"type": "string",
+					"description": "Fonction à exécuter au sein du code chaîné."
+				},
+				"args": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Arguments fournis à la fonction de code chaîné."
+				}
+			}
+		},
+		"Secret": {
+			"type": "object",
+			"properties": {
+				"enrollId": {
+					"type": "string",
+					"description": "ID d'inscription enregistré auprès de l'autorité de certification."
+				},
+				"enrollSecret": {
+					"type": "string",
+					"description": "Mot de passe d'inscription enregistré auprès de l'autorité de certification."
+				}
+			}
+		},
+		"Timestamp": {
+			"type": "object",
+			"properties": {
+				"seconds": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Représente les secondes du temps UTC depuis l'époque Unix 1970-01-01T00:00:00Z. Il doit s'agir de 0001-01-01T00:00:00Z à 9999-12-31T23:59:59Z inclus."
+				},
+				"nanos": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Fractions non négatives d'une seconde en résolution nanoseconde. Les valeurs de seconde négatives avec les fractions doivent toujours avoir des valeurs nanos non négatives qui comptent en avant dans le temps. Il doit s'agir de 0 à 999,999,999 inclus."
+				}
+			}
+		},
+		"PeersMessage": {
+			"type": "object",
+			"properties": {
+				"peers": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PeerEndpoint"
+					}
+				}
+			}
+		},
+		"PeerEndpoint": {
+			"type": "object",
+			"properties": {
+				"ID": {
+					"$ref": "#/definitions/PeerID",
+					"description": "Identificateur d'homologue unique."
+				},
+				"address": {
+					"type": "string",
+					"description": "ipaddress:port combination identifying a network peer."
+				},
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"VALIDATOR",
+						"NON_VALIDATOR"
+					],
+					"description": "Type d'homologue réseau."
+				},
+				"pkiID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Identificateur d'infrastructure à clé publique (PKI) pour l'homologue réseau."
+				}
+			}
+		},
+		"PeerID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Nom qui identifie de manière unique un homologue réseau."
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"Error": {
+					"type": "string",
+					"description": "Message qui décrit la cause de l'erreur."
+				}
+			}
+		},
+		"OK": {
+			"type": "object",
+			"properties": {
+				"OK": {
+					"type": "string",
+					"description": "Message descriptif qui confirme que la demande a abouti."
+				},
+				"message": {
+					"type": "string",
+					"description": "Paramètre facultatif qui contient des renseignements supplémentaires sur la demande."
+				}
+			}
+		},
+		"ChaincodeOpSuccess": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "Chaîne indiquant la version du protocole JSON-RPC. Il doit s'agir exactement de '2.0'."
+				},
+				"result": {
+					"$ref": "#/definitions/rpcResponse",
+					"description": "La valeur de cet élément est déterminée par la méthode appelée sur le serveur."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "Ce nombre sera identique à la valeur du membre d'ID dans l'objet de demande."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"résultat",
+				"id"
+			]
+		},
+		"ChaincodeOpFailure": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "Chaîne indiquant la version du protocole JSON-RPC. Il doit s'agir exactement de '2.0'."
+				},
+				"error": {
+					"$ref": "#/definitions/rpcError",
+					"description": "Valeur structurée indiquant le code et la description de l'erreur qui s'est produite."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "Ce nombre sera identique à la valeur du membre d'ID dans l'objet de demande. Si une erreur s'est produite lors de la détection de l'ID dans l'objet de demande (erreur d'analyse/demande non valide, par exemple), il sera nul."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"error",
+				"id"
+			]
+		},
+		"rpcResponse": {
+			"type": "object",
+			"properties": {
+				"Status": {
+					"type": "string",
+					"default": "OK",
+					"description": "Chaîne contenant l'exécution de demande qui a abouti."
+				},
+				"Message": {
+					"type": "string",
+					"default": "500",
+					"description": "Renseignements supplémentaires sur la réponse ou les valeurs retournées."
+				}
+			},
+			"required": [
+				"Statut"
+			]
+		},
+		"rpcError": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "integer",
+					"format": "int64",
+					"default": -32700,
+					"description": "Nombre qui indique le type d'erreur qui s'est produit."
+				},
+				"message": {
+					"type": "string",
+					"default": "Parse error",
+					"description": "Chaîne qui fournit une brève description de l'erreur."
+				},
+				"data": {
+					"type": "string",
+					"default": "Erreur de déconversion de paramètres du contenu de la demande de code chaîné : fin inattendue de l'entrée JSON",
+					"description": "Valeur primitive ou structurée qui contient des renseignements supplémentaires sur l'erreur (informations d'erreur détaillées, erreurs imbriquées, etc.)."
+				}
+			},
+			"required": [
+				"code",
+				"message"
+			]
+		}
+	}
+}
+

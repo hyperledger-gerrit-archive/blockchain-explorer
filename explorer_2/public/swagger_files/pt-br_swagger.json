@@ -1,0 +1,846 @@
+{
+	"swagger": "2,0",
+	"info": {
+		"title": "API do IBM Blockchain",
+		"description": "Abra uma seção abaixo para interagir com sua rede blockchain",
+		"version": "1.0.0"
+	},
+	"host": "127.0.0.1:3000",
+	"schemes": [
+		"Protocolo de Transporte de Hipertexto"
+	],
+	"produces": [
+		"aplicativo/json"
+	],
+	"paths": {
+		"/chain": {
+			"get": {
+				"summary": "Informações de blockchain",
+				"description": "O terminal de Cadeia retorna informações sobre o estado atual do blockchain, como altura, o hash do bloco atual e o hash do bloco anterior.",
+				"tags": [
+					"Cadeia de blocos"
+				],
+				"operationId": "getChain",
+				"responses": {
+					"200": {
+						"description": "Informações de blockchain",
+						"schema": {
+							"$ref": "#/definitions/BlockchainInfo"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chain/blocks/{Block}": {
+			"get": {
+				"summary": "Informações de blocos individuais",
+				"description": "O terminal {Block} retorna informações sobre um bloco específico dentro do Blockchain. Observe que o bloco genesis é o bloco zero.",
+				"tags": [
+					"Atrib"
+				],
+				"operationId": "getBlock",
+				"parameters": [{
+					"name": "Block",
+					"in": "path",
+					"description": "Número de bloco a ser recuperado",
+					"type": "integer",
+					"format": "uint64",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Conteúdo de bloco individual",
+						"schema": {
+							"$ref": "#/definitions/Block"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/transactions/{UUID}": {
+			"get": {
+				"summary": "Conteúdo de transação individual",
+				"description": "O terminal /transactions/{UUID} retorna a transação correspondente ao UUID especificado.",
+				"tags": [
+					"Transações"
+				],
+				"operationId": "getTransaction",
+				"parameters": [{
+					"name": "UUID",
+					"in": "path",
+					"description": "Transação a ser recuperada do blockchain.",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Conteúdo de transação individual",
+						"schema": {
+							"$ref": "#/definitions/Transaction"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chaincode": {
+			"post": {
+				"summary": "Terminal em serviço para operações de Chaincode",
+				"description": "O terminal /chaincode recebe solicitações para implementar, chamar e consultar um chaincode de destino. Esse terminal em serviço implementa a especificação JSON RPC 2.0 com a carga útil que identifica a operação Chaincode desejada dentro do campo 'method'.<strong>Escolha uma especificação de corpo do 3 abaixo que corresponda ao seu tipo de solicitação.</strong>",
+				"tags": [
+					"Chaincode"
+				],
+				"operationId": "chaincodeOp",
+				"parameters": [{
+					"name": "QuerySpec",
+					"in": "body",
+					"description": "especificação de corpo para consulta",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/QuerySpec"
+					}
+				},
+				{
+					"name": "DeploySpec",
+					"in": "body",
+					"description": "especificação de corpo para implementação",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/DeploySpec"
+					}
+				},
+				{
+					"name": "InvokeSpec",
+					"in": "body",
+					"description": "especificação de corpo para chamada",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/InvokeSpec"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Operação de chaincode bem-sucedida",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpSuccess"
+						}
+					},
+					"default": {
+						"description": "Operação de chaincode com falha",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpFailure"
+						}
+					}
+				}
+			}
+		},
+		"/registrar": {
+			"post": {
+				"summary": "Registrar um usuário na autoridade de certificação",
+				"description": "O terminal /registrar recebe solicitações para registrar um usuário na autoridade de certificação. A solicitação deve fornecer o ID de registro e a senha dentro da carga útil. Se o registro for bem-sucedido, os certificados de transação requeridos serão recebidos e armazenados localmente. Caso contrário, um erro será exibido com um motivo da falha.",
+				"tags": [
+					"Escrivão"
+				],
+				"operationId": "registerUser",
+				"parameters": [{
+					"name": "Segredo",
+					"in": "body",
+					"description": "Credenciais de inscrição do usuário",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Secret"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Usuário registrado com sucesso na autoridade de certificação",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}": {
+			"get": {
+				"summary": "Confirme se o usuário foi registrado na autoridade de certificação",
+				"description": "O terminal /registrar/{enrollmentID} confirma se o usuário especificado foi registrado na autoridade de certificação. Se o usuário tiver sido registrado, uma mensagem de confirmação será retornada. Caso contrário, o resultado será uma falha de autorização.",
+				"tags": [
+					"Escrivão"
+				],
+				"operationId": "getUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "O nome do usuário cujo registro deve ser confirmado",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmar registro para usuário de destino",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Excluir tokens de login do usuário do armazenamento local",
+				"description": "O terminal /registrar/{enrollmentID} exclui qualquer token de login do cliente existente do armazenamento local. Após a conclusão dessa solicitação, o usuário de destino não poderá mais executar transações.",
+				"tags": [
+					"Escrivão"
+				],
+				"operationId": "deleteUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "O nome do usuário cujos tokens de login devem ser excluídos",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirmar exclusão de tokens de login do usuário",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/ecert": {
+			"get": {
+				"summary": "Recuperar certificado de inscrição do usuário",
+				"description": "O terminal /registrar/{enrollmentID}/ecert recupera o certificado de inscrição de um determinado usuário que foi registrado na autoridade de certificação. Se o usuário tiver sido registrado, uma mensagem de confirmação será retornada contendo o certificado de inscrição codificado por URL. Caso contrário, o resultado será um erro.",
+				"tags": [
+					"Escrivão"
+				],
+				"operationId": "getUserEnrollmentCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "EnrollmentID cujo certificado é solicitado",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirme o registro do usuário de destino e retorne o certificado de inscrição codificado por URL",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/tcert": {
+			"get": {
+				"summary": "Recuperar certificados de transação do usuário",
+				"description": "O terminal /registrar/{enrollmentID}/tcert recupera os certificados de transação de um determinado usuário que foi registrado na autoridade de certificação. Se o usuário tiver sido registrado, uma mensagem de confirmação será retornada contendo uma matriz de certificados de transação codificados por URL. Caso contrário, o resultado será um erro. O número desejado de certificados de transação é especificado com o parâmetro de consulta opcional 'count'. O número padrão de certificados de transação retornados é 1 e 500 é o número máximo de certificados que podem ser recuperados com uma única solicitação.",
+				"tags": [
+					"Escrivão"
+				],
+				"operationId": "getUserTransactionCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "EnrollmentID cujo certificado é solicitado",
+					"type": "string",
+					"required": true
+				}, {
+					"name": "contar",
+					"in": "consultar",
+					"description": "O número desejado de certificados de transação. O número padrão de certificados de transação retornados é 1 e 500 é o número máximo de certificados que podem ser recuperados com uma única solicitação",
+					"type": "string"
+				}],
+				"responses": {
+					"200": {
+						"description": "Confirme o registro do usuário de destino e retorne o número desejado de certificados de transação codificados por URL",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/network/peers": {
+			"get": {
+				"summary": "Lista de peers de rede",
+				"description": "O terminal /network/peers retorna uma lista de todas as conexões de rede existentes para o nó peer de destino. A lista inclui peers de validação e de não validação.",
+				"tags": [
+					"Rede"
+				],
+				"operationId": "getPeers",
+				"responses": {
+					"200": {
+						"description": "Lista de peers de rede",
+						"schema": {
+							"$ref": "#/definitions/PeersMessage"
+						}
+					},
+					"default": {
+						"description": "Unexpected error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"BlockchainInfo": {
+			"type": "object",
+			"properties": {
+				"height": {
+					"type": "integer",
+					"format": "uint64",
+					"description": "Altura atual do blockchain."
+				},
+				"currentBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hash do último bloco no blockchain."
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hash do bloco anterior no blockchain."
+				}
+			}
+		},
+		"Block": {
+			"type": "object",
+			"properties": {
+				"proposerID": {
+					"type": "string",
+					"description": "Criador/originador do bloco."
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "Horário de criação do bloco."
+				},
+				"transactions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Transaction"
+					}
+				},
+				"stateHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hash de estado global após a execução de todas as transações no bloco."
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Hash do bloco anterior no blockchain."
+				},
+				"consensusMetadata": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Metadados necessários para consenso."
+				},
+				"nonHashData": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Dados armazenados no bloco, mas excluídos do cálculo de hash do bloco."
+				}
+			}
+		},
+		"Transaction": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"default": "INDEFINIDO",
+					"example": "INDEFINIDO",
+					"enum": [
+						"INDEFINIDO",
+						"CHAINCODE_DEPLOY",
+						"CHAINCODE_INVOKE",
+						"CHAINCODE_QUERY",
+						"CHAINCODE_TERMINATE"
+					],
+					"description": "Tipo de transação."
+				},
+				"chaincodeID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Identificador de chaincode como bytes."
+				},
+				"payload": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Carga útil fornecida para execução de função Chaincode."
+				},
+				"uuid": {
+					"type": "string",
+					"description": "Identificador de transação exclusiva."
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "Horário em que o chanincode se torna executável."
+				},
+				"confidentialityLevel": {
+					"$ref": "#/definitions/ConfidentialityLevel",
+					"description": "Nível de confidencialidade do Chaincode."
+				},
+				"nonce": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Valor de nonce gerado para esta transação."
+				},
+				"cert": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Certificado do cliente que envia a transação."
+				},
+				"signature": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Assinatura do cliente que envia a transação."
+				}
+			}
+		},
+		"ChaincodeID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Identificador de nome do chaincode. Esse valor é requerido pelas transações de chamada e consulta."
+				}
+			}
+		},
+		"DeployParamChaincodeSpec": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "string",
+					"description": "Local do chaincode no sistema de arquivos. Esse valor é requerido pela transação de implementação."
+				}
+			}
+		},
+		"InvokeQueryParamSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Idioma do chaincode"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/ChaincodeID",
+					"description": "Identificador exclusivo do chaincode."
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "Nome do usuário quando a segurança está ativada."
+				}
+			}
+		},
+		"DeployParamsSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Idioma de especificação do chaincode."
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/DeployParamChaincodeSpec",
+					"description": "Identificador exclusivo do chaincode."
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput",
+					"description": "Função específica a ser executada no chaincode."
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "Nome do usuário quando a segurança está ativada."
+				}
+			}
+		},
+		"ChaincodeInvocationSpec": {
+			"type": "object",
+			"properties": {
+				"InvokeQueryParamSpec": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Mensagem de especificação do chaincode."
+				}
+			}
+		},
+		"QuerySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2,0",
+					"description": "Uma sequência especificando a versão do protocolo JSON-RPC. Deve ser exatamente '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "consultar",
+					"description": "Uma sequência contendo o nome do método a ser chamado. Deve ser 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Uma mensagem de especificação necessária do Chaincode que identifica o chaincode de destino."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Um número inteiro usado para correlacionar os objetos de solicitação e resposta. Se não estiver incluído, a solicitação será considerada como uma notificação e o servidor não irá gerar uma resposta."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method (método)",
+				"params",
+				"ID"
+			]
+		},
+		"InvokeSpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2,0",
+					"description": "Uma sequência especificando a versão do protocolo JSON-RPC. Deve ser exatamente '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "invocar",
+					"description": "Uma sequência contendo o nome do método a ser chamado. Deve ser 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Uma mensagem de especificação necessária do Chaincode que identifica o chaincode de destino."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Um número inteiro usado para correlacionar os objetos de solicitação e resposta. Se não estiver incluído, a solicitação será considerada como uma notificação e o servidor não irá gerar uma resposta."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method (método)",
+				"params",
+				"ID"
+			]
+		},
+		"DeploySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2,0",
+					"description": "Uma sequência especificando a versão do protocolo JSON-RPC. Deve ser exatamente '2.0'."
+				},
+				"method": {
+					"type": "string",
+					"example": "implementação",
+					"description": "Uma sequência contendo o nome do método a ser chamado. Deve ser 'deploy', 'invoke' ou 'query'."
+				},
+				"params": {
+					"$ref": "#/definitions/DeployParamsSpec",
+					"description": "Uma mensagem de especificação necessária do Chaincode que identifica o chaincode de destino."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Um número inteiro usado para correlacionar os objetos de solicitação e resposta. Se não estiver incluído, a solicitação será considerada como uma notificação e o servidor não irá gerar uma resposta."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method (método)",
+				"params",
+				"ID"
+			]
+		},
+		"ConfidentialityLevel": {
+			"type": "string",
+			"default": "PUBLIC",
+			"example": "PUBLIC",
+			"enum": [
+				"PUBLIC",
+				"CONFIDENTIAL"
+			],
+			"description": "Nível de confidencialidade do Chaincode."
+		},
+		"ChaincodeInput": {
+			"type": "object",
+			"properties": {
+				"function": {
+					"type": "string",
+					"description": "Função a ser executada no Chaincode."
+				},
+				"args": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "Argumentos fornecidos à função Chaincode."
+				}
+			}
+		},
+		"Secret": {
+			"type": "object",
+			"properties": {
+				"enrollId": {
+					"type": "string",
+					"description": "ID de inscrição do usuário registrado na autoridade de certificação."
+				},
+				"enrollSecret": {
+					"type": "string",
+					"description": "Senha de inscrição do usuário registrada na autoridade de certificação."
+				}
+			}
+		},
+		"Timestamp": {
+			"type": "object",
+			"properties": {
+				"seconds": {
+					"type": "integer",
+					"format": "int64",
+					"description": "Representa segundos no horário UTC desde o Unix época 1970-01-01T00:00:00Z. Deve ser de 0001-01-01T00:00:00Z a 9999-12-31T23:59:59Z inclusive."
+				},
+				"nanos": {
+					"type": "integer",
+					"format": "int32",
+					"description": "Frações não negativas de um segundo na resolução de nanossegundo. Valores negativos de segundo com frações ainda devem ter valores nanos não negativos que contam adiante no tempo. Deve ser de 0 a 999.999.999 inclusive."
+				}
+			}
+		},
+		"PeersMessage": {
+			"type": "object",
+			"properties": {
+				"peers": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PeerEndpoint"
+					}
+				}
+			}
+		},
+		"PeerEndpoint": {
+			"type": "object",
+			"properties": {
+				"ID": {
+					"$ref": "#/definitions/PeerID",
+					"description": "Identificador de peer exclusivo."
+				},
+				"address": {
+					"type": "string",
+					"description": "Combinação ipaddress:port que identifica um peer de rede."
+				},
+				"type": {
+					"type": "string",
+					"default": "INDEFINIDO",
+					"example": "INDEFINIDO",
+					"enum": [
+						"INDEFINIDO",
+						"VALIDADOR",
+						"NON_VALIDATOR"
+					],
+					"description": "Tipo de peer de rede."
+				},
+				"pkiID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Identificador de PKI para o peer de rede."
+				}
+			}
+		},
+		"PeerID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Nome que identifica exclusivamente um peer de rede."
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"Error": {
+					"type": "string",
+					"description": "Uma mensagem descritiva que explica a causa do erro."
+				}
+			}
+		},
+		"OK": {
+			"type": "object",
+			"properties": {
+				"OK": {
+					"type": "string",
+					"description": "Uma mensagem descritiva que confirma uma solicitação bem-sucedida."
+				},
+				"message": {
+					"type": "string",
+					"description": "Um parâmetro opcional que contém informações adicionais sobre a solicitação."
+				}
+			}
+		},
+		"ChaincodeOpSuccess": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2,0",
+					"description": "Uma sequência especificando a versão do protocolo JSON-RPC. Deve ser exatamente '2.0'."
+				},
+				"result": {
+					"$ref": "#/definitions/rpcResponse",
+					"description": "O valor desse elemento é determinado pelo método chamado no servidor."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "Esse número será o mesmo que o valor do membro ID no objeto da solicitação."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"Resultado",
+				"ID"
+			]
+		},
+		"ChaincodeOpFailure": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2,0",
+					"description": "Uma sequência especificando a versão do protocolo JSON-RPC. Deve ser exatamente '2.0'."
+				},
+				"error": {
+					"$ref": "#/definitions/rpcError",
+					"description": "Um valor estruturado especificando o código e a descrição do erro que ocorreu."
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "Esse número será o mesmo que o valor do membro ID no objeto da solicitação. Se houver um erro ao detectar o ID no objeto da solicitação (por exemplo, erro de análise/solicitação inválida), ele será nulo."
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"error",
+				"ID"
+			]
+		},
+		"rpcResponse": {
+			"type": "object",
+			"properties": {
+				"Status": {
+					"type": "string",
+					"default": "OK",
+					"description": "Uma sequência confirmando a execução bem-sucedida da solicitação."
+				},
+				"Message": {
+					"type": "string",
+					"default": "500",
+					"description": "Informações adicionais sobre a resposta ou valores retornados."
+				}
+			},
+			"required": [
+				"Status"
+			]
+		},
+		"rpcError": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "integer",
+					"format": "int64",
+					"default": -32700,
+					"description": "Um número que indica o tipo de erro que ocorreu."
+				},
+				"message": {
+					"type": "string",
+					"default": "Erro de análise",
+					"description": "Uma sequência que fornece uma descrição simples do erro."
+				},
+				"data": {
+					"type": "string",
+					"default": "Erro ao desserializar a carga útil de solicitação de chaincode: fim inesperado de entrada JSON",
+					"description": "Um valor primitivo ou estruturado que contém informações adicionais sobre o erro (por exemplo, informações de erro detalhadas, erros aninhados etc.)."
+				}
+			},
+			"required": [
+				"code",
+				"message"
+			]
+		}
+	}
+}
+

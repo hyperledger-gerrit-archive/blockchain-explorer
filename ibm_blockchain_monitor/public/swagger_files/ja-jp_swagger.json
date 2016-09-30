@@ -1,0 +1,846 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "IBM ブロックチェーン API",
+		"description": "ブロックチェーン・ネットワークと対話するために、以下のセクションを開きます",
+		"version": "1.0.0"
+	},
+	"host": "127.0.0.1:3000",
+	"schemes": [
+		"http"
+	],
+	"produces": [
+		"application/json"
+	],
+	"paths": {
+		"/chain": {
+			"get": {
+				"summary": "ブロックチェーン情報",
+				"description": "チェーン・エンドポイントは、高さ、現在のブロック・ハッシュ、以前のブロック・ハッシュなど、ブロックチェーンの現在の状態に関する情報を返します。",
+				"tags": [
+					"ブロックチェーン"
+				],
+				"operationId": "getChain",
+				"responses": {
+					"200": {
+						"description": "ブロックチェーン情報",
+						"schema": {
+							"$ref": "#/definitions/BlockchainInfo"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chain/blocks/{Block}": {
+			"get": {
+				"summary": "個々のブロック情報",
+				"description": "{Block} エンドポイントは、ブロックチェーン内の特定のブロックに関する情報を返します。起源ブロックは、ブロック 0 であることに注意してください。",
+				"tags": [
+					"ブロック"
+				],
+				"operationId": "getBlock",
+				"parameters": [{
+					"name": "Block",
+					"in": "path",
+					"description": "取得するブロック番号",
+					"type": "integer",
+					"format": "uint64",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "個々のブロック内容",
+						"schema": {
+							"$ref": "#/definitions/Block"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/transactions/{UUID}": {
+			"get": {
+				"summary": "個々のトランザクション内容",
+				"description": "/transactions/{UUID} エンドポイントは、指定された UUID と一致するトランザクションを返します。",
+				"tags": [
+					"トランザクション"
+				],
+				"operationId": "getTransaction",
+				"parameters": [{
+					"name": "UUID",
+					"in": "path",
+					"description": "ブロックチェーンから取得するトランザクション。",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "個々のトランザクション内容",
+						"schema": {
+							"$ref": "#/definitions/Transaction"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chaincode": {
+			"post": {
+				"summary": "チェーンコード操作のサービス・エンドポイント",
+				"description": "/chaincode エンドポイントは、ターゲット・チェーンコードのデプロイ、呼び出し、照会を行う要求を受け取ります。このサービス・エンドポイントは、「method」フィールド内の対象とするチェーンコード操作を識別するペイロードを使用して、JSON RPC 2.0 仕様を実装します。<strong>要求タイプに一致する body 仕様を、以下の 3 つの中から 1 つ選択します。</strong>",
+				"tags": [
+					"チェーンコード"
+				],
+				"operationId": "chaincodeOp",
+				"parameters": [{
+					"name": "QuerySpec",
+					"in": "body",
+					"description": "query の body 仕様",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/QuerySpec"
+					}
+				},
+				{
+					"name": "DeploySpec",
+					"in": "body",
+					"description": "deploy の body 仕様",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/DeploySpec"
+					}
+				},
+				{
+					"name": "InvokeSpec",
+					"in": "body",
+					"description": "invoke の body 仕様",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/InvokeSpec"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "チェーンコード操作が成功しました",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpSuccess"
+						}
+					},
+					"default": {
+						"description": "チェーンコード操作が失敗しました",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpFailure"
+						}
+					}
+				}
+			}
+		},
+		"/registrar": {
+			"post": {
+				"summary": "ユーザーを認証局に登録します",
+				"description": "/registrar エンドポイントは、ユーザーを認証局に登録する要求を受け取ります。要求には、ペイロードの中に登録 ID とパスワードが提供されている必要があります。登録が成功すると、必要なトランザクション証明書が受信され、ローカルに保管されます。そうでない場合は、エラーが失敗の理由とともに表示されます。",
+				"tags": [
+					"レジストラー"
+				],
+				"operationId": "registerUser",
+				"parameters": [{
+					"name": "Secret",
+					"in": "body",
+					"description": "ユーザー登録資格情報",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Secret"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "ユーザーの認証局への登録が成功しました",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}": {
+			"get": {
+				"summary": "ユーザーが認証局に登録されていることを確認します",
+				"description": "/registrar/{enrollmentID} エンドポイントは、指定されたユーザーが認証局に登録されているかどうかを確認します。ユーザーが登録されている場合は、確認メッセージが返されます。そうでない場合は、許可の失敗になります。",
+				"tags": [
+					"レジストラー"
+				],
+				"operationId": "getUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "登録を確認するユーザー名",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "ターゲット・ユーザーの登録を確認します",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "ローカル・ストレージからユーザーのログイン・トークンを削除します",
+				"description": "/registrar/{enrollmentID} エンドポイントは、ローカル・ストレージからすべての既存の顧客のログイン・トークンを削除します。この要求が完了した後は、ターゲット・ユーザーはトランザクションを実行できなくなります。",
+				"tags": [
+					"レジストラー"
+				],
+				"operationId": "deleteUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "ログイン・トークンを削除するユーザー名",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "ユーザーのログイン・トークンの削除を確認します",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/ecert": {
+			"get": {
+				"summary": "ユーザー登録証明書を取得します",
+				"description": "/registrar/{enrollmentID}/ecert エンドポイントは、認証局に登録されている特定のユーザーの登録証明書を取得します。ユーザーが登録されている場合は、URL エンコードされた登録証明書が含まれた、確認メッセージが返されます。そうでない場合は、エラーになります。",
+				"tags": [
+					"レジストラー"
+				],
+				"operationId": "getUserEnrollmentCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "証明書を要求する EnrollmentID",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "ターゲット・ユーザーの登録を確認し、URL エンコードされた登録証明書を返します",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/tcert": {
+			"get": {
+				"summary": "ユーザー・トランザクション証明書を取得します",
+				"description": "/registrar/{enrollmentID}/tcert エンドポイントは、認証局に登録されている特定のユーザーのトランザクション証明書を取得します。ユーザーが登録されている場合は、URL エンコードされたトランザクション証明書の配列が含まれた、確認メッセージが返されます。そうでない場合は、エラーになります。トランザクション証明書の必要な数は、オプションの 'count' query パラメーターで指定されます。返されるトランザクション証明書のデフォルトの数は 1 です。また、1 回の要求で取得できる証明書の最大数は 500 です。",
+				"tags": [
+					"レジストラー"
+				],
+				"operationId": "getUserTransactionCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "証明書を要求する EnrollmentID",
+					"type": "string",
+					"required": true
+				}, {
+					"name": "count",
+					"in": "query",
+					"description": "トランザクション証明書の必要な数。返されるトランザクション証明書のデフォルトの数は 1 です。また、1 回の要求で取得できる証明書の最大数は 500 です",
+					"type": "string"
+				}],
+				"responses": {
+					"200": {
+						"description": "ターゲット・ユーザーの登録を確認し、必要な数の URL エンコードされたトランザクション証明書を返します",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/network/peers": {
+			"get": {
+				"summary": "ネットワーク・ピアのリスト",
+				"description": "/network/peers エンドポイントは、ターゲットのピア・ノードの既存のすべてのネットワーク接続のリストを返します。リストには、検証と非検証の両方のピアが含まれます。",
+				"tags": [
+					"ネットワーク"
+				],
+				"operationId": "getPeers",
+				"responses": {
+					"200": {
+						"description": "ネットワーク・ピアのリスト",
+						"schema": {
+							"$ref": "#/definitions/PeersMessage"
+						}
+					},
+					"default": {
+						"description": "予期しないエラー",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"BlockchainInfo": {
+			"type": "object",
+			"properties": {
+				"height": {
+					"type": "integer",
+					"format": "uint64",
+					"description": "ブロックチェーンの現在の高さ。"
+				},
+				"currentBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "ブロックチェーンの最後のブロックのハッシュ。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "ブロックチェーンの以前のブロックのハッシュ。"
+				}
+			}
+		},
+		"Block": {
+			"type": "object",
+			"properties": {
+				"proposerID": {
+					"type": "string",
+					"description": "ブロックの作成者/オリジネーター。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "ブロックの作成時刻。"
+				},
+				"transactions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Transaction"
+					}
+				},
+				"stateHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "ブロック内のすべてのトランザクションを実行した後のグローバル状態ハッシュ。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "ブロックチェーンの以前のブロックのハッシュ。"
+				},
+				"consensusMetadata": {
+					"type": "string",
+					"format": "bytes",
+					"description": "コンセンサスに必要なメタデータ。"
+				},
+				"nonHashData": {
+					"type": "string",
+					"format": "bytes",
+					"description": "データはブロックに保管されていますが、ブロック・ハッシュの計算から除外されます。"
+				}
+			}
+		},
+		"Transaction": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"CHAINCODE_DEPLOY",
+						"CHAINCODE_INVOKE",
+						"CHAINCODE_QUERY",
+						"CHAINCODE_TERMINATE"
+					],
+					"description": "トランザクション・タイプ。"
+				},
+				"chaincodeID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "バイトで表したチェーンコード ID。"
+				},
+				"payload": {
+					"type": "string",
+					"format": "bytes",
+					"description": "チェーンコード機能の実行に指定されたペイロード。"
+				},
+				"uuid": {
+					"type": "string",
+					"description": "固有のトランザクション ID。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "チェーンコードが実行可能になる時刻。"
+				},
+				"confidentialityLevel": {
+					"$ref": "#/definitions/ConfidentialityLevel",
+					"description": "チェーンコードの機密性レベル。"
+				},
+				"nonce": {
+					"type": "string",
+					"format": "bytes",
+					"description": "このトランザクションに生成された nonce 値。"
+				},
+				"cert": {
+					"type": "string",
+					"format": "bytes",
+					"description": "トランザクションを送信する顧客の証明書。"
+				},
+				"signature": {
+					"type": "string",
+					"format": "bytes",
+					"description": "トランザクションを送信する顧客の署名。"
+				}
+			}
+		},
+		"ChaincodeID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "チェーンコード名 ID。この値は、invoke トランザクションおよび query トランザクションで必須です。"
+				}
+			}
+		},
+		"DeployParamChaincodeSpec": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "string",
+					"description": "チェーンコードの、ファイル・システムでの場所。この値は、deploy トランザクションで必須です。"
+				}
+			}
+		},
+		"InvokeQueryParamSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "チェーンコード言語"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/ChaincodeID",
+					"description": "固有のチェーンコード ID。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "セキュリティーが有効な場合のユーザー名。"
+				}
+			}
+		},
+		"DeployParamsSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "チェーンコード仕様言語。"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/DeployParamChaincodeSpec",
+					"description": "固有のチェーンコード ID。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput",
+					"description": "チェーンコード内で実行する特定の機能。"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "セキュリティーが有効な場合のユーザー名。"
+				}
+			}
+		},
+		"ChaincodeInvocationSpec": {
+			"type": "object",
+			"properties": {
+				"InvokeQueryParamSpec": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "チェーンコード仕様メッセージ。"
+				}
+			}
+		},
+		"QuerySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "JSON-RPC プロトコルのバージョンを指定するストリング。正確に「2.0」でなければなりません。"
+				},
+				"method": {
+					"type": "string",
+					"example": "query",
+					"description": "呼び出すメソッド名を含んだストリング。「deploy」、「invoke」、「query」のいずれかでなければなりません。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "ターゲット・チェーンコードを識別する、必須のチェーンコード仕様メッセージ。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "要求オブジェクトと応答オブジェクトの関連付けに使用する整数値。これが含まれていない場合、要求は通知であると見なされ、サーバーは応答を生成しません。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"InvokeSpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "JSON-RPC プロトコルのバージョンを指定するストリング。正確に「2.0」でなければなりません。"
+				},
+				"method": {
+					"type": "string",
+					"example": "invoke",
+					"description": "呼び出すメソッド名を含んだストリング。「deploy」、「invoke」、「query」のいずれかでなければなりません。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "ターゲット・チェーンコードを識別する、必須のチェーンコード仕様メッセージ。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "要求オブジェクトと応答オブジェクトの関連付けに使用する整数値。これが含まれていない場合、要求は通知であると見なされ、サーバーは応答を生成しません。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"DeploySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "JSON-RPC プロトコルのバージョンを指定するストリング。正確に「2.0」でなければなりません。"
+				},
+				"method": {
+					"type": "string",
+					"example": "deploy",
+					"description": "呼び出すメソッド名を含んだストリング。「deploy」、「invoke」、「query」のいずれかでなければなりません。"
+				},
+				"params": {
+					"$ref": "#/definitions/DeployParamsSpec",
+					"description": "ターゲット・チェーンコードを識別する、必須のチェーンコード仕様メッセージ。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "要求オブジェクトと応答オブジェクトの関連付けに使用する整数値。これが含まれていない場合、要求は通知であると見なされ、サーバーは応答を生成しません。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"ConfidentialityLevel": {
+			"type": "string",
+			"default": "PUBLIC",
+			"example": "PUBLIC",
+			"enum": [
+				"PUBLIC",
+				"CONFIDENTIAL"
+			],
+			"description": "チェーンコードの機密性レベル。"
+		},
+		"ChaincodeInput": {
+			"type": "object",
+			"properties": {
+				"function": {
+					"type": "string",
+					"description": "チェーンコード内で実行する機能。"
+				},
+				"args": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "チェーンコード機能に渡される引数。"
+				}
+			}
+		},
+		"Secret": {
+			"type": "object",
+			"properties": {
+				"enrollId": {
+					"type": "string",
+					"description": "認証局に登録されたユーザー登録 ID。"
+				},
+				"enrollSecret": {
+					"type": "string",
+					"description": "認証局に登録されたユーザー登録パスワード。"
+				}
+			}
+		},
+		"Timestamp": {
+			"type": "object",
+			"properties": {
+				"seconds": {
+					"type": "integer",
+					"format": "int64",
+					"description": "UNIX エポック 1970-01-01T00:00:00Z から経過した、UTC 時の秒を表します。0001-01-01T00:00:00Z から 9999-12-31T23:59:59Z まででなければなりません。"
+				},
+				"nanos": {
+					"type": "integer",
+					"format": "int32",
+					"description": "非負の秒の端数部 (ナノ秒の精度で)。端数部を持つ負の秒値の場合も、未来に向かってカウントする、非負のナノ秒値がなければなりません。0 から 999,999,999 まででなければなりません。"
+				}
+			}
+		},
+		"PeersMessage": {
+			"type": "object",
+			"properties": {
+				"peers": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PeerEndpoint"
+					}
+				}
+			}
+		},
+		"PeerEndpoint": {
+			"type": "object",
+			"properties": {
+				"ID": {
+					"$ref": "#/definitions/PeerID",
+					"description": "固有のピア ID。"
+				},
+				"address": {
+					"type": "string",
+					"description": "ネットワーク・ピアを表す、ipaddress:port の組み合わせ。"
+				},
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"VALIDATOR",
+						"NON_VALIDATOR"
+					],
+					"description": "ネットワーク・ピア・タイプ。"
+				},
+				"pkiID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "ネットワーク・ピアの PKI ID。"
+				}
+			}
+		},
+		"PeerID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "ネットワーク・ピアを一意に識別する名前。"
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"Error": {
+					"type": "string",
+					"description": "エラーの原因を説明する説明メッセージ。"
+				}
+			}
+		},
+		"OK": {
+			"type": "object",
+			"properties": {
+				"OK": {
+					"type": "string",
+					"description": "要求の成功を確認する説明メッセージ。"
+				},
+				"message": {
+					"type": "string",
+					"description": "要求に関する追加情報を含むオプション・パラメーター。"
+				}
+			}
+		},
+		"ChaincodeOpSuccess": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "JSON-RPC プロトコルのバージョンを指定するストリング。正確に「2.0」でなければなりません。"
+				},
+				"result": {
+					"$ref": "#/definitions/rpcResponse",
+					"description": "このエレメントの値は、サーバーに呼び出されるメソッドによって決まります。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "この数値は、要求オブジェクトの ID メンバーの値と同じになります。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"result",
+				"id"
+			]
+		},
+		"ChaincodeOpFailure": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "JSON-RPC プロトコルのバージョンを指定するストリング。正確に「2.0」でなければなりません。"
+				},
+				"error": {
+					"$ref": "#/definitions/rpcError",
+					"description": "発生したエラーのコードと説明を指定する構造化された値。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "この数値は、要求オブジェクトの ID メンバーの値と同じになります。要求オブジェクトの中の ID の検出でエラーが発生した場合 (例えば、解析エラー/無効な要求)、それはヌルになります。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"error",
+				"id"
+			]
+		},
+		"rpcResponse": {
+			"type": "object",
+			"properties": {
+				"Status": {
+					"type": "string",
+					"default": "OK",
+					"description": "要求の実行の成功を確認するストリング。"
+				},
+				"Message": {
+					"type": "string",
+					"default": "500",
+					"description": "返された応答または値に関する追加情報。"
+				}
+			},
+			"required": [
+				"Status"
+			]
+		},
+		"rpcError": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "integer",
+					"format": "int64",
+					"default": -32700,
+					"description": "発生したエラー・タイプを表す数値。"
+				},
+				"message": {
+					"type": "string",
+					"default": "解析エラー",
+					"description": "エラーの簡略説明を表すストリング。"
+				},
+				"data": {
+					"type": "string",
+					"default": "チェーンコード要求ペイロードのアンマーシャルでエラーが発生: JSON 入力の予期しない終了",
+					"description": "エラーに関する追加情報を含むプリミティブ値または構造化された値 (例えば、詳細エラー情報、ネストされたエラーなど)。"
+				}
+			},
+			"required": [
+				"code",
+				"message"
+			]
+		}
+	}
+}
+

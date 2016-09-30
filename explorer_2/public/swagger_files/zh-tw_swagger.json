@@ -1,0 +1,846 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "IBM Blockchain API",
+		"description": "開啟下面的區段，以與 Blockchain 網路互動",
+		"version": "1.0.0"
+	},
+	"host": "127.0.0.1:3000",
+	"schemes": [
+		"http"
+	],
+	"produces": [
+		"application/json"
+	],
+	"paths": {
+		"/chain": {
+			"get": {
+				"summary": "Blockchain 資訊",
+				"description": "Chain 端點會傳回現行 Blockchain 狀態的相關資訊（例如高度、現行區塊雜湊及前一個區塊雜湊）。",
+				"tags": [
+					"Blockchain"
+				],
+				"operationId": "getChain",
+				"responses": {
+					"200": {
+						"description": "Blockchain 資訊",
+						"schema": {
+							"$ref": "#/definitions/BlockchainInfo"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chain/blocks/{Block}": {
+			"get": {
+				"summary": "個別區塊資訊",
+				"description": "{Block} 端點會傳回 Blockchain 內特定區塊的相關資訊。請注意，初始區塊是區塊零。",
+				"tags": [
+					"Block"
+				],
+				"operationId": "getBlock",
+				"parameters": [{
+					"name": "Block",
+					"in": "path",
+					"description": "要擷取的區塊號碼",
+					"type": "integer",
+					"format": "uint64",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "個別區塊內容",
+						"schema": {
+							"$ref": "#/definitions/Block"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/transactions/{UUID}": {
+			"get": {
+				"summary": "個別交易內容",
+				"description": "/transactions/{UUID} 端點會傳回符合所指定 UUID 的交易。",
+				"tags": [
+					"交易"
+				],
+				"operationId": "getTransaction",
+				"parameters": [{
+					"name": "UUID",
+					"in": "path",
+					"description": "要從 Blockchain 擷取的交易。",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "個別「交易」內容",
+						"schema": {
+							"$ref": "#/definitions/Transaction"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chaincode": {
+			"post": {
+				"summary": "Chaincode 作業的服務端點",
+				"description": "/chaincode 端點會接收部署、呼叫及查詢目標 Chaincode 的要求。此服務端點會實作可識別 'method' 欄位內所要 Chaincode 作業之有效負載的 JSON RPC 2.0 規格。<strong>請從下面的 3 中挑選一個符合要求類型的主體規格。</strong>",
+				"tags": [
+					"Chaincode"
+				],
+				"operationId": "chaincodeOp",
+				"parameters": [{
+					"name": "QuerySpec",
+					"in": "body",
+					"description": "查詢的主體規格",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/QuerySpec"
+					}
+				},
+				{
+					"name": "DeploySpec",
+					"in": "body",
+					"description": "部署的主體規格",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/DeploySpec"
+					}
+				},
+				{
+					"name": "InvokeSpec",
+					"in": "body",
+					"description": "呼叫的主體規格",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/InvokeSpec"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "Chaincode 作業成功",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpSuccess"
+						}
+					},
+					"default": {
+						"description": "Chaincode 作業失敗",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpFailure"
+						}
+					}
+				}
+			}
+		},
+		"/registrar": {
+			"post": {
+				"summary": "向憑證管理中心登錄使用者",
+				"description": "/registrar 端點會接收向憑證管理中心登錄使用者的要求。要求必須在有效負載內提供登錄 ID 及密碼。如果登錄成功，則會接收到所需的交易憑證，並將其儲存在本端。否則，會顯示錯誤及失敗原因。",
+				"tags": [
+					"登記員"
+				],
+				"operationId": "registerUser",
+				"parameters": [{
+					"name": "Secret",
+					"in": "body",
+					"description": "使用者註冊認證",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Secret"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "已順利向憑證管理中心登錄使用者",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}": {
+			"get": {
+				"summary": "確認已向憑證管理中心登錄使用者",
+				"description": "/registrar/{enrollmentID} 端點會確認是否已向憑證管理中心登錄指定的使用者。如果已登錄使用者，則會傳回確認訊息。否則，會導致授權失效。",
+				"tags": [
+					"登記員"
+				],
+				"operationId": "getUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要確認其登錄的使用者名稱",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "確認目標使用者的登錄",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "刪除本端儲存空間中的使用者登入記號",
+				"description": "/registrar/{enrollmentID} 端點會刪除本端儲存空間中的任何現有用戶端登入記號。完成此要求之後，目標使用者將無法再執行交易。",
+				"tags": [
+					"登記員"
+				],
+				"operationId": "deleteUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要刪除其登入記號的使用者名稱",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "確認刪除使用者登入記號",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/ecert": {
+			"get": {
+				"summary": "擷取使用者註冊憑證",
+				"description": "/registrar/{enrollmentID}/ecert 端點會擷取已向憑證管理中心登錄之給定使用者的註冊憑證。如果已登錄使用者，則會傳回包含 URL 編碼之註冊憑證的確認訊息。否則，會導致錯誤。",
+				"tags": [
+					"登記員"
+				],
+				"operationId": "getUserEnrollmentCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要求其憑證的 EnrollmentID",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "確認目標使用者的登錄，並傳回 URL 編碼的註冊憑證",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/tcert": {
+			"get": {
+				"summary": "擷取使用者交易憑證",
+				"description": "/registrar/{enrollmentID}/tcert 端點會擷取已向憑證管理中心登錄之給定使用者的交易憑證。如果已登錄使用者，則會傳回包含 URL 編碼之交易憑證陣列的確認訊息。否則，會導致錯誤。所需的交易憑證數目是使用選用 'count' 查詢參數所指定。預設所傳回交易憑證數目是 1，而 500 是可使用單一要求所擷取的憑證數目上限。",
+				"tags": [
+					"登記員"
+				],
+				"operationId": "getUserTransactionCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要求其憑證的 EnrollmentID",
+					"type": "string",
+					"required": true
+				}, {
+					"name": "count",
+					"in": "query",
+					"description": "所需的交易憑證數目。預設所傳回交易憑證數目是 1，而 500 是可使用單一要求所擷取的憑證數目上限",
+					"type": "string"
+				}],
+				"responses": {
+					"200": {
+						"description": "確認目標使用者的登錄，並傳回所需的 URL 編碼交易憑證數目",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/network/peers": {
+			"get": {
+				"summary": "網路對等清單",
+				"description": "/network/peers 端點會傳回目標對等節點的所有現有網路連線清單。此清單會包括驗證及非驗證對等。",
+				"tags": [
+					"網路"
+				],
+				"operationId": "getPeers",
+				"responses": {
+					"200": {
+						"description": "網路對等清單",
+						"schema": {
+							"$ref": "#/definitions/PeersMessage"
+						}
+					},
+					"default": {
+						"description": "非預期的錯誤",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"BlockchainInfo": {
+			"type": "object",
+			"properties": {
+				"height": {
+					"type": "integer",
+					"format": "uint64",
+					"description": "Blockchain 的現行高度。"
+				},
+				"currentBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Blockchain 中最後一個區塊的雜湊。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Blockchain 中前一個區塊的雜湊。"
+				}
+			}
+		},
+		"Block": {
+			"type": "object",
+			"properties": {
+				"proposerID": {
+					"type": "string",
+					"description": "區塊的建立者/發送端。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "區塊建立時間。"
+				},
+				"transactions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Transaction"
+					}
+				},
+				"stateHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "執行區塊中的所有交易之後的廣域狀態雜湊。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Blockchain 中前一個區塊的雜湊。"
+				},
+				"consensusMetadata": {
+					"type": "string",
+					"format": "bytes",
+					"description": "一致所需的 meta 資料。"
+				},
+				"nonHashData": {
+					"type": "string",
+					"format": "bytes",
+					"description": "區塊中所儲存的資料，但排除不進行區塊雜湊計算。"
+				}
+			}
+		},
+		"Transaction": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"CHAINCODE_DEPLOY",
+						"CHAINCODE_INVOKE",
+						"CHAINCODE_QUERY",
+						"CHAINCODE_TERMINATE"
+					],
+					"description": "交易類型。"
+				},
+				"chaincodeID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "Chaincode ID（位元組）。"
+				},
+				"payload": {
+					"type": "string",
+					"format": "bytes",
+					"description": "針對 Chaincode 函數執行所提供的有效負載。"
+				},
+				"uuid": {
+					"type": "string",
+					"description": "唯一交易 ID。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "Chanincode 變成可執行的時間。"
+				},
+				"confidentialityLevel": {
+					"$ref": "#/definitions/ConfidentialityLevel",
+					"description": "Chaincode 的機密性層次。"
+				},
+				"nonce": {
+					"type": "string",
+					"format": "bytes",
+					"description": "針對此交易所產生的 Nonce 值。"
+				},
+				"cert": {
+					"type": "string",
+					"format": "bytes",
+					"description": "傳送交易之用戶端的憑證。"
+				},
+				"signature": {
+					"type": "string",
+					"format": "bytes",
+					"description": "傳送交易之用戶端的簽章。"
+				}
+			}
+		},
+		"ChaincodeID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "Chaincode 名稱 ID。呼叫及查詢交易需要這個值。"
+				}
+			}
+		},
+		"DeployParamChaincodeSpec": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "string",
+					"description": "檔案系統中的 Chaincode 位置。部署交易需要這個值。"
+				}
+			}
+		},
+		"InvokeQueryParamSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Chaincode 語言"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/ChaincodeID",
+					"description": "唯一 Chaincode ID。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "啟用安全時的使用者名稱。"
+				}
+			}
+		},
+		"DeployParamsSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "Chaincode 規格語言。"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/DeployParamChaincodeSpec",
+					"description": "唯一 Chaincode ID。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput",
+					"description": "要在 Chaincode 內執行的特定函數。"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "啟用安全時的使用者名稱。"
+				}
+			}
+		},
+		"ChaincodeInvocationSpec": {
+			"type": "object",
+			"properties": {
+				"InvokeQueryParamSpec": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "Chaincode 規格訊息。"
+				}
+			}
+		},
+		"QuerySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "指定 JSON-RPC 通訊協定版本的字串。只能是 '2.0'。"
+				},
+				"method": {
+					"type": "string",
+					"example": "query",
+					"description": "包含要呼叫之方法名稱的字串。必須是 'deploy'、'invoke' 或 'query'。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "識別目標 Chaincode 的所需 Chaincode 規格訊息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用來產生要求與回應物件之關聯的整數。如果未包括，則假設要求是通知，而且伺服器不會產生回應。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"InvokeSpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "指定 JSON-RPC 通訊協定版本的字串。只能是 '2.0'。"
+				},
+				"method": {
+					"type": "string",
+					"example": "invoke",
+					"description": "包含要呼叫之方法名稱的字串。必須是 'deploy'、'invoke' 或 'query'。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "識別目標 Chaincode 的所需 Chaincode 規格訊息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用來產生要求與回應物件之關聯的整數。如果未包括，則假設要求是通知，而且伺服器不會產生回應。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"DeploySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "指定 JSON-RPC 通訊協定版本的字串。只能是 '2.0'。"
+				},
+				"method": {
+					"type": "string",
+					"example": "deploy",
+					"description": "包含要呼叫之方法名稱的字串。必須是 'deploy'、'invoke' 或 'query'。"
+				},
+				"params": {
+					"$ref": "#/definitions/DeployParamsSpec",
+					"description": "識別目標 Chaincode 的所需 Chaincode 規格訊息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用來產生要求與回應物件之關聯的整數。如果未包括，則假設要求是通知，而且伺服器不會產生回應。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"ConfidentialityLevel": {
+			"type": "string",
+			"default": "PUBLIC",
+			"example": "PUBLIC",
+			"enum": [
+				"PUBLIC",
+				"CONFIDENTIAL"
+			],
+			"description": "Chaincode 的機密性層次。"
+		},
+		"ChaincodeInput": {
+			"type": "object",
+			"properties": {
+				"function": {
+					"type": "string",
+					"description": "要在 Chaincode 內執行的函數。"
+				},
+				"args": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "提供給 Chaincode 函數的引數。"
+				}
+			}
+		},
+		"Secret": {
+			"type": "object",
+			"properties": {
+				"enrollId": {
+					"type": "string",
+					"description": "向憑證管理中心登錄的使用者註冊 ID。"
+				},
+				"enrollSecret": {
+					"type": "string",
+					"description": "向憑證管理中心登錄的使用者註冊密碼。"
+				}
+			}
+		},
+		"Timestamp": {
+			"type": "object",
+			"properties": {
+				"seconds": {
+					"type": "integer",
+					"format": "int64",
+					"description": "代表自 Unix 新紀元 1970-01-01T00:00:00Z 以來的世界標準時間秒數。必須從 0001-01-01T00:00:00Z 到 9999-12-31T23:59:59Z（含）。"
+				},
+				"nanos": {
+					"type": "integer",
+					"format": "int32",
+					"description": "解析度為十億分之一秒的非負小數。含小數的負秒值仍然必須有計入時間的非負十億分之一值。必須從 0 到 999,999,999（含）。"
+				}
+			}
+		},
+		"PeersMessage": {
+			"type": "object",
+			"properties": {
+				"peers": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PeerEndpoint"
+					}
+				}
+			}
+		},
+		"PeerEndpoint": {
+			"type": "object",
+			"properties": {
+				"ID": {
+					"$ref": "#/definitions/PeerID",
+					"description": "唯一對等 ID。"
+				},
+				"address": {
+					"type": "string",
+					"description": "識別網路對等的 ipaddress:port 組合。"
+				},
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"VALIDATOR",
+						"NON_VALIDATOR"
+					],
+					"description": "網路對等類型。"
+				},
+				"pkiID": {
+					"type": "string",
+					"format": "bytes",
+					"description": "網路對等的 PKI ID。"
+				}
+			}
+		},
+		"PeerID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "可唯一識別網路對等的名稱。"
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"Error": {
+					"type": "string",
+					"description": "說明錯誤原因的敘述性訊息。"
+				}
+			}
+		},
+		"OK": {
+			"type": "object",
+			"properties": {
+				"OK": {
+					"type": "string",
+					"description": "確認成功要求的敘述性訊息。"
+				},
+				"message": {
+					"type": "string",
+					"description": "包含要求之其他資訊的選用參數。"
+				}
+			}
+		},
+		"ChaincodeOpSuccess": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "指定 JSON-RPC 通訊協定版本的字串。只能是 '2.0'。"
+				},
+				"result": {
+					"$ref": "#/definitions/rpcResponse",
+					"description": "此元素的值是透過伺服器所呼叫的方法所決定。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "此數字會與 request 物件中 id 成員的值相同。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"result",
+				"id"
+			]
+		},
+		"ChaincodeOpFailure": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "指定 JSON-RPC 通訊協定版本的字串。只能是 '2.0'。"
+				},
+				"error": {
+					"$ref": "#/definitions/rpcError",
+					"description": "指定程式碼以及所發生錯誤之說明的結構化值。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "此數字會與 request 物件中 id 成員的值相同。如果偵測 request 物件中的 id 時發生錯誤（例如，剖析錯誤/要求無效），則會是空值。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"error",
+				"id"
+			]
+		},
+		"rpcResponse": {
+			"type": "object",
+			"properties": {
+				"Status": {
+					"type": "string",
+					"default": "OK",
+					"description": "確認成功要求執行的字串。"
+				},
+				"Message": {
+					"type": "string",
+					"default": "500",
+					"description": "所傳回之回應或值的其他資訊。"
+				}
+			},
+			"required": [
+				"Status"
+			]
+		},
+		"rpcError": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "integer",
+					"format": "int64",
+					"default": -32700,
+					"description": "指出所發生錯誤類型的數字。"
+				},
+				"message": {
+					"type": "string",
+					"default": "剖析錯誤",
+					"description": "提供簡要錯誤說明的字串。"
+				},
+				"data": {
+					"type": "string",
+					"default": "解除配置 Chaincode 要求有效負載時發生錯誤：JSON 輸入有非預期的結尾",
+					"description": "包含其他錯誤資訊（例如詳細錯誤資訊、巢狀錯誤等）的基本或結構化值。"
+				}
+			},
+			"required": [
+				"code",
+				"message"
+			]
+		}
+	}
+}
+

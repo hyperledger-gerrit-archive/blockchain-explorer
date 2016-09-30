@@ -1,0 +1,846 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "IBM Blockchain API",
+		"description": "打开下面的部分，与您的区块链网络互动",
+		"version": "1.0.0"
+	},
+	"host": "127.0.0.1:3000",
+	"schemes": [
+		"http"
+	],
+	"produces": [
+		"application/json"
+	],
+	"paths": {
+		"/chain": {
+			"get": {
+				"summary": "区块链信息",
+				"description": "Chain 端点返回有关区块链当前状态的信息，如高度、当前区块散列和先前区块散列。",
+				"tags": [
+					"区块链"
+				],
+				"operationId": "getChain",
+				"responses": {
+					"200": {
+						"description": "区块链信息",
+						"schema": {
+							"$ref": "#/definitions/BlockchainInfo"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chain/blocks/{Block}": {
+			"get": {
+				"summary": "单个区块信息",
+				"description": "{Block} 端点返回区块链中特定区块的相关信息。注意，起源区块为区块 0。",
+				"tags": [
+					"区块"
+				],
+				"operationId": "getBlock",
+				"parameters": [{
+					"name": "Block",
+					"in": "path",
+					"description": "要检索的区块号",
+					"type": "integer",
+					"format": "uint64",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "单个区块内容",
+						"schema": {
+							"$ref": "#/definitions/Block"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/transactions/{UUID}": {
+			"get": {
+				"summary": "单个事务内容",
+				"description": "/transactions/{UUID} 端点返回匹配指定 UUID 的事务。",
+				"tags": [
+					"事务"
+				],
+				"operationId": "getTransaction",
+				"parameters": [{
+					"name": "UUID",
+					"in": "path",
+					"description": "将从区块链检索的事务。",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "单个事务内容",
+						"schema": {
+							"$ref": "#/definitions/Transaction"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/chaincode": {
+			"post": {
+				"summary": "链代码操作的服务端点",
+				"description": "/chaincode 端点接收到部署、调用和查询目标链代码的请求。该服务端点使用“方法”字段识别所需的链代码操作的有效内容来实施 JSON RPC 2.0 规范。<strong>从以下三个规范中选取一个与您的请求类型匹配的主体规范。</strong>",
+				"tags": [
+					"链代码"
+				],
+				"operationId": "chaincodeOp",
+				"parameters": [{
+					"name": "QuerySpec",
+					"in": "body",
+					"description": "查询的主体规范",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/QuerySpec"
+					}
+				},
+				{
+					"name": "DeploySpec",
+					"in": "body",
+					"description": "部署的主体规范",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/DeploySpec"
+					}
+				},
+				{
+					"name": "InvokeSpec",
+					"in": "body",
+					"description": "调用的主体规范",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/InvokeSpec"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "链代码操作成功",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpSuccess"
+						}
+					},
+					"default": {
+						"description": "链代码操作已失败",
+						"schema": {
+							"$ref": "#/definitions/ChaincodeOpFailure"
+						}
+					}
+				}
+			}
+		},
+		"/registrar": {
+			"post": {
+				"summary": "向认证中心注册用户",
+				"description": "/registrar 端点接收向认证中心注册用户的请求。该请求必须在有效内容中提供注册标识和密码。如果注册成功，将在本地接收和存储所需的事务证书。否则，将显示错误以及失败的原因。",
+				"tags": [
+					"注册器"
+				],
+				"operationId": "registerUser",
+				"parameters": [{
+					"name": "Secret",
+					"in": "body",
+					"description": "用户注册凭证",
+					"required": true,
+					"schema": {
+						"$ref": "#/definitions/Secret"
+					}
+				}],
+				"responses": {
+					"200": {
+						"description": "已成功向认证中心注册用户",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}": {
+			"get": {
+				"summary": "确认用户已向认证中心注册",
+				"description": "/registrar/{enrollmentID} 端点确认指定的用户是否已向认证中心注册。如果用户已注册，将返回确认消息。否则，将导致授权失败。",
+				"tags": [
+					"注册器"
+				],
+				"operationId": "getUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要确认注册的用户名",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "确认目标用户的注册",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "删除本地存储器中的用户登录标记",
+				"description": "/registrar/{enrollmentID} 端点删除本地存储器中的任何现有客户机登录标记。此请求完成之后，目标用户将再也不能执行事务。",
+				"tags": [
+					"注册器"
+				],
+				"operationId": "deleteUserRegistration",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "要删除其登录标记的用户名",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "确认用户登录标记已删除",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/ecert": {
+			"get": {
+				"summary": "检索用户注册证书",
+				"description": "/registrar/{enrollmentID}/ecert 端点检索已向认证中心注册的给定用户的注册证书。如果用户已注册，将返回确认消息，其中包含 URL 编码的注册证书。否则，将导致错误。",
+				"tags": [
+					"注册器"
+				],
+				"operationId": "getUserEnrollmentCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "请求其证书的注册标识",
+					"type": "string",
+					"required": true
+				}],
+				"responses": {
+					"200": {
+						"description": "确认目标用户已注册并返回 URL 编码的注册证书",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/registrar/{enrollmentID}/tcert": {
+			"get": {
+				"summary": "检索用户事务证书",
+				"description": "/registrar/{enrollmentID}/tcert 端点检索已向认证中心注册的给定用户的事务证书。如果用户已注册，将返回确认消息，其中包含一组 URL 编码的事务证书。否则，将导致错误。所需的事务证书数量使用可选的“count”查询参数指定。返回的事务证书的缺省数量为 1，通过单个请求可检索的证书的最大数量为 500。",
+				"tags": [
+					"注册器"
+				],
+				"operationId": "getUserTransactionCertificate",
+				"parameters": [{
+					"name": "enrollmentID",
+					"in": "path",
+					"description": "请求其证书的注册标识",
+					"type": "string",
+					"required": true
+				}, {
+					"name": "count",
+					"in": "查询",
+					"description": "所需的事务证书数量。返回的事务证书的缺省数量为 1，通过单个请求可检索的证书的最大数量为 500",
+					"type": "string"
+				}],
+				"responses": {
+					"200": {
+						"description": "确认目标用户已注册并返回 URL 编码的事务证书的所需数量",
+						"schema": {
+							"$ref": "#/definitions/OK"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/network/peers": {
+			"get": {
+				"summary": "网络同级列表",
+				"description": "/network/peers 端点返回目标同级节点所有现有网络连接的列表。该列表包含验证和非验证同级。",
+				"tags": [
+					"网络"
+				],
+				"operationId": "getPeers",
+				"responses": {
+					"200": {
+						"description": "网络同级列表",
+						"schema": {
+							"$ref": "#/definitions/PeersMessage"
+						}
+					},
+					"default": {
+						"description": "意外错误",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"BlockchainInfo": {
+			"type": "object",
+			"properties": {
+				"height": {
+					"type": "integer",
+					"format": "uint64",
+					"description": "区块链的当前高度。"
+				},
+				"currentBlockHash": {
+					"type": "string",
+					"format": "字节",
+					"description": "区块链中最后一个块的散列。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "字节",
+					"description": "区块链中前一个块的散列。"
+				}
+			}
+		},
+		"Block": {
+			"type": "object",
+			"properties": {
+				"proposerID": {
+					"type": "string",
+					"description": "区块的创建者/发起方。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "区块的创建时间。"
+				},
+				"transactions": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Transaction"
+					}
+				},
+				"stateHash": {
+					"type": "string",
+					"format": "字节",
+					"description": "在区块中执行所有事务的全局状态散列。"
+				},
+				"previousBlockHash": {
+					"type": "string",
+					"format": "字节",
+					"description": "区块链中前一个块的散列。"
+				},
+				"consensusMetadata": {
+					"type": "string",
+					"format": "字节",
+					"description": "需要共识的元数据。"
+				},
+				"nonHashData": {
+					"type": "string",
+					"format": "字节",
+					"description": "区块中存储的数据，但不包括在区块散列计算中。"
+				}
+			}
+		},
+		"Transaction": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"CHAINCODE_DEPLOY",
+						"CHAINCODE_INVOKE",
+						"CHAINCODE_QUERY",
+						"CHAINCODE_TERMINATE"
+					],
+					"description": "事务类型。"
+				},
+				"chaincodeID": {
+					"type": "string",
+					"format": "字节",
+					"description": "作为字节的链代码标识。"
+				},
+				"payload": {
+					"type": "string",
+					"format": "字节",
+					"description": "提供给链代码函数执行的有效内容。"
+				},
+				"uuid": {
+					"type": "string",
+					"description": "唯一事务标识。"
+				},
+				"timestamp": {
+					"$ref": "#/definitions/Timestamp",
+					"description": "链代码可执行的时间。"
+				},
+				"confidentialityLevel": {
+					"$ref": "#/definitions/ConfidentialityLevel",
+					"description": "链代码的机密性级别。"
+				},
+				"nonce": {
+					"type": "string",
+					"format": "字节",
+					"description": "为此事务生成的现时标志值。"
+				},
+				"cert": {
+					"type": "string",
+					"format": "字节",
+					"description": "发送事务的客户端的证书。"
+				},
+				"signature": {
+					"type": "string",
+					"format": "字节",
+					"description": "发送事务的客户端的签名。"
+				}
+			}
+		},
+		"ChaincodeID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "链代码名称标识。调用和查询事务需要此值。"
+				}
+			}
+		},
+		"DeployParamChaincodeSpec": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "string",
+					"description": "文件系统中的链代码位置。部署事务需要此值。"
+				}
+			}
+		},
+		"InvokeQueryParamSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "链代码语言"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/ChaincodeID",
+					"description": "唯一链代码标识。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "启用安全时的用户名。"
+				}
+			}
+		},
+		"DeployParamsSpec": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "number",
+					"default": 1,
+					"example": 1,
+					"enum": [
+						"UNDEFINED = 0",
+						"GOLANG = 1",
+						"NODE = 2"
+					],
+					"description": "链代码规范语言。"
+				},
+				"chaincodeID": {
+					"$ref": "#/definitions/DeployParamChaincodeSpec",
+					"description": "唯一链代码标识。"
+				},
+				"ctorMsg": {
+					"$ref": "#/definitions/ChaincodeInput",
+					"description": "将在链代码中执行的特定函数。"
+				},
+				"secureContext": {
+					"type": "string",
+					"description": "启用安全时的用户名。"
+				}
+			}
+		},
+		"ChaincodeInvocationSpec": {
+			"type": "object",
+			"properties": {
+				"InvokeQueryParamSpec": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "链代码规范消息。"
+				}
+			}
+		},
+		"QuerySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "用于指定 JSON-RPC 协议版本的字符串。必须精确设置为“2.0”。"
+				},
+				"method": {
+					"type": "string",
+					"example": "query",
+					"description": "包含要调用的方法的名称的字符串。必须为“deploy”、“invoke”或“query”。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "用于识别目标链代码的所需链代码规范消息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用于关联请求和响应对象的整数。如果未包含，将认定请求为通知，并且服务器不生成响应。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"InvokeSpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "用于指定 JSON-RPC 协议版本的字符串。必须精确设置为“2.0”。"
+				},
+				"method": {
+					"type": "string",
+					"example": "invoke",
+					"description": "包含要调用的方法的名称的字符串。必须为“deploy”、“invoke”或“query”。"
+				},
+				"params": {
+					"$ref": "#/definitions/InvokeQueryParamSpec",
+					"description": "用于识别目标链代码的所需链代码规范消息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用于关联请求和响应对象的整数。如果未包含，将认定请求为通知，并且服务器不生成响应。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"DeploySpec": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "用于指定 JSON-RPC 协议版本的字符串。必须精确设置为“2.0”。"
+				},
+				"method": {
+					"type": "string",
+					"example": "deploy",
+					"description": "包含要调用的方法的名称的字符串。必须为“deploy”、“invoke”或“query”。"
+				},
+				"params": {
+					"$ref": "#/definitions/DeployParamsSpec",
+					"description": "用于识别目标链代码的所需链代码规范消息。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"description": "用于关联请求和响应对象的整数。如果未包含，将认定请求为通知，并且服务器不生成响应。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"method",
+				"params",
+				"id"
+			]
+		},
+		"ConfidentialityLevel": {
+			"type": "string",
+			"default": "PUBLIC",
+			"example": "PUBLIC",
+			"enum": [
+				"PUBLIC",
+				"CONFIDENTIAL"
+			],
+			"description": "链代码的机密性级别。"
+		},
+		"ChaincodeInput": {
+			"type": "object",
+			"properties": {
+				"function": {
+					"type": "string",
+					"description": "将在链代码中执行的函数。"
+				},
+				"args": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "提供给链代码函数的参数。"
+				}
+			}
+		},
+		"Secret": {
+			"type": "object",
+			"properties": {
+				"enrollId": {
+					"type": "string",
+					"description": "向认证中心注册的用户注册标识。"
+				},
+				"enrollSecret": {
+					"type": "string",
+					"description": "向认证中心注册的用户注册密码。"
+				}
+			}
+		},
+		"Timestamp": {
+			"type": "object",
+			"properties": {
+				"seconds": {
+					"type": "integer",
+					"format": "int64",
+					"description": "表示自 Unix 戳记时间 1970-01-01T00:00:00Z 以来的 UTC 时间（秒数）。必须为 0001-01-01T00:00:00Z（包含）至 9999-12-31T23:59:59Z（包含）之间的数。"
+				},
+				"nanos": {
+					"type": "integer",
+					"format": "int32",
+					"description": "以纳秒为单位时秒的非负分数。带有分数的负秒值必须仍然使用非负纳秒值。必须介于 0 至 999,999,999 之间（包含）。"
+				}
+			}
+		},
+		"PeersMessage": {
+			"type": "object",
+			"properties": {
+				"peers": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/PeerEndpoint"
+					}
+				}
+			}
+		},
+		"PeerEndpoint": {
+			"type": "object",
+			"properties": {
+				"ID": {
+					"$ref": "#/definitions/PeerID",
+					"description": "唯一同级标识。"
+				},
+				"address": {
+					"type": "string",
+					"description": "用于标识网络同级的 ipaddress:port 组合"
+				},
+				"type": {
+					"type": "string",
+					"default": "UNDEFINED",
+					"example": "UNDEFINED",
+					"enum": [
+						"UNDEFINED",
+						"VALIDATOR",
+						"NON_VALIDATOR"
+					],
+					"description": "网络同级类型。"
+				},
+				"pkiID": {
+					"type": "string",
+					"format": "字节",
+					"description": "网络同级的 PKI 标识。"
+				}
+			}
+		},
+		"PeerID": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": "用于唯一标识网络同级的名称。"
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"Error": {
+					"type": "string",
+					"description": "用于解释错误原因的描述性消息。"
+				}
+			}
+		},
+		"OK": {
+			"type": "object",
+			"properties": {
+				"OK": {
+					"type": "string",
+					"description": "用于确认请求成功的描述性消息。"
+				},
+				"message": {
+					"type": "string",
+					"description": "包含请求的其他信息的可选参数。"
+				}
+			}
+		},
+		"ChaincodeOpSuccess": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "用于指定 JSON-RPC 协议版本的字符串。必须精确设置为“2.0”。"
+				},
+				"result": {
+					"$ref": "#/definitions/rpcResponse",
+					"description": "此元素的值由服务器上调用的方法确定。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "此值与请求对象中标识成员的值相同。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"result",
+				"id"
+			]
+		},
+		"ChaincodeOpFailure": {
+			"type": "object",
+			"properties": {
+				"jsonrpc": {
+					"type": "string",
+					"default": "2.0",
+					"description": "用于指定 JSON-RPC 协议版本的字符串。必须精确设置为“2.0”。"
+				},
+				"error": {
+					"$ref": "#/definitions/rpcError",
+					"description": "用于指定所发生错误的代码和描述的构造值。"
+				},
+				"id": {
+					"type": "integer",
+					"format": "int64",
+					"default": 123,
+					"description": "此值与请求对象中标识成员的值相同。如果检测请求对象中的标识时出现错误（例如，解析错误/无效请求），该值为空。"
+				}
+			},
+			"required": [
+				"jsonrpc",
+				"error",
+				"id"
+			]
+		},
+		"rpcResponse": {
+			"type": "object",
+			"properties": {
+				"Status": {
+					"type": "string",
+					"default": "OK",
+					"description": "用于确认请求执行成功的字符串。"
+				},
+				"Message": {
+					"type": "string",
+					"default": "500",
+					"description": "有关返回的响应或值的其他信息。"
+				}
+			},
+			"required": [
+				"状态"
+			]
+		},
+		"rpcError": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "integer",
+					"format": "int64",
+					"default": -32700,
+					"description": "用于指示发生的错误类型的数字。"
+				},
+				"message": {
+					"type": "string",
+					"default": "解析错误",
+					"description": "用于提供错误的简短描述的字符串。"
+				},
+				"data": {
+					"type": "string",
+					"default": "重新整理链代码请求有效内容时出错：JSON 输入意外终止",
+					"description": "包含错误其他相关信息的原语或构造值（例如，详细的错误信息，嵌套的错误等）."
+				}
+			},
+			"required": [
+				"code",
+				"message"
+			]
+		}
+	}
+}
+
