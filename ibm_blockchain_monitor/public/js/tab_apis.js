@@ -1,9 +1,9 @@
-/* global $, document, window, rest_get_peers, friendly_name, network_id,  SwaggerUi, hljs*/
+/* global $, document, window, rest_get_peers, friendly_name, network_id,  SwaggerUi, hljs, lang*/
 
 //globals for this tab
-var swagger_url = '/rest_api_swagger.json';									//[default] - relative path to THIS file
+var swagger_url = '/swagger_files/' + lang._PREFIX + '_swagger.json';									//[default] - relative path to THIS file
 var origUrl = '';
-
+console.log('loading swagger...', swagger_url);
 
 // =================================================================================
 // On Load
@@ -18,6 +18,12 @@ $(document).on('ready', function() {
 		onComplete: function(swaggerApi, swaggerUi){
 			if(window.SwaggerTranslator) {
 				window.SwaggerTranslator.translate();
+				window.SwaggerTranslator.translate('h4');
+				window.SwaggerTranslator.translate('.model-signature');
+				window.SwaggerTranslator.translate('.code');
+				window.SwaggerTranslator.translate('.notice');
+				window.SwaggerTranslator.translate('td');
+				window.SwaggerTranslator.translate('label');
 			}
 			$('pre code').each(function(i, e) {
 				hljs.highlightBlock(e);
@@ -55,11 +61,11 @@ $(document).on('ready', function() {
 	$('#enrollWrapToggle').click(function(){
 		if($('#enrollIDsWrap').is(':visible')){
 			$('#enrollIDsWrap').slideUp();
-			$('#enrollWrapStatus').html('Expand');
+			$('#enrollWrapStatus').html(lang.expand);
 		}
 		else{
 			$('#enrollIDsWrap').slideDown();
-			$('#enrollWrapStatus').html('Collapse');
+			$('#enrollWrapStatus').html(lang.collapse);
 		}
 	});
 	
@@ -124,6 +130,7 @@ function rest_get_creds(){
 	$.ajax({
 		method: 'GET',
 		url: window.location.origin + '/api/network/' + network_id,
+		timeout: 30000,
 		contentType: 'application/json',
 		success: function(json){
 			console.log('Success - vcap details', json);
@@ -138,8 +145,8 @@ function rest_get_creds(){
 //build the enrollID html
 function build_enrollID_html(credentials){
 	var html = '<div class="enrollWrapHeader">';
-	html +=			'<div class="enrollId">ID</div>';
-	html +=			'<div class="enrollSecret">Secret</div>';
+	html +=			'<div class="enrollId">' + lang.id + '</div>';
+	html +=			'<div class="enrollSecret">' + lang.secret + '</div>';
 	html += 	'</div>';
 	if(credentials.users){
 		for(var i in credentials.users){
@@ -182,9 +189,6 @@ function waitForSwagger(){
 	else{
 		console.log('swagger is fully loaded!');
 		origUrl = window.swaggerUi.api.schemes[0] + '://' + window.swaggerUi.api.host + window.swaggerUi.api.basePath;
-		$('.description-link').each(function(){
-			$(this).html('Model Details');											//rename
-		});
 
 		console.log(window.swaggerUi.api);
 		//$('.endpoints').show();													//default to showing them all

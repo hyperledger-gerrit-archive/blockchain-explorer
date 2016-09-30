@@ -2,16 +2,13 @@ var express = require('express');
 var fs = require('fs');
 var path = require('path');
 
-module.exports = function(dbConnectionString, blockchain_configs, logger, ev, sessionMiddleware) {
+module.exports = function(dbConnectionString, logger, ev, sessionMiddleware, crud) {
 	var app = express();
 	var nano = require('nano')(dbConnectionString);
 	var dbNetworks = nano.use(ev.DB_PREFIX + 'networks');
-	var middle = require('../../libs/mine/middleware.js')(logger, dbConnectionString, ev);
-	var skipper = require('../../libs/skipper_proxy.js')(logger, dbConnectionString, ev, blockchain_configs);
-	var misc	= require('../../libs/misc.js')(logger);
-	var crud = {};
-	if(process.env.RUN_MODE === 'IBM-BCS') crud = require('../../libs/crud_core_cl.js');
-	else crud = require('../../libs/crud_core_fs.js');
+	var middle = require('../../libs/mine/middleware.js')(logger, dbConnectionString, ev, crud);
+	var skipper = require('../../libs/skipper_proxy.js')(logger, dbConnectionString, ev, crud, null);
+	var common_misc	= require('../../libs/common_misc.js')(logger);
 
 	var apiSessionAuth = [];
 	if(process.env.RUN_MODE === 'IBM-BCS'){
@@ -31,16 +28,9 @@ module.exports = function(dbConnectionString, blockchain_configs, logger, ev, se
 				res.status(404).json({errors: 'could not find network document'});
 			}
 			else{
-				var blk_config = misc.find_blockchain_config(net_doc, blockchain_configs);
-				if(!blk_config) {
-					logger.error('could not find a blockchain.js for this network');
-					res.status(500).json({errors: 'could not find a blockchain.js for this network'});
-				}
-				else{
-					var vcap = misc.build_vcap_object(net_doc, blk_config);
-					vcap.credentials.users =  misc.filter_enrollIDs(vcap.credentials.users);
-					res.status(200).json(vcap);
-				}
+				var vcap = common_misc.build_vcap_object(net_doc);
+				vcap.credentials.users =  common_misc.filter_enrollIDs(vcap.credentials.users);
+				res.status(200).json(vcap);
 			}
 		});
 	});
@@ -125,49 +115,42 @@ module.exports = function(dbConnectionString, blockchain_configs, logger, ev, se
 
 
 				// ---- find dashboard enroll id ---- //
-				var blk_config = misc.find_blockchain_config(net_doc, blockchain_configs);
-				if(!blk_config) {
-					logger.error('could not find a blockchain.js for this network');
-					res.status(500).json({errors: 'could not find a blockchain.js for this network'});
+				var vcap = common_misc.build_vcap_object(net_doc);
+				var cred = vcap.credentials;
+				for(var i in cred.users){
+					if(cred.users[i].enrollId.indexOf('dashboarduser') === 0){		//prefer to give out dedicated enrollIDs
+						toRet.user = cred.users[i];
+						break;
+					}
 				}
-				else{
-					var vcap = misc.build_vcap_object(net_doc, blk_config);
-					var cred = vcap.credentials;
-					for(var i in cred.users){
-						if(cred.users[i].enrollId.indexOf('dashboarduser') === 0){		//prefer to give out dedicated enrollIDs
+				
+				if(!toRet.user || !toRet.user.enrollId){							//if we didn't find any enrollIDs yet grab a type0
+					for(i in cred.users){
+						if(cred.users[i].enrollId.indexOf('user_type0') === 0){
 							toRet.user = cred.users[i];
 							break;
 						}
 					}
-					
-					if(!toRet.user || !toRet.user.enrollId){							//if we didn't find any enrollIDs yet grab a type0
-						for(i in cred.users){
-							if(cred.users[i].enrollId.indexOf('user_type0') === 0){
-								toRet.user = cred.users[i];
-								break;
-							}
-						}
-					}
-					
-					if(!toRet.user || !toRet.user.enrollId){							//if we didn't find any enrollIDs yet grab a type1...
-						for(i in cred.users){
-							if(cred.users[i].enrollId.indexOf('user_type1') === 0){
-								toRet.user = cred.users[i];
-								break;
-							}
-						}
-					}
-
-					if(!toRet.user || !toRet.user.enrollId){							//if its a yeti network grab it from the peer obj instead
-						for(i in cred.peers){
-							if(cred.peers[i].users && cred.peers[i].users[0]){
-								toRet.user = {enrollId: cred.peers[i].users[0]};		//there is no secret, make do
-								break;
-							}
+				}
+				
+				if(!toRet.user || !toRet.user.enrollId){							//if we didn't find any enrollIDs yet grab a type1...
+					for(i in cred.users){
+						if(cred.users[i].enrollId.indexOf('user_type1') === 0){
+							toRet.user = cred.users[i];
+							break;
 						}
 					}
 				}
 
+				if(!toRet.user || !toRet.user.enrollId){							//if its a yeti network grab it from the peer obj instead
+					for(i in cred.peers){
+						if(cred.peers[i].users && cred.peers[i].users[0]){
+							toRet.user = {enrollId: cred.peers[i].users[0]};		//there is no secret, make do
+							break;
+						}
+					}
+				}
+				
 				res.status(200).json(toRet);											//all done here
 			}
 		});
@@ -322,7 +305,7 @@ module.exports = function(dbConnectionString, blockchain_configs, logger, ev, se
 	// YETI APIs 
 	//--------------------------------
 	//receive save network api
-	app.post('/api/network', apiSessionAuth, function(req, res, next) {
+	app.post('/:lang/api/network', apiSessionAuth, function(req, res, next) {
 		if(process.env.RUN_MODE === 'IBM-BCS') next();
 		else{
 			var doc = {};
@@ -342,7 +325,7 @@ module.exports = function(dbConnectionString, blockchain_configs, logger, ev, se
 						res.status(500).json(e);
 					}
 					else {
-						res.redirect('/v2/network/' + doc._id);
+						res.redirect('/' + req.params.lang + '/v2/network/' + doc._id);
 					}
 				});
 			}

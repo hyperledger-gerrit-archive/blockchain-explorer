@@ -2,23 +2,23 @@
 	.mainContentWrap
 		// ============ Titles ============ //
 		.demoAppWrap
-			.demoAppName Application
-			.demoAppDescr Description
-			.demoDetails Links
-			.demoInteract Interact
+			.demoAppName #{lang.application}
+			.demoAppDescr #{lang.description}
+			.demoDetails #{lang.links}
+			.demoInteract #{lang.interact}
 			.demoDeployWrap &nbsp;
 		
 		
 		// ============ Example02 ============ //
 		.demoAppWrap
-			.demoAppName Example02
-			.demoAppDescr Store two integers named A and B. Subtract from one and add to the other.
+			.demoAppName #{lang.ex02_title}
+			.demoAppDescr #{lang.ex02_description}
 			.demoDetails
-				a(href="https://github.com/hyperledger/fabric/blob/master/examples/chaincode/go/chaincode_example02/chaincode_example02.go" target="_blank").underline Chaincode
+				a(href="https://github.com/masterDev1985/hyperledger_chaincode/blob/master/chaincode_example02/chaincode_example02.go" target="_blank").underline #{lang.chaincode}
 			.demoInteract 
-				a(href="#").underline.showActions Show Actions
+				a(href="#" cc="example02").underline.showActions #{lang.show_actions}
 			.demoDeployWrap
-				button(type="button" disabled="disabled" cc="example02").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				button(type="button" disabled="disabled" cc="example02").deployButton.bx--btn &nbsp;#{lang.deploy}&nbsp;
 				#example02Loading.loadingdiv.demoLoading
 					span
 					span
@@ -28,36 +28,36 @@
 					div
 			.demoActionWrap.example02
 				.demoCCSelectWrap
-					span.smallerFont Select the correct chaincode:
+					span.smallerFont #{lang.select_cc}:
 					select(name="demo_chaincode_name" cc="example02").selectCC
-						option(disabled="disabled" selected="selected") invalid
+						option(disabled="disabled" selected="selected") #{lang.invalid}
 				.demoActionSelectWrap
-					span.smallerFont Select an action:
+					span.smallerFont #{lang.select_action}:
 					select(cc="example02").selectAction
-						option(disabled="disabled" value="invokeA2B").demoAction#invokeA2B Transfer from A to B
-						option(disabled="disabled" value="invokeB2A").demoAction#invokeB2A Transfer from B to A
-						option(disabled="disabled" selected="selected" value="queryA").demoAction#queryA Query A
-						option(disabled="disabled" value="queryB").demoAction#queryB Query B
+						option(disabled="disabled" value="invokeA2B").demoAction#invokeA2B #{lang.ex02_action1}
+						option(disabled="disabled" value="invokeB2A").demoAction#invokeB2A #{lang.ex02_action2}
+						option(disabled="disabled" selected="selected" value="queryA").demoAction#queryA #{lang.ex02_action3}
+						option(disabled="disabled" value="queryB").demoAction#queryB #{lang.ex02_action4}
 				.demoActionButtonWrap
 					span.smallerFont &nbsp;&nbsp;&nbsp;
-					button(type="button" disabled="disabled" cc="example02").bx--btn--secondary.executeAction Execute
+					button(type="button" disabled="disabled" cc="example02").bx--btn--secondary.executeAction #{lang.execute}
 
 		
 		
 		// ============ Marbles ============ //
 		.demoAppWrap
-			.demoAppName Marbles
-			.demoAppDescr Create marble assets and trade them with your friend Leroy.
+			.demoAppName #{lang.marbles_title}
+			.demoAppDescr #{lang.marbles_description}
 			.demoDetails
-				a(href="https://github.com/ibm-blockchain/marbles" target="_blank").underline GitHub
-				span ,&nbsp;
-				a(href="https://github.com/IBM-Blockchain/marbles-chaincode/blob/master/hyperledger/part2/part2_chaincode.go" target="_blank").underline Chaincode
-				span ,&nbsp;
-				a(href="https://github.com/IBM-Blockchain/marbles/blob/master/tutorial_part1.md" target="_blank").underline Docs
+				a(href="https://github.com/IBM-Blockchain/marbles" target="_blank").underline #{lang.github}
+				span , 
+				a(href="https://github.com/IBM-Blockchain/marbles-chaincode/blob/master/hyperledger/part2/part2_chaincode.go" target="_blank").underline #{lang.chaincode}
+				span , 
+				a(href="https://github.com/IBM-Blockchain/marbles/blob/master/tutorial_part1.md" target="_blank").underline #{lang.docs}
 			.demoInteract 
-				a(href="#").underline.showActions Show Actions
+				a(href="#" cc="marbles").underline.showActions #{lang.show_actions}
 			.demoDeployWrap
-				button(type="button" disabled="disabled" cc="marbles").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				button(type="button" disabled="disabled" cc="marbles").deployButton.bx--btn &nbsp;#{lang.deploy}&nbsp;
 				#marblesLoading.loadingdiv.demoLoading
 					span
 					span
@@ -67,35 +67,35 @@
 					div
 			.demoActionWrap.marbles
 				.demoCCSelectWrap
-					span.smallerFont Select the correct chaincode:
+					span.smallerFont #{lang.select_cc}:
 					select(name="demo_chaincode_name" cc="marbles").selectCC
-						option(disabled="disabled" selected="selected") invalid
+						option(disabled="disabled" selected="selected") #{lang.invalid}
 				.demoActionSelectWrap
-					span.smallerFont Select an action:
+					span.smallerFont #{lang.select_action}:
 					select(cc="marbles").selectAction
-						option(disabled="disabled" selected="selected" value="createMarble").demoAction#createMarble Create marble
-						option(disabled="disabled" value="transferMarble").demoAction#transferMarble Trade away marble
-						option(disabled="disabled" value="delMarble").demoAction#delMarble Delete marble
-						option(disabled="disabled" value="queryMarble").demoAction#queryMarble Query marble
+						option(disabled="disabled" selected="selected" value="createMarble").demoAction#createMarble #{lang.marbles_action1}
+						option(disabled="disabled" value="transferMarble").demoAction#transferMarble #{lang.marbles_action2}
+						option(disabled="disabled" value="delMarble").demoAction#delMarble #{lang.marbles_action3}
+						option(disabled="disabled" value="queryMarble").demoAction#queryMarble #{lang.marbles_action4}
 				.demoActionButtonWrap
 					span.smallerFont &nbsp;&nbsp;&nbsp;
-					button(type="button" disabled="disabled" cc="marbles").bx--btn--secondary.executeAction Execute
+					button(type="button" disabled="disabled" cc="marbles").bx--btn--secondary.executeAction #{lang.execute}
 				
 			
 		// ============ Commerical Paper ============ //
 		.demoAppWrap
-			.demoAppName Commercial Paper
-			.demoAppDescr Buy and sell business to business monetary loans.
+			.demoAppName #{lang.cp_title}
+			.demoAppDescr #{lang.cp_description}
 			.demoDetails
-				a(href="https://github.com/IBM-Blockchain/cp-web" target="_blank").underline GitHub
-				span ,&nbsp;
-				a(href="https://github.com/IBM-Blockchain/cp-chaincode-v2/blob/master/cp_cc.go" target="_blank").underline Chaincode
-				span ,&nbsp;
-				a(href="https://github.com/IBM-Blockchain/cp-web/blob/master/README.md" target="_blank").underline Docs
+				a(href="https://github.com/IBM-Blockchain/cp-web" target="_blank").underline #{lang.github}
+				span , 
+				a(href="https://github.com/IBM-Blockchain/cp-chaincode-v2/blob/master/hyperledger/cp_cc.go" target="_blank").underline #{lang.chaincode}
+				span , 
+				a(href="https://github.com/IBM-Blockchain/cp-web/blob/master/README.md" target="_blank").underline #{lang.docs}
 			.demoInteract 
-				a(href="#").underline.showActions Show Actions
+				a(href="#" cc="cp").underline.showActions #{lang.show_actions}
 			.demoDeployWrap
-				button(type="button" disabled="disabled" cc="cp").deployButton.bx--btn &nbsp;Deploy&nbsp;
+				button(type="button" disabled="disabled" cc="cp").deployButton.bx--btn &nbsp;#{lang.deploy}&nbsp;
 				#cpLoading.loadingdiv.demoLoading
 					span
 					span
@@ -105,30 +105,30 @@
 					div
 			.demoActionWrap.cp
 				.demoCCSelectWrap
-					span.smallerFont Select the correct chaincode:
+					span.smallerFont #{lang.select_cc}:
 					select(name="demo_chaincode_name" cc="cp").selectCC
-						option(disabled="disabled" selected="selected") invalid
+						option(disabled="disabled" selected="selected") #{lang.invalid}
 				.demoActionSelectWrap
-					span.smallerFont Select an action:
+					span.smallerFont #{lang.select_action}:
 					select(cc="cp").selectAction
-						option(disabled="disabled" selected="selected" value="regAcount").demoAction#regAcount Register Accounts
-						option(disabled="disabled" value="issuePaper").demoAction#issuePaper Seed paper
-						option(disabled="disabled" value="buyPaper").demoAction#buyPaper Buy paper
-						option(disabled="disabled" value="queryAccount").demoAction#queryAccount Query account
+						option(disabled="disabled" selected="selected" value="regAcount").demoAction#regAcount #{lang.cp_action1}
+						option(disabled="disabled" value="issuePaper").demoAction#issuePaper #{lang.cp_action2}
+						option(disabled="disabled" value="buyPaper").demoAction#buyPaper #{lang.cp_action3}
+						option(disabled="disabled" value="queryAccount").demoAction#queryAccount #{lang.cp_action4}
 				.demoActionButtonWrap
 					span.smallerFont &nbsp;&nbsp;&nbsp;
-					button(type="button" disabled="disabled" cc="cp").bx--btn--secondary.executeAction Execute
+					button(type="button" disabled="disabled" cc="cp").bx--btn--secondary.executeAction #{lang.execute}
 			
 		br
 
 		// ============ Log Panel ============ //
-		div(style="text-align:right;").logControls
-			label.apiDetailsCheck
-				input(type="checkbox" name="showAPIdetails" style="vertical-align: top;")
-				span Show API details&nbsp;
-		#logWrapper.logControls
-			svg(title="Clear Logs")#clearLogs
-				use(xlink:href="/img/icons/sprite.svg#common--close")
+		#logWrapper
+			#demoLogsToolbar
+				label.apiDetailsCheck
+					input(type="checkbox" name="showAPIdetails" style="position: relative; top: 3px; left: 4px;")
+					span &nbsp; #{lang.show_api_details}
+				svg#clearLogs
+					use(xlink:href="/img/icons/sprite.svg#common--close")
 			#demoLogs
 
 		// ============ Notification Panel ============ //
@@ -138,23 +138,23 @@
 				svg.notificationImg.notifcationSuccess
 					use(xlink:href="/img/icons/sprite.svg#notifications--success")
 				.notificationBody
-					strong Demo Chaincode successfully deployed:
-					div Now you can hit an action button below "Actions" to invoke a chaincode function.
+					strong #{lang.deploy_notification1}:
+					div #{lang.deploy_notification2}.
 				svg.notificationClose
 					use(xlink:href="/img/icons/sprite.svg#common--close")
 			.notificationWrap.invokeHelperText
 				svg.notificationImg
 					use(xlink:href="/img/icons/sprite.svg#support--info-stroke-circle")
 				.notificationBody
-					strong Your invocation was sent:
-					div You can check out API details in the panel below.  Now click a Query button to query chaincode state.
+					strong #{lang.invoke_notification1}:
+					div #{lang.invoke_notification2}
 				svg.notificationClose
 					use(xlink:href="/img/icons/sprite.svg#common--close")
 			.notificationWrap.queryHelperText
 				svg.notificationImg
 					use(xlink:href="/img/icons/sprite.svg#support--info-stroke-circle")
 				.notificationBody
-					strong Your query was sent:
-					div You can check out API details in the panel below.
+					strong #{lang.query_notification1}:
+					div #{lang.query_notification1}
 				svg.notificationClose
 					use(xlink:href="/img/icons/sprite.svg#common--close")

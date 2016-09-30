@@ -21,7 +21,7 @@ window.SwaggerTranslator.learn({
     "Response Code":"Response Code",
     "Response Headers":"Response Headers",
     "Hide Response":"Hide Response",
-    "Headers":"Headers",
+    "Headers":"",
     "Try it out!":"Try it out!",
     "Show/Hide":"Show/Hide",
     "List Operations":"List Operations",
@@ -49,5 +49,15 @@ window.SwaggerTranslator.learn({
     "Finished Loading Resource Information. Rendering Swagger UI":"Finished Loading Resource Information. Rendering Swagger UI",
     "Unable to read api":"Unable to read api",
     "from path":"from path",
-    "server returned":"server returned"
+    "server returned":"server returned",
+	"object": "object",
+	"array": "array",
+	"string": "string",
+	"number": "number",
+	"integer": "integer",
+	"default": "default",
+	"body": "cuerpo",
+	"path": "path",
+	"Click to set as parameter value": "Click to set as parameter value",
+	"Parameter content type:": "Parameter content type:"
 });

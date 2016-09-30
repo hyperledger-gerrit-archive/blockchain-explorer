@@ -19,8 +19,7 @@ var checkInterval = null;
 var resume = [];
 var ON_PAGE = 'invalid';
 var path_parts = window.location.pathname.split('/');
-if(path_parts[1] === 'v2' || path_parts[1] === 'v1') ON_PAGE = path_parts[2];
-else ON_PAGE = path_parts[1];
+if(path_parts[2] === 'v2' || path_parts[2] === 'v1') ON_PAGE = path_parts[3];
 console.log('detecting user on page', ON_PAGE);
 activate_page_js();
 set_nav();
@@ -112,7 +111,7 @@ $(document).on('ready', function() {
 
 	function page_is_mobile(){
 		var ret = false;
-		if($('.selectedPage').width() > 300) ret = true; 					//this is hokey as fuck, but it'll do
+		if($('.selectedPage').width() > 300) ret = true; 				//this is hokey as fuck, but it'll do
 		return ret;
 	}
 
@@ -209,12 +208,15 @@ function deactivate_page_js(){
 
 //set the url link and nav class
 function set_nav(){
-	window.history.pushState({},'', '/' + path_parts[1] + '/' + ON_PAGE +'/' + path_parts[3]);
+	if(path_parts[2] === 'v2' || path_parts[2] === 'v1'){
+		//									/language			/dashboard version 		/page			/network id
+		window.history.pushState({},'', '/' + path_parts[1] + '/' + path_parts[2]  + '/' + ON_PAGE +'/' + path_parts[4]);
+	}
 	$('.navLink').each(function(){										//add icon to selected tab
 		var link = $(this).attr('act');
 		if(ON_PAGE === link){
 			var html = '<svg class="selectedNavChev">';
-			html 	+= 		'<use xlink:href="/img/icons/sprite.svg#service--chevron"></use>';
+			html 	+= 		'<use xlink:href="/img/icons/sprite.svg#support--arrow-right"></use>';
 			html    += '</svg>';
 			$(this).addClass('selectedPage').find('.selectedNavChevron').html(html);
 		}

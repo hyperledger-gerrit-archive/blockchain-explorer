@@ -1,20 +1,20 @@
 // =================================================================================
 // helper.js - JS functions needed on multiple pages
 // =================================================================================
-/* global $, document, network_id, window */
+/* global $, document, network_id, window, RUN_MODE, lang */
 /* exported appendChaincodeTable, show_status, appendPeerTable, convertTimeToSeconds, convertSecondsToTime, rest_reset_network, hideGenericPopup*/
 /* exported rest_get_chaincode, rest_get_peers, GOOD_STATUS, BAD_STATUS, rest_get_reset_status, rest_restart_peer */
 /* exported rest_get_service_status, formatDate, escapeHtml, toTitleCase, build_status, rest_get_ca, resize_peer_names*/
 /* exported check_if_refresh_interval, pause_refresh, reset_status_interval, user, peer, tab, cc_hashes, known_ccs, logger*/
 /* exported bag, selected_peer, get_last, known_blocks, blockheight_interval, last, count, goingDown, TYPE_DEPLOY, TYPE_INVOKE, TYPE_QUERY, TYPE_TERMINATE*/
-/* exported next, rest_start_peer, rest_post_registrar, rest_get_registrar, rest_get_cc_hashses, CANT_GET_STATUS*/
+/* exported next, rest_start_peer, rest_post_registrar, rest_get_registrar, rest_get_cc_hashses, CANT_GET_STATUS, parse_host_for_id*/
 
 //globals for all tabs
 var reset_status_interval = null;
 var pause_refresh = false;						//when true the auto refresh timer will freeze, the interval continues...
 var GOOD_STATUS = 'running';
 var MEH_STATUS = 'restarting';
-var BAD_STATUS = 'exited';
+var BAD_STATUS = 'stopped';
 var CANT_GET_STATUS = 'unknown';
 
 // =================================================================================
@@ -27,6 +27,7 @@ function rest_get_chaincode(cb) {
 	$.ajax({
 		method: 'GET',
 		url: url,
+		timeout: 30000,
 		headers: { 
 			Accept : 'application/json'
 		},
@@ -57,14 +58,14 @@ function appendChaincodeTable(id, chaincode) {
 		options += '<option value="' + chaincode[i].peer_id + '">';
 		options +=		parse_4_peer_shortname(chaincode[i].peer_id);
 		options += '</option>';
-		clone_cc.find('.upTime').append('<span class="ccUpTime ' + chaincode[i].peer_id + '">' + chaincode[0].status + '</span>');
+		clone_cc.find('.upTime').append('<span class="ccUpTime ' + chaincode[i].peer_id + '">' + chaincode[i].status + '</span>');
 	}
 	
 	var cc_id = '';
 	cc_id +=		'<span class="ccidWrap bx--tooltip__top" data-tooltip="' + id +'">';
 	cc_id +=			'<span class="ccTxt" full="' + id + '">' + id + '...</span>';
 	cc_id +=		'</span>';
-	cc_id +=		'<button class="copyButton copyButtonStyle" data-clipboard-text="' + id +'">Copy</button>';
+	cc_id +=		'<button class="copyButton copyButtonStyle" data-clipboard-text="' + id +'">' + lang.copy + '</button>';
 	clone_cc.find('.ccIdTd').html(cc_id);
 
 	clone_cc.find('.chaincode_peer_count').html(chaincode.length);
@@ -98,43 +99,64 @@ function show_status(me){
 //rest get peer details
 function rest_get_peers(cb) {
 	console.log('getting /api/network/' + network_id + '/peers');
-	$.get('/api/network/' + network_id + '/peers')
-		.done(function(data){
-
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/peers',
+		timeout: 30000,
+		headers: {
+			Accept : 'application/json'
+		},
+		success: function(json){
 			// FAKE NETWORK - dsh - todo remove this //
-			for(var i = 0; i < 4; i++){
-				data.peers[i+1].api_host ='6183e812-a6fe-4bd4-b21c-adf12840b460_vp' + i + '.us.blockchain.ibm.com';
-				data.peers[i+1].api_port = 443;
-				data.peers[i+1].tls = true;
+			if(RUN_MODE === 'IBM-BCS'){
+				for(var i = 0; i < 4; i++){
+					json.peers[i+1].api_host ='6d034331-553b-409e-8c27-cd912434cbdf_vp' + i + '.us.blockchain.ibm.com';
+					json.peers[i+1].api_port = 443;
+					json.peers[i+1].tls = true;
+				}
+				json.user =	{
+								enrollId: 'dashboarduser_type1_704279bb3f',
+								enrollSecret: '8d7ad2f006'
+							};
 			}
-			data.user =	{
-							enrollId: 'dashboarduser_type1_cf1e29d2f4',
-							enrollSecret: 'aa968ecac6'
-						};
 			//end
 				
-			console.log('Success - getting peer status data', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+			console.log('Success - getting peer status data', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('Error - failed to get peer status data');
 			cb(e);
-		});
+		}
+	});
 }
 
 //rest get ca status
-function rest_get_ca(hostname, cb) {
+function rest_get_ca(hostname, container_id, cb) {
 	//console.log('getting ca status', hostname);
-	$.get('/api/network/' + network_id + '/ca/status')
-		.done(function(data){
-			data.id = parse_host_for_id(hostname);
-			console.log('Success - getting ca status data');
-			cb(null, data);
-		})
-		.fail(function(e){
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/ca/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			if(!json || !json.status){
+				console.log('Error - failed to get ca status data');
+				cb('no status field in resp', {id: container_id});
+			}
+			else{
+				json.id = container_id;
+				console.log('Success - getting ca status data');
+				cb(null, json);
+			}
+		},
+		error: function(e){
 			console.log('Error - failed to get ca status data');
-			cb(e, {id: parse_host_for_id(hostname)});										//we need id field to build status
-		});
+			cb(e, {id: container_id});									//we need id field to build status
+		}
+	});
 }
 
 //create friendly name for peer
@@ -144,12 +166,12 @@ function friendly_name(id){
 
 	var i = id.indexOf('_vp');
 	if(i >= 0){
-		name = 'Validating Peer ' + id.substring(i + 3);			//strip off the '_vpx'
+		name = lang.validating_peer + ' ' + id.substring(i + 3);		//strip off the '_vpx'
 	}
 	
 	var m = id.indexOf('_ca');
 	if (m >= 0){
-		name = 'Membership Services';								//just rename the stupid thing
+		name = lang.membership_services;								//just rename the stupid thing
 	}
 
 	return name;
@@ -176,7 +198,7 @@ function appendPeerTable(peer, total_peers) {
 	routes +=				'<span class="routeWrap bx--tooltip__top" data-tooltip="' + default_text +'">';
 	routes +=					'<span class="routeTxt" full="' + default_text + '">' + default_text + '...</span>';
 	routes +=				'</span>';
-	routes +=				'<button class="copyButton copyButtonStyle" data-clipboard-text="' + default_text +'">Copy</button>';
+	routes +=				'<button class="copyButton copyButtonStyle" data-clipboard-text="' + default_text +'">' + lang.copy +'</button>';
 	
 	clone.find('.name').html(friendly_name(peer.id));
 	clone.find('.routes').html(routes);
@@ -185,13 +207,13 @@ function appendPeerTable(peer, total_peers) {
 		clone.find('.stop_peer').addClass('disabledButton');
 	}
 
-	var discoveryHtml = '<div class="bx--tooltip__top" data-tooltip="Peer discovery data uknown">';
+	var discoveryHtml = '<div class="bx--tooltip__top" data-tooltip="' + lang.discovery_tooltip + '">';
 	discoveryHtml +=		 '<span id="discovery' + peer.id +'">?</span> / ' + total_peers;
 	discoveryHtml +=	'</div>';
 
 	clone.attr('peer', peer.id);
 	clone.find('.discoveryCount').html(discoveryHtml);
-	clone.find('.peer_status').html('loading');								//leave status blank, will use rest call to populate
+	clone.find('.peer_status').html(lang.loading);							//leave status blank, will use rest call to populate
 
 	clone.addClass('actualPeer');											//used to remove built peers and keep sample
 	clone.removeClass('sample').removeClass('sample_peer');
@@ -202,41 +224,39 @@ function appendPeerTable(peer, total_peers) {
 
 //resize the full peer name field
 function resize_peer_names(){
-	var width = $('.routes:last').width() - 198;
-	width = Math.ceil(width / 5) * 5;								//round down to nearest xx
-	if(width !== $('.routeWrap:last').width()){						//dont bother if width is the same
-		$('.routeWrap').css('width', width + 'px');
-		
-		$('.routeTxt').each(function(){
-			var name = $(this).attr('full');
-			var perChar = 13;										//least characters
+	var perChar = 7;												//pixels per character
+	//width   = (row width)    -   (select) - (self padding) - (copy button) - (row padding)
+	var width = $('.routes:last').width() - 105 - 21 - 55 - 30;
+	width = Math.ceil(width / (perChar*3)) * (perChar*3);			//round down to nearest 3 characters
+	$('.routeTxt').each(function(){
+		var name = $(this).attr('full');
+		var chars =  (width - 15) / perChar;					//subtract fudge factor
+		if(chars < name.length) name = name.substring(0, chars-4) + '...';
 
-			if(width >= 600) perChar = 8;							//most characters, smaller # is more characters
-			else if(width >= 250) perChar = 9;
-			else if(width >= 115) perChar = 12;
+		var span_name = '';										//fixed width font is a lie, manually control character spacing with span
+		for(var i in name) span_name += '<span class="fixedWidth">' + name[i] + '</span>';
 
-			var chars =  width / perChar;
-			if(chars < name.length) name = name.substring(0, chars) + '...';
-			$(this).html(name);
-		});
-	}
+		$(this).html(span_name);								//set the shortened route text
+		$(this).parent().css('width', width + 'px');			//set width now
+		$('#debug').html(width);
+	});
 }
 
 //color code peer's status
 function build_status(status, timer){
 	var ret = '';
 	if(status && status.toLowerCase() === GOOD_STATUS){
-		ret = '<div class="peerStatus"></div> Running';
+		ret = '<div class="peerStatus"></div> ' + lang.status_running;
 	}
 	else if(status && status.toLowerCase() === CANT_GET_STATUS){
 		ret = '-';
 	}
 	else if(status && status.toLowerCase() === MEH_STATUS){
-		ret = '<div class="peerStatus peerStatusError"></div> Restarting';
+		ret = '<div class="peerStatus peerStatusError"></div> ' + lang.status_restarting;
 		ret += '<div class="restart_timer">' + timer + '</div>';
 	}
 	else{
-		ret = '<div class="peerStatus peerStatusError"></div> Stopped';
+		ret = '<div class="peerStatus peerStatusError"></div> ' + lang.status_stopped;
 	}
 	return ret;
 }
@@ -246,6 +266,7 @@ function rest_restart_peer(peer_name, cb) {
 	var url = '/api/peer/' + peer_name + '/restart';
 	$.ajax({
 		url: url,
+		timeout: 30000,
 		cache: false
 	}).done(function(data) {
 		console.log('Success - sending restart', data);
@@ -261,6 +282,7 @@ function rest_start_peer(peer_name, cb) {
 	var url = '/api/peer/' + peer_name + '/start';
 	$.ajax({
 		url: url,
+		timeout: 30000,
 		cache: false
 	}).done(function(data) {
 		console.log('Success - sending start', data);
@@ -274,29 +296,43 @@ function rest_start_peer(peer_name, cb) {
 //rest reset the network!
 function rest_reset_network(cb) {
 	console.log('resetting network');
-	$.post('/api/network/' + network_id + '/reset')
-		.done(function(data){
-			console.log('Success - sending reset', data);
+	$.ajax({
+		method: 'POST',
+		url: '/api/network/' + network_id + '/reset',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - sending reset', json);
 			setTimeout(function(){cb(null,{});}, 1000);
-		})
-		.fail(function(e){
+		},
+		error: function(e){
 			console.log('Error - failed to send reset', e);
 			setTimeout(function(){cb(null,{});}, 1000);
-		});
+		}
+	});
 }
 
 //rest get chaincode details
 function rest_get_reset_status(cb) {
 	console.log('getting reset status data');
-	$.get('/api/network/' + network_id + '/reset/status')
-		.done(function(data){
-			console.log('Success - getting reset status', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/reset/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - getting reset status', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('failed to get reset status');
 			cb(e);
-		});
+		}
+	});
 }
 
 
@@ -308,6 +344,7 @@ function rest_get_cc_hashses(cb){
 	$.ajax({
 		method: 'GET',
 		url: window.location.origin + '/api/chaincode/demos/',
+		timeout: 30000,
 		contentType: 'application/json',
 		success: function(json){
 			console.log('Success - getting known cc hashes', json);
@@ -351,7 +388,7 @@ function convertSecondsToTime(seconds) {
 		} else {
 			numberToAdd = Number((seconds % 60).toFixed(0));
 			strTime = ((numberToAdd > 9)?'':'0') + numberToAdd + ':' + strTime;
-			seconds = Math.floor(seconds/60);			
+			seconds = Math.floor(seconds/60);
 		}
 	}
 	
@@ -365,15 +402,22 @@ function convertSecondsToTime(seconds) {
 //rest get env status
 function rest_get_service_status(cb) {
 	console.log('getting bluemix service status data');
-	$.get('https://bluemix-service-status.blockchain.ibm.com/status')
-		.done(function(data){
-			console.log('Success - getting bluemix service status', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+	$.ajax({
+		method: 'GET',
+		url: 'https://bluemix-service-status.blockchain.ibm.com/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - getting bluemix service status', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('Error - failed to get bluemix service status', e);
 			cb(e);
-		});
+		}
+	});
 }
 
 //pretty format date

@@ -1,4 +1,4 @@
-/* global $, document*/
+/* global $, document, lang*/
 /* global escapeHtml, peer_rest_post_registrar, peer_rest_get_registrar, rest_get_peers */
 /* global rest_get_cc_hashses, peer_rest_deploy, peer_rest_invoke, peer_rest_query */
 /* exported activate_demo_tab, deactivate_demo_tab*/
@@ -61,13 +61,13 @@ $(document).on('ready', function() {
 		var panel = $(this).parent().parent().find('.demoActionWrap');
 		if($(panel).is(':visible')){
 			$(panel).fadeOut();
-			$(this).html('Show Actions');
+			$(this).html(lang.show_actions);
 		}
 		else{
-			$('.showActions').html('Show Actions');
+			$('.showActions').html(lang.show_actions);
 			$('.demoActionWrap').fadeOut();									//hide others
 			$(panel).fadeIn();
-			$(this).html('Hide Actions');
+			$(this).html(lang.hide_actions);
 		}
 	});
 	
@@ -104,6 +104,7 @@ $(document).on('ready', function() {
 			console.log('deploying cc', map[cc]);
 			rest_deploy(map[cc].git, map[cc].func, map[cc].args, user.enrollId, function(e, data){
 				$('.' + cc).fadeIn();							//show action panel for this demo
+				$('.showActions[cc="' + cc + '"]').html(lang.hide_actions);
 				$('#' + cc + 'Loading').fadeOut();
 				if(data.result){
 					cc_hashes[data.result.message] = true;
@@ -258,7 +259,7 @@ $(document).on('ready', function() {
 		var hash = $('select[cc="cp"]').val();
 		
 		//find all CPs first... then use the first one
-		logger.log('lets query on all cps to get a CUSIP. then buy the first one');
+		logger.log(lang.query_cp_msg);
 		rest_query_peer(hash, 'query', ['GetAllCPs'], user.enrollId, false, function(e, data){
 			try{
 				data = JSON.parse(data.result.message);						//get all the cps
@@ -297,8 +298,8 @@ $(document).on('ready', function() {
 // =================================================================================
 //deploy chaincode, duh
 function rest_deploy(gogit, func, args, enrollId, cb){
-	logger.log('Deploying chaincode', gogit);
-	$('.logControls').fadeIn();
+	var color = '#AF6EE8';
+	logger.log(lang.deploying_chaincode, gogit);
 	var data = {
 					'jsonrpc': '2.0',
 					'method': 'deploy',
@@ -316,22 +317,22 @@ function rest_deploy(gogit, func, args, enrollId, cb){
 					'id': 1
 				};
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
-	log_api_req('#AF6EE8', 'POST', url, data);
+	log_api_req(color, 'POST', url, data);
 	
 	peer_rest_deploy(peer.api_host, peer.api_port, peer.tls, data, peer.id, function(err, json){
 		if(err != null){
 			console.log('Error - failed to deploy', err);
-			logger.log('Error - deployment', err);
+			logger.log(lang.deploying_error, err);
 			if(cb) cb(err, null);
 		}
 		else{
 			console.log('Success - deployment', json);
-			logger.log('Success - deployment (wait for the cc to start up)...');
-			log_api_resp('#AF6EE8', json);
+			logger.log(lang.deploying_success);
+			log_api_resp(color, json);
 			setTimeout(function(){
-				logger.log(tab + 'done');
+				logger.log(tab + lang.done);
 				if(cb) cb(null, json);
-			}, 45000);
+			}, 50000);
 		}
 	});
 }
@@ -358,23 +359,23 @@ function build_rest_body(hash, type, func, args, enrollId){
 
 //invoke a peer
 function rest_invoke_peer(hash, func, args, enrollId, cb){
-	logger.log('Invoking function -', func);
-	$('.logControls').fadeIn();
+	var color = '#8a8a8a';
+	logger.log(lang.invoking_chaincode + ' -', func);
 	var data = build_rest_body(hash, 'invoke', func, args, enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
-	log_api_req('#8a8a8a', 'POST', url, data);
+	log_api_req(color, 'POST', url, data);
 
 	peer_rest_invoke(peer.api_host, peer.api_port, peer.tls, data, peer.id, function(err, json){
 		if(err != null){
 			console.log('Error - failed invocation', err);
-			logger.log('Error - invocation', err);
+			logger.log(lang.invocation_error, err);
 			if(cb) cb(err, null);
 		}
 		else{
 			console.log('Success - invocation', json);
-			if(json && json.result && json.result.message) logger.log('Success - invocation', json.result.message);
-			else logger.log('Error - invocation');
-			log_api_resp('#8a8a8a', json);
+			if(json && json.result && json.result.message) logger.log(lang.invocation_success, json.result.message);
+			else logger.log(lang.invocation_success);
+			log_api_resp(color, json);
 			if(cb) cb(null, json);
 		}
 	});
@@ -382,8 +383,7 @@ function rest_invoke_peer(hash, func, args, enrollId, cb){
 
 //query a peer
 function rest_query_peer(hash, func, args, enrollId, quietly, cb){
-	if(!quietly) logger.log('Querying function -', func, JSON.stringify(args));
-	$('.logControls').fadeIn();
+	if(!quietly) logger.log(lang.querying_chaincode + ' -', func, JSON.stringify(args));
 	var data = build_rest_body(hash, 'query', func, args, enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
 	if(!quietly) log_api_req('#00B29F', 'POST', url, data);
@@ -392,7 +392,7 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 		if(err != null){
 			if(!quietly){
 				console.log('Error - failed query', err);
-				logger.log('Error - query', err);
+				logger.log(lang.query_error, err);
 			}
 			if(cb) cb(err, null);
 		}
@@ -400,9 +400,9 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 			if(!quietly) {
 				console.log('Success - query', json);
 				if(json && json.result && json.result.message) {
-					logger.log('Success - query', json.result.message);
+					logger.log(lang.success, json.result.message);
 				}
-				else logger.log('Error - undefined');
+				else logger.log(lang.query_error2);
 				log_api_resp('#00B29F', json);
 			}
 			if(cb) cb(null, json);
@@ -412,16 +412,24 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 
 //check if enrollID has already been registered (this if for yeti)
 function check_enroll_id(){
+	var color = '#3ce251';
 	$('.demoLoading').fadeIn();
-	$('.logControls').fadeIn();
-	logger.log('Checking enrollID', user.enrollId);
+	logger.log(lang.checking_enrollid, user.enrollId);
+	var proto = 'http';
+	if(peer.tls === true) proto = 'https';
+	if(peer.tls === 'https') proto = 'https';
+	var url = proto + '://' + peer.api_host + ':' + Number(peer.api_port) + '/registrar/' + user.enrollId;
+
+	log_api_req(color, 'GET', url, null);
 	peer_rest_get_registrar(peer.api_host, peer.api_port, peer.tls, user.enrollId, function(err, json){
 		if(err !== null){
-			logger.log('ID not yet registered');
+			logger.log(lang.id_not_reg);
+			log_api_resp(color, json);
 			register_enrolld_id();
 		}
 		else {
-			logger.log(tab + 'ID is registered');
+			logger.log(tab + lang.id_is_reg);
+			log_api_resp(color, json);
 			rdy_for_user();
 		}
 	});
@@ -429,30 +437,29 @@ function check_enroll_id(){
 
 //resister an enroll ID
 function register_enrolld_id(){
+	var color = '#5AAAFA';
 	$('.demoLoading').fadeIn();
-	logger.log('Registering enrollID', user.enrollId);
+	logger.log(lang.registering_enrollid, user.enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/registrar';
 	var log_data = {
 					enrollId: user.enrollId,
 					enrollSecret: user.enrollSecret
 				};
-	log_api_req('#5AAAFA', 'POST', url, log_data);
+	log_api_req(color, 'POST', url, log_data);
 	peer_rest_post_registrar(peer.api_host, peer.api_port, peer.tls, user.enrollId, user.enrollSecret, function(err, json){
 		if(err != null){
-			logger.log('Error - failed to register enrollID', err);
+			logger.log(lang.register_failed, err);
 			$('.demoLoading').fadeOut();
 			var html = 	'<div style="color:#f51212">';
-			html +=			'Error - cannot continue, failed to register enrollId! :(';
+			html +=			lang.register_failed2 + ' :(';
 			html +=			'<br/>';
-			html += 		tab + tab + tab + tab + '- make sure VP0 is running. Then refresh the page and try again';
+			html += 		tab + tab + tab + tab + '- ' + lang.register_failed3;
 			html +=		'</div>';
 			logger.log(html);
-			//logger.log(tab + tab + tab + tab + '- make sure VP0 is running. Then refresh the page and try again');
-			//$('.logControls').fadeIn();
 		}
 		else {
-			logger.log('Success - registering enrollID');
-			log_api_resp('#5AAAFA', json);
+			logger.log(lang.register_success);
+			log_api_resp(color, json);
 			rdy_for_user();
 		}
 	});
@@ -479,7 +486,7 @@ function rdy_for_user(){
 function log_api_req(color, method, path, body){
 	var html = 	'<div class="apiDetails" style="color:' + color +'">';
 	html +=			'<div class="apiReq">HTTP ' + method.toUpperCase() + ' ' + path + '</div>';
-	html +=			'<pre>' + JSON.stringify(body, null, 4) + ' </pre>';
+	if(body) html +='<pre>' + JSON.stringify(body, null, 4) + ' </pre>';
 	html +=		'</div>';
 	$('#demoLogs').append(html);
 	showOrHideDetails();
@@ -516,26 +523,34 @@ function build_cc_options(hashes){
 				html += '<option value="' + i + '" ' + selectMe +' ' + disable + '>' + nickname + ': ' + i.substr(0, 8) + '...</option>';
 			}
 		}
-
-		if(html === '') html = '<option disabled="disabled" selected="selected">invalid</option>';		//if no options, build invalid cc hint
+		
+		//if no options, build invalid cc hint
+		if(html === '') html = '<option disabled="disabled" selected="selected">' + lang.invalid.toLowerCase() + '</option>';
 		$('.selectCC[cc="' +  known_ccs[y] +'"]').html(html);
 		enableOptions(known_ccs[y]);
 	}
 }
 
 //show the next guided step
+var deployTimer = null, invokeTimer = null, queryTimer = null;
 function show_next_step(step){
 	if(step == 2){
-		$('.notificationWrap').hide();
+		//$('.notificationWrap').hide();
 		$('.deployHelperText').fadeIn();
+		clearTimeout(deployTimer);
+		deployTimer = setTimeout(function(){$('.deployHelperText').fadeOut();}, 10000);
 	}
 	if(step == 3){
-		$('.notificationWrap').hide();
+		//$('.notificationWrap').hide();
 		$('.invokeHelperText').fadeIn();
+		clearTimeout(invokeTimer);
+		invokeTimer = setTimeout(function(){$('.invokeHelperText').fadeOut();}, 10000);
 	}
 	if(step == 4){
-		$('.notificationWrap').hide();
+		//$('.notificationWrap').hide();
 		$('.queryHelperText').fadeIn();
+		clearTimeout(queryTimer);
+		queryTimer = setTimeout(function(){$('.queryHelperText').fadeOut();}, 10000);
 	}
 }
 

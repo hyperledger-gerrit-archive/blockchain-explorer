@@ -8,7 +8,6 @@
   "immed": true,
   "latedef": "nofunc",
   "newcap": true,
-  "nonew": true,
   "noarg": true,
   "quotmark": "single",
   "regexp": true,
@@ -21,5 +20,6 @@
   "maxlen": 160,
   "maxdepth": 7,
   "maxerr": 100,
-  "maxparams": 6
+  "maxparams": 6,
+  "nonew": false
 }

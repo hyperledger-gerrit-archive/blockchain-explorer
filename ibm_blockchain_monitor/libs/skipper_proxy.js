@@ -1,14 +1,19 @@
+//-----------------------------------------------------------------------------------
+// skipper_proxy.js - Skipper Proxy Functions
+// - used to send docker related commands to the correct skipper, not used in YETI mode
+//
+// Copyright (c) 2016 IBM Corp.
+// All rights reserved. 
+//-----------------------------------------------------------------------------------
+
 var rest = require('../libs/rest.js');
 var node_url = require('url');
 
-module.exports = function(logger, dbConnectionString, ev, blockchain_configs) {
+module.exports = function(logger, dbConnectionString, ev, crud, blockchain_configs) {
 	var exports = {};
 	var nano = require('nano')(dbConnectionString);
 	var dbNetworks = nano.use(ev.DB_PREFIX + 'networks');
-	var misc = require('../libs/misc.js')(logger);
-	var crud = {};
-	if(process.env.RUN_MODE === 'IBM-BCS') crud = require('../libs/crud_core_cl.js');
-	else crud = require('../libs/crud_core_fs.js');
+	var common_misc = require('../libs/common_misc.js')(logger);
 
 	//---------------------------------------------------------------------------------------------
 	// get skipper's url from a [network id]
@@ -35,17 +40,9 @@ module.exports = function(logger, dbConnectionString, ev, blockchain_configs) {
 			return cb(null, network_doc.pod.url);			//found in network doc
 		}
 		else{
-
-			// --- Detect which blockchain config --- // - fallback plan if not found above
-			var myConfig = misc.find_blockchain_config(network_doc, blockchain_configs);
-			if(!myConfig){
-				var error_msg = 'could not find blockchain config for network';
-				logger.error(error_msg, network_doc.swarm);
-				return cb({error: error_msg}, null);
-			}
-			else{
-				return cb(null, myConfig.pod.url);			//found in config doc
-			}
+			var error_msg = 'could not find pod url in network doc';
+			logger.error(error_msg);
+			return cb({error: error_msg}, null);
 		}
 	};
 
@@ -108,7 +105,7 @@ module.exports = function(logger, dbConnectionString, ev, blockchain_configs) {
 		};
 		options.headers['content-type'] = 'application/json';
 		options.headers['accept'] = 'application/json';
-		options.headers.authorization = 'Basic '  + misc.b64(process.env.APP_NAME + ':' + process.env.APP_PASS);
+		options.headers.authorization = 'Basic '  + common_misc.b64(process.env.APP_NAME + ':' + process.env.APP_PASS);
 
 		// --- Handle response from skipper --- //
 		options.cb = function(errCode, skipper_resp){

@@ -1367,6 +1367,7 @@
 }
 
 #enrollWrapToggle{
+	font-size: 24px;
 	margin-top: 25px;
 	cursor: pointer;
 }
@@ -1452,7 +1453,6 @@
 
 
 #apiTxtWrap{
-	background: $color__navy-gray-4;
 	padding: 20px 10px;
 	padding-bottom: 40px;
 	min-width: 585px;
@@ -1460,4 +1460,13 @@
 
 .options li:first-of-type{
 	display:none;
+}
+
+
+.swagger-section .swagger-ui-wrap .footer{
+	display: none;
+}
+
+.operation-status .headers{											//hide headers field
+	display: none;
 }

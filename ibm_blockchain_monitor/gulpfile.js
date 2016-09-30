@@ -27,7 +27,7 @@ gulp.task('build-sass', function () {							//concat css and build hash
 });
 
 gulp.task('build-js-hash', function () {						//concat our js and build hash
-	gulp.src([path.join(__dirname,'/public/js/*.js'), '!**/tab_apis.js', '!**/yeti_setup.js'])
+	gulp.src([path.join(__dirname,'/public/js/*.js'), '!**/tab_apis.js', '!**/yeti_setup.js', '!**/analytics.js'])
 		.pipe(concat('singlejshash'))
 		//.pipe(uglify())
 		.pipe(stripComments())
@@ -71,6 +71,8 @@ gulp.task('watch-server', ['server'], function () {
 	gulp.watch(path.join(__dirname, '/routes/**/*.js'), ['server']);
 	gulp.watch(path.join(__dirname, '/libs/**/*.js'), ['server']);
 	gulp.watch(path.join(__dirname, '/app.js'), ['server']);
+	gulp.watch(path.join(__dirname, '/lang/*.json'), ['server']);
+	gulp.watch(path.join(__dirname, '/lang/*.js'), ['server']);
 });
 
 ////// Tasks //////

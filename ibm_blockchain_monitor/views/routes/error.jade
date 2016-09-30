@@ -13,23 +13,22 @@ block content
 		br
 		
 		center
-			h1 Whoops
+			h1 #{lang.error_title}
 		
 		.logoutWrap
 			if(email !== false)
 				.emailId #{email}
-			a.logoutLink(href="/logout") Logout
+			a.logoutLink(href="/logout") #{lang.logout_label}
 		.errorMsgWrap
 			- for(var i = 0; i < lines.length; i++)
 				p= lines[i]
 		
 		p(style="text-align: left; width: 70%; margin: auto;  margin-top:20px;")
-			span Having issues? 
-			span Check the status, release notes, known issues/outages and general communication on our 
-			a(href="https://bluemix-service-status.blockchain.ibm.com/" target="_blank").underline service status 
-			span page. 
+			span #{lang.issue_msg1}&nbsp;
+			a(href="https://bluemix-service-status.blockchain.ibm.com/" target="_blank").underline #{lang.issue_msg2}
+			span &nbsp;#{lang.issue_msg3}
 			br
 			br
-			span To reach the team fill out a 
-			a(href="https://github.com/IBM-Blockchain/ibm-blockchain-issues/issues" target="_blank").underline GitHub issue
+			span #{lang.issue_msg4}&nbsp;
+			a(href="https://github.com/IBM-Blockchain/ibm-blockchain-issues/issues" target="_blank").underline #{lang.issue_msg5}
 					

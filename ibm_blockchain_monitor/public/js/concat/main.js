@@ -10,8 +10,7 @@ var checkInterval = null;
 var resume = [];
 var ON_PAGE = 'invalid';
 var path_parts = window.location.pathname.split('/');
-if(path_parts[1] === 'v2' || path_parts[1] === 'v1') ON_PAGE = path_parts[2];
-else ON_PAGE = path_parts[1];
+if(path_parts[2] === 'v2' || path_parts[2] === 'v1') ON_PAGE = path_parts[3];
 console.log('detecting user on page', ON_PAGE);
 activate_page_js();
 set_nav();
@@ -94,7 +93,7 @@ $(document).on('ready', function() {
 
 	function page_is_mobile(){
 		var ret = false;
-		if($('.selectedPage').width() > 300) ret = true; 					
+		if($('.selectedPage').width() > 300) ret = true; 				
 		return ret;
 	}
 
@@ -177,12 +176,14 @@ function deactivate_page_js(){
 }
 
 function set_nav(){
-	window.history.pushState({},'', '/' + path_parts[1] + '/' + ON_PAGE +'/' + path_parts[3]);
+	if(path_parts[2] === 'v2' || path_parts[2] === 'v1'){
+		window.history.pushState({},'', '/' + path_parts[1] + '/' + path_parts[2]  + '/' + ON_PAGE +'/' + path_parts[4]);
+	}
 	$('.navLink').each(function(){										
 		var link = $(this).attr('act');
 		if(ON_PAGE === link){
 			var html = '<svg class="selectedNavChev">';
-			html 	+= 		'<use xlink:href="/img/icons/sprite.svg#service--chevron"></use>';
+			html 	+= 		'<use xlink:href="/img/icons/sprite.svg#support--arrow-right"></use>';
 			html    += '</svg>';
 			$(this).addClass('selectedPage').find('.selectedNavChevron').html(html);
 		}
@@ -195,7 +196,7 @@ var reset_status_interval = null;
 var pause_refresh = false;						
 var GOOD_STATUS = 'running';
 var MEH_STATUS = 'restarting';
-var BAD_STATUS = 'exited';
+var BAD_STATUS = 'stopped';
 var CANT_GET_STATUS = 'unknown';
 
 function rest_get_chaincode(cb) {
@@ -204,6 +205,7 @@ function rest_get_chaincode(cb) {
 	$.ajax({
 		method: 'GET',
 		url: url,
+		timeout: 30000,
 		headers: { 
 			Accept : 'application/json'
 		},
@@ -233,14 +235,14 @@ function appendChaincodeTable(id, chaincode) {
 		options += '<option value="' + chaincode[i].peer_id + '">';
 		options +=		parse_4_peer_shortname(chaincode[i].peer_id);
 		options += '</option>';
-		clone_cc.find('.upTime').append('<span class="ccUpTime ' + chaincode[i].peer_id + '">' + chaincode[0].status + '</span>');
+		clone_cc.find('.upTime').append('<span class="ccUpTime ' + chaincode[i].peer_id + '">' + chaincode[i].status + '</span>');
 	}
 
 		var cc_id = '';
 	cc_id +=		'<span class="ccidWrap bx--tooltip__top" data-tooltip="' + id +'">';
 	cc_id +=			'<span class="ccTxt" full="' + id + '">' + id + '...</span>';
 	cc_id +=		'</span>';
-	cc_id +=		'<button class="copyButton copyButtonStyle" data-clipboard-text="' + id +'">Copy</button>';
+	cc_id +=		'<button class="copyButton copyButtonStyle" data-clipboard-text="' + id +'">' + lang.copy + '</button>';
 	clone_cc.find('.ccIdTd').html(cc_id);
 
 	clone_cc.find('.chaincode_peer_count').html(chaincode.length);
@@ -268,39 +270,60 @@ function show_status(me){
 
 function rest_get_peers(cb) {
 	console.log('getting /api/network/' + network_id + '/peers');
-	$.get('/api/network/' + network_id + '/peers')
-		.done(function(data){
-
-			for(var i = 0; i < 4; i++){
-				data.peers[i+1].api_host ='6183e812-a6fe-4bd4-b21c-adf12840b460_vp' + i + '.us.blockchain.ibm.com';
-				data.peers[i+1].api_port = 443;
-				data.peers[i+1].tls = true;
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/peers',
+		timeout: 30000,
+		headers: {
+			Accept : 'application/json'
+		},
+		success: function(json){
+			if(RUN_MODE === 'IBM-BCS'){
+				for(var i = 0; i < 4; i++){
+					json.peers[i+1].api_host ='6d034331-553b-409e-8c27-cd912434cbdf_vp' + i + '.us.blockchain.ibm.com';
+					json.peers[i+1].api_port = 443;
+					json.peers[i+1].tls = true;
+				}
+				json.user =	{
+								enrollId: 'dashboarduser_type1_704279bb3f',
+								enrollSecret: '8d7ad2f006'
+							};
 			}
-			data.user =	{
-							enrollId: 'dashboarduser_type1_cf1e29d2f4',
-							enrollSecret: 'aa968ecac6'
-						};
 
-							console.log('Success - getting peer status data', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+							console.log('Success - getting peer status data', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('Error - failed to get peer status data');
 			cb(e);
-		});
+		}
+	});
 }
 
-function rest_get_ca(hostname, cb) {
-	$.get('/api/network/' + network_id + '/ca/status')
-		.done(function(data){
-			data.id = parse_host_for_id(hostname);
-			console.log('Success - getting ca status data');
-			cb(null, data);
-		})
-		.fail(function(e){
+function rest_get_ca(hostname, container_id, cb) {
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/ca/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			if(!json || !json.status){
+				console.log('Error - failed to get ca status data');
+				cb('no status field in resp', {id: container_id});
+			}
+			else{
+				json.id = container_id;
+				console.log('Success - getting ca status data');
+				cb(null, json);
+			}
+		},
+		error: function(e){
 			console.log('Error - failed to get ca status data');
-			cb(e, {id: parse_host_for_id(hostname)});										
-		});
+			cb(e, {id: container_id});									
+		}
+	});
 }
 
 function friendly_name(id){
@@ -309,12 +332,12 @@ function friendly_name(id){
 
 	var i = id.indexOf('_vp');
 	if(i >= 0){
-		name = 'Validating Peer ' + id.substring(i + 3);			
+		name = lang.validating_peer + ' ' + id.substring(i + 3);		
 	}
 
 		var m = id.indexOf('_ca');
 	if (m >= 0){
-		name = 'Membership Services';								
+		name = lang.membership_services;								
 	}
 
 	return name;
@@ -340,7 +363,7 @@ function appendPeerTable(peer, total_peers) {
 	routes +=				'<span class="routeWrap bx--tooltip__top" data-tooltip="' + default_text +'">';
 	routes +=					'<span class="routeTxt" full="' + default_text + '">' + default_text + '...</span>';
 	routes +=				'</span>';
-	routes +=				'<button class="copyButton copyButtonStyle" data-clipboard-text="' + default_text +'">Copy</button>';
+	routes +=				'<button class="copyButton copyButtonStyle" data-clipboard-text="' + default_text +'">' + lang.copy +'</button>';
 
 		clone.find('.name').html(friendly_name(peer.id));
 	clone.find('.routes').html(routes);
@@ -349,13 +372,13 @@ function appendPeerTable(peer, total_peers) {
 		clone.find('.stop_peer').addClass('disabledButton');
 	}
 
-	var discoveryHtml = '<div class="bx--tooltip__top" data-tooltip="Peer discovery data uknown">';
+	var discoveryHtml = '<div class="bx--tooltip__top" data-tooltip="' + lang.discovery_tooltip + '">';
 	discoveryHtml +=		 '<span id="discovery' + peer.id +'">?</span> / ' + total_peers;
 	discoveryHtml +=	'</div>';
 
 	clone.attr('peer', peer.id);
 	clone.find('.discoveryCount').html(discoveryHtml);
-	clone.find('.peer_status').html('loading');								
+	clone.find('.peer_status').html(lang.loading);							
 
 	clone.addClass('actualPeer');											
 	clone.removeClass('sample').removeClass('sample_peer');
@@ -365,40 +388,37 @@ function appendPeerTable(peer, total_peers) {
 }
 
 function resize_peer_names(){
-	var width = $('.routes:last').width() - 198;
-	width = Math.ceil(width / 5) * 5;								
-	if(width !== $('.routeWrap:last').width()){						
-		$('.routeWrap').css('width', width + 'px');
+	var perChar = 7;												
+	var width = $('.routes:last').width() - 105 - 21 - 55 - 30;
+	width = Math.ceil(width / (perChar*3)) * (perChar*3);			
+	$('.routeTxt').each(function(){
+		var name = $(this).attr('full');
+		var chars =  (width - 15) / perChar;					
+		if(chars < name.length) name = name.substring(0, chars-4) + '...';
 
-				$('.routeTxt').each(function(){
-			var name = $(this).attr('full');
-			var perChar = 13;										
+		var span_name = '';										
+		for(var i in name) span_name += '<span class="fixedWidth">' + name[i] + '</span>';
 
-			if(width >= 600) perChar = 8;							
-			else if(width >= 250) perChar = 9;
-			else if(width >= 115) perChar = 12;
-
-			var chars =  width / perChar;
-			if(chars < name.length) name = name.substring(0, chars) + '...';
-			$(this).html(name);
-		});
-	}
+		$(this).html(span_name);								
+		$(this).parent().css('width', width + 'px');			
+		$('#debug').html(width);
+	});
 }
 
 function build_status(status, timer){
 	var ret = '';
 	if(status && status.toLowerCase() === GOOD_STATUS){
-		ret = '<div class="peerStatus"></div> Running';
+		ret = '<div class="peerStatus"></div> ' + lang.status_running;
 	}
 	else if(status && status.toLowerCase() === CANT_GET_STATUS){
 		ret = '-';
 	}
 	else if(status && status.toLowerCase() === MEH_STATUS){
-		ret = '<div class="peerStatus peerStatusError"></div> Restarting';
+		ret = '<div class="peerStatus peerStatusError"></div> ' + lang.status_restarting;
 		ret += '<div class="restart_timer">' + timer + '</div>';
 	}
 	else{
-		ret = '<div class="peerStatus peerStatusError"></div> Stopped';
+		ret = '<div class="peerStatus peerStatusError"></div> ' + lang.status_stopped;
 	}
 	return ret;
 }
@@ -407,6 +427,7 @@ function rest_restart_peer(peer_name, cb) {
 	var url = '/api/peer/' + peer_name + '/restart';
 	$.ajax({
 		url: url,
+		timeout: 30000,
 		cache: false
 	}).done(function(data) {
 		console.log('Success - sending restart', data);
@@ -421,6 +442,7 @@ function rest_start_peer(peer_name, cb) {
 	var url = '/api/peer/' + peer_name + '/start';
 	$.ajax({
 		url: url,
+		timeout: 30000,
 		cache: false
 	}).done(function(data) {
 		console.log('Success - sending start', data);
@@ -433,28 +455,42 @@ function rest_start_peer(peer_name, cb) {
 
 function rest_reset_network(cb) {
 	console.log('resetting network');
-	$.post('/api/network/' + network_id + '/reset')
-		.done(function(data){
-			console.log('Success - sending reset', data);
+	$.ajax({
+		method: 'POST',
+		url: '/api/network/' + network_id + '/reset',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - sending reset', json);
 			setTimeout(function(){cb(null,{});}, 1000);
-		})
-		.fail(function(e){
+		},
+		error: function(e){
 			console.log('Error - failed to send reset', e);
 			setTimeout(function(){cb(null,{});}, 1000);
-		});
+		}
+	});
 }
 
 function rest_get_reset_status(cb) {
 	console.log('getting reset status data');
-	$.get('/api/network/' + network_id + '/reset/status')
-		.done(function(data){
-			console.log('Success - getting reset status', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+	$.ajax({
+		method: 'GET',
+		url: '/api/network/' + network_id + '/reset/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - getting reset status', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('failed to get reset status');
 			cb(e);
-		});
+		}
+	});
 }
 
 
@@ -462,6 +498,7 @@ function rest_get_cc_hashses(cb){
 	$.ajax({
 		method: 'GET',
 		url: window.location.origin + '/api/chaincode/demos/',
+		timeout: 30000,
 		contentType: 'application/json',
 		success: function(json){
 			console.log('Success - getting known cc hashes', json);
@@ -503,7 +540,7 @@ function convertSecondsToTime(seconds) {
 		} else {
 			numberToAdd = Number((seconds % 60).toFixed(0));
 			strTime = ((numberToAdd > 9)?'':'0') + numberToAdd + ':' + strTime;
-			seconds = Math.floor(seconds/60);			
+			seconds = Math.floor(seconds/60);
 		}
 	}
 
@@ -516,15 +553,22 @@ function convertSecondsToTime(seconds) {
 
 function rest_get_service_status(cb) {
 	console.log('getting bluemix service status data');
-	$.get('https://bluemix-service-status.blockchain.ibm.com/status')
-		.done(function(data){
-			console.log('Success - getting bluemix service status', data);
-			cb(null, data);
-		})
-		.fail(function(e){
+	$.ajax({
+		method: 'GET',
+		url: 'https://bluemix-service-status.blockchain.ibm.com/status',
+		timeout: 30000,
+		headers: { 
+			Accept : 'application/json'
+		},
+		success: function(json){
+			console.log('Success - getting bluemix service status', json);
+			cb(null, json);
+		},
+		error: function(e){
 			console.log('Error - failed to get bluemix service status', e);
 			cb(e);
-		});
+		}
+	});
 }
 
 function formatDate(date, fmt) {
@@ -619,21 +663,11 @@ function hideGenericPopup(hideScreen){
 }
 
 
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments);},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m);
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-80809151-2', 'auto');
-ga('send', 'pageview');
-
-
 function peer_rest_get_peers(host, port, tls, i, cb){
 	console.log('peer_rest_get_peers()');
 	var proto = 'http';
 	if(tls === true) proto = 'https';
 	if(tls === 'https') proto = 'https';
-	console.log('here', host, port, tls);
 
 	if(!host || !port || isNaN(port)){
 		if(cb) cb({error: 'no host or port'}, {shortname: i});
@@ -642,6 +676,7 @@ function peer_rest_get_peers(host, port, tls, i, cb){
 		$.ajax({
 			method: 'GET',
 			url: proto + '://' + host.trim() + ':' + Number(port) + '/network/peers',
+			timeout: 20000,
 			contentType: 'application/json',
 			success: function(json){
 				json.peers.sort(function(a, b) {										
@@ -674,6 +709,7 @@ function peer_rest_get_registrar(host, port, tls, id, cb){
 		$.ajax({
 			method: 'GET',
 			url: proto + '://' + host.trim() + ':' + Number(port) + '/registrar/' + id,
+			timeout: 20000,
 			contentType: 'application/json',
 			success: function(json){
 				json.id = id;
@@ -710,6 +746,7 @@ function peer_rest_post_registrar(host, port, tls, id, secret, cb){
 		$.ajax({
 			method: 'POST',
 			url: url,
+			timeout: 20000,
 			data: JSON.stringify({
 									enrollId: id,
 									enrollSecret: secret
@@ -739,6 +776,7 @@ function peer_rest_get_blockheight(host, port, tls, peer_id, cb){
 	}
 	else{
 		$.ajax({
+			timeout: 15000,
 			method: 'GET',
 			url: url,
 			success: function(json){
@@ -764,6 +802,7 @@ function peer_rest_blockstats(host, port, tls, height, peer_id, cb){
 	$.ajax({
 		method: 'GET',
 		url: url,
+		timeout: 20000,
 		contentType: 'application/json',
 		success: function(json){
 			json.id = peer_id;
@@ -785,6 +824,7 @@ function peer_rest_deploy(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){
@@ -807,6 +847,7 @@ function peer_rest_invoke(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){
@@ -829,6 +870,7 @@ function peer_rest_query(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){
@@ -870,7 +912,7 @@ var TYPE_QUERY = 3;
 var TYPE_TERMINATE = 4;							
 
 var loadMoreRowHtml =  '<tr id="loadMore" class="blockchainTabRow">';
-	loadMoreRowHtml += 		'<td colspan="5">Load More</td>';
+	loadMoreRowHtml += 		'<td colspan="5">' + lang.load_more + '</td>';
 	loadMoreRowHtml +=	'</tr>';
 
 
@@ -943,7 +985,7 @@ function check_height(){
 	$('.dateText').each(function(){
 		var i = $(this).attr('blockheight');
 		if(known_blocks[i] && known_blocks[i].transactions > 0){
-			$(this).html(formatTime(known_blocks[i].transactions[0].timestamp.seconds) + ' <br/>ago');
+			$(this).html(formatTime(known_blocks[i].transactions[0].timestamp.seconds) + ' <br/>' + lang.ago);
 		}
 	});
 }
@@ -951,7 +993,7 @@ function check_height(){
 function cb_got_chainstats(e, resp){
 	$('#loadingSpinner').fadeOut();
 	if(e != null){
-		$('#loadingTxt').html('Error - could not contact network');
+		$('#loadingTxt').html(lang.could_not_contact);
 		$('#loadingRow').show();
 		$('#userTipRow').remove();
 		$('#blockchainPeer').html('[ ! ]');
@@ -977,7 +1019,7 @@ function cb_got_chainstats(e, resp){
 		}
 		if(resp.height === 0 || next === 0) $('#loadMore').remove();	
 		if(resp.height === 0){
-			$('#loadingTxt').html('Genesis');
+			$('#loadingTxt').html(lang.genesis);
 			$('#loadingRow').show();
 		}
 	}
@@ -1052,7 +1094,7 @@ function build_chain_row(block){
 				if(block.height === 0){													
 			html += '<tr class="blockchainTabRow" blockheight="' + block.height + '">';
 			html += 	'<td><div class="blockIcon ' + css + '"></td>';
-			html +=		'<td class="blockTime">' + time + ' ago</td>';
+			html +=		'<td class="blockTime">' + time + ' ' + lang.ago + '</td>';
 			html +=		'<td>0</td>';
 			html +=		'<td>Genesis</td>';
 			html +=		'<td></td>';
@@ -1061,7 +1103,7 @@ function build_chain_row(block){
 		else{																	
 			html += '<tr class="blockchainTabRow" blockheight="' + block.height + '">';
 			html += 	'<td><div class="blockIcon ' + css + '"></td>';
-			html +=		'<td class="blockTime">' + time + ' ago</td>';
+			html +=		'<td class="blockTime">' + time + ' ' + lang.ago + '</td>';
 			html +=		'<td>' + block.height + '</td>';
 			html +=		'<td>' + deploys + '</td>';
 			html +=		'<td>' + invokes + '</td>';
@@ -1092,8 +1134,8 @@ function build_block_details_row(height){
 		var displayccid = ccid;
 		if(pos === -1) encrypted = true;
 		if(encrypted){																	
-			payload = '(encrypted) ' + known_blocks[height].transactions[i].payload;	
-			displayccid = '(encrypted) ' + known_blocks[height].transactions[i].chaincodeID;
+			payload = '(' + lang.encrypted + ') ' + known_blocks[height].transactions[i].payload;	
+			displayccid = '(' + lang.encrypted + ') ' + known_blocks[height].transactions[i].chaincodeID;
 		}
 		else{
 			payload = payload.substring(pos + ccid.length + 2);
@@ -1102,15 +1144,15 @@ function build_block_details_row(height){
 			uuid = 'n/a &nbsp;&nbsp;';
 			if(!encrypted) displayccid = known_blocks[height].transactions[i].uuid;
 		}
-		else if(!encrypted) displayccid = ccid.substring(0, 14);
+		else if(!encrypted) displayccid = ccid.substring(0, 14) + '...';
 
 		html += '<tr>';
 		html +=		'<td style="word-break: break-word;">';
 		html +=			formatDate(known_blocks[height].transactions[i].timestamp.seconds * 1000, '%M/%d %I:%m%p') + ' UTC';
 		html +=		'</td>';
-		html += 	'<td>' + type2word(known_blocks[height].transactions[i].type) + '</td>';
+		html += 	'<td class="uppercaseMe">' + type2word(known_blocks[height].transactions[i].type) + '</td>';
 		html += 	'<td>' + uuid + '</td>';
-		html += 	'<td><div>' + displayccid + '...</div></td>';
+		html += 	'<td><div>' + displayccid + '</div></td>';
 		html += 	'<td>' + payload + '</td>';
 		html += '</tr>';
 	}
@@ -1118,10 +1160,10 @@ function build_block_details_row(height){
 }
 
 function type2word(type){
-	if(type === TYPE_DEPLOY) return 'DEPLOY';											
-	if(type === TYPE_INVOKE) return 'INVOKE';
-	if(type === TYPE_QUERY) return 'QUERY';
-	if(type === TYPE_TERMINATE) return 'TERMINATE';
+	if(type === TYPE_DEPLOY) return lang.deploy;											
+	if(type === TYPE_INVOKE) return lang.invoke;
+	if(type === TYPE_QUERY) return lang.query;
+	if(type === TYPE_TERMINATE) return lang.terminate;
 	return type;
 }
 
@@ -1197,7 +1239,7 @@ function rest_chainstats(cb){
 			else{
 				json.height--;
 				console.log('Success - getting chainstats on peer', selected_peer);
-				$('#blockchainPeer').html('[ Connected to ' + friendly_name(bag.peers[selected_peer].id) + ' ]');
+				$('#blockchainPeer').html('[ ' + lang.connected_to + ' ' + friendly_name(bag.peers[selected_peer].id) + ' ]');
 				if(cb) cb(null, json);
 			}
 		});
@@ -1241,25 +1283,25 @@ function formatTime(ms){
 
 		if(elasped >= 60*60*24){
 		levels++;
-		str =  Math.floor(elasped / (60*60*24)) + 'days ';
+		str =  Math.floor(elasped / (60*60*24)) + lang.days + ' ';
 		elasped = elasped % (60*60*24);
 	}
 	if(elasped >= 60*60){
 		levels++;
 		if(levels < 2){
-			str =  Math.floor(elasped / (60*60)) + 'hr ';
+			str =  Math.floor(elasped / (60*60)) + lang.hr + ' ';
 			elasped = elasped % (60*60);
 		}
 	}
 	if(elasped >= 60){
 		if(levels < 2){
 			levels++;
-			str +=  Math.floor(elasped / 60) + 'min ';
+			str +=  Math.floor(elasped / 60) + lang.min + ' ';
 			elasped = elasped % 60;
 		}
 	}
 	if(levels < 2){
-		str +=  elasped + 'sec ';
+		str +=  elasped + lang.sec + ' ';
 	}
 
 		return str;
@@ -1288,12 +1330,12 @@ function formatDate(date, fmt) {
 			return pad(tmp);
 		case 'p':								
 			tmp = date.getUTCHours();
-			if(tmp >= 12) return 'pm';
-			return 'am';
+			if(tmp >= 12) return lang.time_pm;
+			return lang.time_am;
 		case 'P':								
 			tmp = date.getUTCHours();
-			if(tmp >= 12) return 'PM';
-			return 'AM';
+			if(tmp >= 12) return lang.time_pm.toUpperCase();
+			return  lang.time_am.toUpperCase();
 		case 'm':								
 			return pad(date.getUTCMinutes());
 		case 's':								
@@ -1359,13 +1401,13 @@ $(document).on('ready', function() {
 		var panel = $(this).parent().parent().find('.demoActionWrap');
 		if($(panel).is(':visible')){
 			$(panel).fadeOut();
-			$(this).html('Show Actions');
+			$(this).html(lang.show_actions);
 		}
 		else{
-			$('.showActions').html('Show Actions');
+			$('.showActions').html(lang.show_actions);
 			$('.demoActionWrap').fadeOut();									
 			$(panel).fadeIn();
-			$(this).html('Hide Actions');
+			$(this).html(lang.hide_actions);
 		}
 	});
 
@@ -1402,6 +1444,7 @@ $(document).on('ready', function() {
 			console.log('deploying cc', map[cc]);
 			rest_deploy(map[cc].git, map[cc].func, map[cc].args, user.enrollId, function(e, data){
 				$('.' + cc).fadeIn();							
+				$('.showActions[cc="' + cc + '"]').html(lang.hide_actions);
 				$('#' + cc + 'Loading').fadeOut();
 				if(data.result){
 					cc_hashes[data.result.message] = true;
@@ -1548,7 +1591,7 @@ $(document).on('ready', function() {
 		$('#cpLoading').fadeIn();
 		var hash = $('select[cc="cp"]').val();
 
-		logger.log('lets query on all cps to get a CUSIP. then buy the first one');
+		logger.log(lang.query_cp_msg);
 		rest_query_peer(hash, 'query', ['GetAllCPs'], user.enrollId, false, function(e, data){
 			try{
 				data = JSON.parse(data.result.message);						
@@ -1583,8 +1626,8 @@ $(document).on('ready', function() {
 
 
 function rest_deploy(gogit, func, args, enrollId, cb){
-	logger.log('Deploying chaincode', gogit);
-	$('.logControls').fadeIn();
+	var color = '#AF6EE8';
+	logger.log(lang.deploying_chaincode, gogit);
 	var data = {
 					'jsonrpc': '2.0',
 					'method': 'deploy',
@@ -1602,22 +1645,22 @@ function rest_deploy(gogit, func, args, enrollId, cb){
 					'id': 1
 				};
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
-	log_api_req('#AF6EE8', 'POST', url, data);
+	log_api_req(color, 'POST', url, data);
 
 		peer_rest_deploy(peer.api_host, peer.api_port, peer.tls, data, peer.id, function(err, json){
 		if(err != null){
 			console.log('Error - failed to deploy', err);
-			logger.log('Error - deployment', err);
+			logger.log(lang.deploying_error, err);
 			if(cb) cb(err, null);
 		}
 		else{
 			console.log('Success - deployment', json);
-			logger.log('Success - deployment (wait for the cc to start up)...');
-			log_api_resp('#AF6EE8', json);
+			logger.log(lang.deploying_success);
+			log_api_resp(color, json);
 			setTimeout(function(){
-				logger.log(tab + 'done');
+				logger.log(tab + lang.done);
 				if(cb) cb(null, json);
-			}, 45000);
+			}, 50000);
 		}
 	});
 }
@@ -1642,31 +1685,30 @@ function build_rest_body(hash, type, func, args, enrollId){
 }
 
 function rest_invoke_peer(hash, func, args, enrollId, cb){
-	logger.log('Invoking function -', func);
-	$('.logControls').fadeIn();
+	var color = '#8a8a8a';
+	logger.log(lang.invoking_chaincode + ' -', func);
 	var data = build_rest_body(hash, 'invoke', func, args, enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
-	log_api_req('#8a8a8a', 'POST', url, data);
+	log_api_req(color, 'POST', url, data);
 
 	peer_rest_invoke(peer.api_host, peer.api_port, peer.tls, data, peer.id, function(err, json){
 		if(err != null){
 			console.log('Error - failed invocation', err);
-			logger.log('Error - invocation', err);
+			logger.log(lang.invocation_error, err);
 			if(cb) cb(err, null);
 		}
 		else{
 			console.log('Success - invocation', json);
-			if(json && json.result && json.result.message) logger.log('Success - invocation', json.result.message);
-			else logger.log('Error - invocation');
-			log_api_resp('#8a8a8a', json);
+			if(json && json.result && json.result.message) logger.log(lang.invocation_success, json.result.message);
+			else logger.log(lang.invocation_success);
+			log_api_resp(color, json);
 			if(cb) cb(null, json);
 		}
 	});
 }
 
 function rest_query_peer(hash, func, args, enrollId, quietly, cb){
-	if(!quietly) logger.log('Querying function -', func, JSON.stringify(args));
-	$('.logControls').fadeIn();
+	if(!quietly) logger.log(lang.querying_chaincode + ' -', func, JSON.stringify(args));
 	var data = build_rest_body(hash, 'query', func, args, enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/chaincode';
 	if(!quietly) log_api_req('#00B29F', 'POST', url, data);
@@ -1675,7 +1717,7 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 		if(err != null){
 			if(!quietly){
 				console.log('Error - failed query', err);
-				logger.log('Error - query', err);
+				logger.log(lang.query_error, err);
 			}
 			if(cb) cb(err, null);
 		}
@@ -1683,9 +1725,9 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 			if(!quietly) {
 				console.log('Success - query', json);
 				if(json && json.result && json.result.message) {
-					logger.log('Success - query', json.result.message);
+					logger.log(lang.success, json.result.message);
 				}
-				else logger.log('Error - undefined');
+				else logger.log(lang.query_error2);
 				log_api_resp('#00B29F', json);
 			}
 			if(cb) cb(null, json);
@@ -1694,44 +1736,53 @@ function rest_query_peer(hash, func, args, enrollId, quietly, cb){
 }
 
 function check_enroll_id(){
+	var color = '#3ce251';
 	$('.demoLoading').fadeIn();
-	$('.logControls').fadeIn();
-	logger.log('Checking enrollID', user.enrollId);
+	logger.log(lang.checking_enrollid, user.enrollId);
+	var proto = 'http';
+	if(peer.tls === true) proto = 'https';
+	if(peer.tls === 'https') proto = 'https';
+	var url = proto + '://' + peer.api_host + ':' + Number(peer.api_port) + '/registrar/' + user.enrollId;
+
+	log_api_req(color, 'GET', url, null);
 	peer_rest_get_registrar(peer.api_host, peer.api_port, peer.tls, user.enrollId, function(err, json){
 		if(err !== null){
-			logger.log('ID not yet registered');
+			logger.log(lang.id_not_reg);
+			log_api_resp(color, json);
 			register_enrolld_id();
 		}
 		else {
-			logger.log(tab + 'ID is registered');
+			logger.log(tab + lang.id_is_reg);
+			log_api_resp(color, json);
 			rdy_for_user();
 		}
 	});
 }
 
 function register_enrolld_id(){
+	var color = '#5AAAFA';
 	$('.demoLoading').fadeIn();
-	logger.log('Registering enrollID', user.enrollId);
+	logger.log(lang.registering_enrollid, user.enrollId);
 	var url = 'https://' + peer.api_host + ':' + peer.api_port + '/registrar';
 	var log_data = {
 					enrollId: user.enrollId,
 					enrollSecret: user.enrollSecret
 				};
-	log_api_req('#5AAAFA', 'POST', url, log_data);
+	log_api_req(color, 'POST', url, log_data);
 	peer_rest_post_registrar(peer.api_host, peer.api_port, peer.tls, user.enrollId, user.enrollSecret, function(err, json){
 		if(err != null){
-			logger.log('Error - failed to register enrollID', err);
+			logger.log(lang.register_failed, err);
 			$('.demoLoading').fadeOut();
 			var html = 	'<div style="color:#f51212">';
-			html +=			'Error - cannot continue, failed to register enrollId! :(';
+			html +=			lang.register_failed2 + ' :(';
 			html +=			'<br/>';
-			html += 		tab + tab + tab + tab + '- make sure VP0 is running. Then refresh the page and try again';
+			html += 		tab + tab + tab + tab + '- ' + lang.register_failed3;
 			html +=		'</div>';
 			logger.log(html);
 		}
 		else {
-			logger.log('Success - registering enrollID');
-			log_api_resp('#5AAAFA', json);
+			logger.log(lang.register_success);
+			log_api_resp(color, json);
 			rdy_for_user();
 		}
 	});
@@ -1753,7 +1804,7 @@ function rdy_for_user(){
 function log_api_req(color, method, path, body){
 	var html = 	'<div class="apiDetails" style="color:' + color +'">';
 	html +=			'<div class="apiReq">HTTP ' + method.toUpperCase() + ' ' + path + '</div>';
-	html +=			'<pre>' + JSON.stringify(body, null, 4) + ' </pre>';
+	if(body) html +='<pre>' + JSON.stringify(body, null, 4) + ' </pre>';
 	html +=		'</div>';
 	$('#demoLogs').append(html);
 	showOrHideDetails();
@@ -1786,24 +1837,28 @@ function build_cc_options(hashes){
 			}
 		}
 
-		if(html === '') html = '<option disabled="disabled" selected="selected">invalid</option>';		
+		if(html === '') html = '<option disabled="disabled" selected="selected">' + lang.invalid.toLowerCase() + '</option>';
 		$('.selectCC[cc="' +  known_ccs[y] +'"]').html(html);
 		enableOptions(known_ccs[y]);
 	}
 }
 
+var deployTimer = null, invokeTimer = null, queryTimer = null;
 function show_next_step(step){
 	if(step == 2){
-		$('.notificationWrap').hide();
 		$('.deployHelperText').fadeIn();
+		clearTimeout(deployTimer);
+		deployTimer = setTimeout(function(){$('.deployHelperText').fadeOut();}, 10000);
 	}
 	if(step == 3){
-		$('.notificationWrap').hide();
 		$('.invokeHelperText').fadeIn();
+		clearTimeout(invokeTimer);
+		invokeTimer = setTimeout(function(){$('.invokeHelperText').fadeOut();}, 10000);
 	}
 	if(step == 4){
-		$('.notificationWrap').hide();
 		$('.queryHelperText').fadeIn();
+		clearTimeout(queryTimer);
+		queryTimer = setTimeout(function(){$('.queryHelperText').fadeOut();}, 10000);
 	}
 }
 
@@ -1909,7 +1964,7 @@ function build_peer_buttons(peers){
 		html += '<div>';
 		html += 	'<div class="logButtonTitle"> ' + friendly_name(peers[i].id) + '</div>';
 		html += 	'<button class="bx--btn peerLogButton" peer_id="' + peers[i].id +'">';
-		html += 	'<span>Logs</span>';
+		html += 	'<span>' + lang.logs +'</span>';
 		html += 		'<svg class="peerLogIcon">';
 		html += 			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#app-actions--go_to_icon"></use>';
 		html +=			'</svg>';
@@ -2011,18 +2066,18 @@ $(document).on('ready', function() {
 		html +=			'<svg class="notifcationAlt modal-icon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#notifications--info"></use>';
 		html +=			'</svg>';
-		html +=			'Start';
+		html +=			lang.start;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html += 		'<p>Are you sure you want to start <span class="highlightName">' + peer_name + '</span>?</p>';
+		html += 		'<p>' + lang.start_msg +' <span class="highlightName">' + peer_name + '</span>?</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedStart" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary" type="button" data-modal-close=""> ' + lang.cancel +' </button>';
+		html +=		'<button id="confirmedStart" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -2057,18 +2112,18 @@ $(document).on('ready', function() {
 		html +=			'<svg class="notifcationWarning modal-icon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--warning"></use>';
 		html +=			'</svg>';
-		html +=			'Stop Warning';
+		html +=			lang.stop_warning;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html += 		'<p>Are you sure you want to stop <span class="highlightName">' + peer_name + '</span>?</p>';
+		html += 		'<p>' + lang.stop_msg + ' <span class="highlightName">' + peer_name + '</span>?</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedStopPeer" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> ' + lang.cancel + ' </button>';
+		html +=		'<button id="confirmedStopPeer" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -2084,6 +2139,7 @@ $(document).on('ready', function() {
 
 		$.ajax({
 			url: url,
+			timeout: 30000,
 			cache: false
 		}).done(function(data) {
 			console.log('Success - sending stop', data);
@@ -2109,13 +2165,13 @@ $(document).on('ready', function() {
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html +=			'<p>All your data will be permmanently deleted if you reset the network. </p>';
-		html += 		'<p>Are you sure you want to reset your network? </p>';
+		html +=			'<p> ' + lang.reset_msg1 + '</p>';
+		html += 		'<p> ' + lang.reset_msg2 + '</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedResetNetwork" class="bx--btn" type="button" data-modal-close=""> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> ' + lang.cancel +' </button>';
+		html +=		'<button id="confirmedResetNetwork" class="bx--btn" type="button" data-modal-close=""> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -2149,7 +2205,7 @@ $(document).on('ready', function() {
 		setTimeout(function() {								
 			resize_peer_names();
 			resize_cc_ids();
-		}, 300);
+		}, 500);
 	});
 
 	$(document).on('change', 'select[name="routeSelect"]', function() {
@@ -2182,7 +2238,7 @@ function updateChaincodeTable() {
 
 		if(!found){
 			var html = '<tr class="actualCC">';
-			html +=			'<td>no chaincode found</td>';
+			html +=			'<td>' + lang.no_chaincode_found +'</td>';
 			html +=			'<td></td>';
 			html +=			'<td></td>';
 			html +=		'</tr>';
@@ -2201,12 +2257,11 @@ function updatePeerTable() {
 			var html = '<tr>';
 			html += 		'<td colspan=9>';
 			html += 			'<em>';
-			html +=					'An error occurred while looking up the peers that belong to your service instance. ';
-			html +=					' To work around this problem, please delete and recreate your instance of the service in Bluemix.';
+			html +=					lang.no_peers_error_msg;
 			html +=				'</em>';
 			html +=			'</td>';
 			html +=		'</tr>';
-			$('#health_data').append(html);
+			$('#peerBody').html(html);
 		}
 		else{
 			$('#loadingSpinner').hide();
@@ -2231,7 +2286,7 @@ function process_container(container, network_data){
 	if(container.type === 'ca'){
 		$('#discovery'+ container.id).parent().html('-');				
 		if(network_data.swarm && network_data.swarm.name !== 'yeti'){
-			rest_get_ca(container.api_host, function(err, data){
+			rest_get_ca(container.api_host, container.id, function(err, data){
 				console.log('ca status data', data);
 				if(!data || data.status !== GOOD_STATUS){
 					process_status(data.id, BAD_STATUS, null);
@@ -2254,7 +2309,7 @@ function process_container(container, network_data){
 
 function updateDiscoveryColumn(err, json){
 	if(err == null){
-		var tooltip = 'This peer has discovered: ';
+		var tooltip = lang.discovery_tooltip2 + ': ';
 		for(var i in json.peers){
 			if(Number(i) === json.peers.length - 1) tooltip += '& ' + json.peers[i].ID.name.toUpperCase();
 			else tooltip += json.peers[i].ID.name.toUpperCase() + ', ';
@@ -2267,23 +2322,25 @@ function blockheight_repeat(api_host, api_port, tls, id, attempt){
 	peer_rest_get_blockheight(api_host, api_port, tls, id, function(err, resp){
 		if(err != null){
 			if(attempt <= 1){
-				console.log('status - failed on', parse_4_peer_shortname(id), ', will try again!');
+				console.log('status - failed on', parse_4_peer_shortname(id), ', [WILL TRY AGAIN]');
 				return setTimeout(function(){ blockheight_repeat(api_host, api_port, tls, id, ++attempt);}, 1000);	
 			}
-			else process_status(resp.id, BAD_STATUS, null);														
+			else process_status(resp.id, BAD_STATUS, null);													
 
 		}
 		else{
-			process_status(resp.id, GOOD_STATUS, resp.height);													
+			process_status(resp.id, GOOD_STATUS, resp.height, resp.currentBlockHash);						
 		}
 	});
 }
 
-function process_status(peer_id, status, height){
+function process_status(peer_id, status, height, hash){
 	console.log('status -', parse_4_peer_shortname(peer_id), status, ', height:', height);
+	if(!hash) hash = '-';
+	else hash = hash.substring(0, 6) + '...';
 
 	if(status === GOOD_STATUS){
-		$('tr[peer="' + peer_id + '"]').find('.blckheight').html(height);
+		$('tr[peer="' + peer_id + '"]').find('.blckheight').html(height).attr('data-tooltip', lang.block + ': ' + hash);
 		$('tr[peer="' + peer_id + '"]').find('.peer_status').html(build_status(status));
 		$('tr[peer="' + peer_id + '"]').find('.stop_peer').removeClass('disabledButton');
 		$('tr[peer="' + peer_id + '"]').find('.start_peer').addClass('disabledButton');
@@ -2343,17 +2400,17 @@ function send_reset(){
 			var html = '';
 			html += '<div class="bx--modal-content">';
 			html +=		'<h2 class="bx--modal-content__heading">';
-			html +=			'Reset';
+			html +=			lang.reset;
 			html +=		'</h2>';
 			html +=		'<svg class="bx--modal__close--icon">';
 			html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 			html +=		'</svg>';
 			html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-			html +=			'<p>There was an error submitting the reset request, please try again later</p>';
+			html +=			'<p>' + lang.reset_error + '</p>';
 			html +=			'<div id="reset_loading_bar_wrap">';
 			html +=				'<div id="reset_loading_bar" style="width: 1%;"></div>';
 			html +=			'</div>';
-			html +=			'<div id="reset_loading_percent">0% complete..</div>';
+			html +=			'<div id="reset_loading_percent">0% ' + lang.complete + '..</div>';
 			html +=		'</div>';
 			html +=	'</div>';
 			$('#passive-modal-innter').html(html);
@@ -2371,28 +2428,28 @@ function fill_loading_bar(barSelector, textSelector, percent, cb){
 	$(barSelector).animate({width: (percent + '%')}, 2000, function(){
 
 				if(percent < 100){
-			$(textSelector).html(percent + '% complete..');
+			$(textSelector).html(percent + '% ' + lang.complete + '..');
 		}
 		else{																
 			var html = '';
 			html += '<div class="bx--modal-content">';
 			html +=		'<h2 class="bx--modal-content__heading">';
-			html +=			'Reset';
+			html +=			lang.reset;
 			html +=		'</h2>';
 			html +=		'<svg class="bx--modal__close--icon">';
 			html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 			html +=		'</svg>';
 			html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-			html +=			'<p>Your network has been successfully reset!</p>';
+			html +=			'<p>' + lang.reset_success +'</p>';
 			html +=			'<div id="reset_loading_bar_wrap">';
 			html +=				'<div id="reset_loading_bar" style="width: 100%;"></div>';
 			html +=			'</div>';
-			html +=			'<div id="reset_loading_percent">100% complete</div>';
+			html +=			'<div id="reset_loading_percent">100% ' + lang.complete + '</div>';
 			html +=		'</div>';
 			html +=	'</div>';
 			$('#passive-modal-innter').html(html);
 			$('#passive-modal').css('border-color', '#7cc7ff').fadeIn();
-			$(textSelector).html(percent + '% complete');					
+			$(textSelector).html(percent + '% ' + lang.complete);			
 			clearInterval(reset_status_interval);
 			updatePeerTable();												
 			updateChaincodeTable();											
@@ -2411,17 +2468,17 @@ function show_reset(error){
 		var html = '';
 		html += '<div class="bx--modal-content">';
 		html +=		'<h2 class="bx--modal-content__heading">';
-		html +=			'Reset';
+		html +=			lang.reset;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-		html +=			'<p id="resetTxt">Your network is resetting.. this may take a few minutes.</p>';
+		html +=			'<p id="resetTxt">' + lang.resetting_msg + '</p>';
 		html +=			'<div id="reset_loading_bar_wrap">';
 		html +=				'<div id="reset_loading_bar" style="width: 1%;"></div>';
 		html +=			'</div>';
-		html +=			'<div id="reset_loading_percent">0% complete..</div>';
+		html +=			'<div id="reset_loading_percent">0% ' + lang.complete  + '..</div>';
 		html +=			'<br/><br/>';
 		html +=		'</div>';
 		html +=	'</div>';
@@ -2449,8 +2506,7 @@ function handle_reset_status(e, data){
 
 		if(data.deleted_timestamp === -1 || data.finished_timestamp === -1){ 			
 			var html = 	'<p>';
-			html +=			'There was an issue resetting your network.';
-			html +=			'If this message does not go away in 10 minutes then delete and re-create this network.';
+			html +=			lang.reset_error2;
 			html +=		'</p>';
 			$('#resetTxt').append(html);
 			clearInterval(reset_status_interval);
@@ -2496,8 +2552,8 @@ function build_peer_notification(status, id){
 		html +=			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--healthy"></use>';
 		html +=		'</svg>';
 		html +=	'<div class="notificationBody">';
-		html +=		'<strong>&nbsp; Success: &nbsp;</strong>';
-		html +=		'<span>Your ' + friendly_name(id) + ' has started.</span>';
+		html +=		'<strong>&nbsp; ' + lang.success + ': &nbsp;</strong>';
+		html +=		'<span>' + friendly_name(id) + ' has started.</span>';
 		html +=	'</div>';
 		html +=	'<svg class="peerNotificationClose peerNotificationFix">';
 		html +=		'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--close"></use>';
@@ -2509,8 +2565,8 @@ function build_peer_notification(status, id){
 		html +=			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--warning"></use>';
 		html +=		'</svg>';
 		html +=	'<div class="notificationBody">';
-		html +=		'<strong>&nbsp; Warning: &nbsp;</strong>';
-		html +=		'<span>Your ' + friendly_name(id) + ' has stopped.</span>';
+		html +=		'<strong>&nbsp; ' + lang.warning + ': &nbsp;</strong>';
+		html +=		'<span>' + friendly_name(id) + ' has stopped.</span>';
 		html +=	'</div>';
 		html +=	'<svg class="peerNotificationClose peerNotificationFix">';
 		html +=		'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--close"></use>';
@@ -2569,7 +2625,7 @@ function activate_service_tab(){
 	$('#service_content').fadeIn(200);
 
 	console.log('on env', ZONE);
-	var prettyEnv = {'prod': 'Production', 'stage': 'Staging', 'dev': 'Development'};
+	var prettyEnv = {'prod': lang.production, 'stage': lang.staging, 'dev': lang.development};
 	$('#envText').html(prettyEnv[ZONE]);
 
 	rest_get_service_status(function(e, data){
@@ -2690,7 +2746,7 @@ function build_histogram_graph(data){
 							labels: labels,
 							datasets: [
 								{
-									label: '% Success',
+									label: '% ' + lang.success,
 									backgroundColor: 'rgba(86,155,227,.5)',
 									borderColor: 'rgba(86,155,227,1)',
 									radius: 4,
@@ -2733,12 +2789,13 @@ function build_histogram_graph(data){
 function build_status_msgs(messages){
 	var html = '';
 	var msgEnv = {'prod': 'production', 'stage': 'staging', 'dev': 'development'};
+	var prettyEnv = {'production': lang.production, 'staging': lang.staging, 'development': lang.development, 'general': lang.general};
 	for(var i in messages){
 		var status = 'generalStatus';
 		if(messages[i].doc.env === msgEnv[ZONE]) status = 'altStatus';
 		if(messages[i].doc.env ===  msgEnv[ZONE] || messages[i].doc.env === 'general'){
 			html += '<div class="messagesWrap">';
-			html += 	'<div class="messageEnv ' + status + '"> ' + toTitleCase(messages[i].doc.env) +' </div>';
+			html += 	'<div class="messageEnv ' + status + '"> ' + prettyEnv[messages[i].doc.env] +' </div>';
 			html +=		'<div class="messageInnerWrap">';
 			html +=			'<div class="notes">' + escapeHtml(messages[i].doc.text) + '</div>';
 			html +=			'<div class="redate">' + formatDate(messages[i].doc.timestamp, '%M/%d %I:%m %p UTC') + '</div>';
@@ -2805,19 +2862,19 @@ function build_release_notes(release_notes){
 		html +=		'</div>';
 
 		html +=		'<div class="releaseNotes">';
-		if(note.prerelease) html += '<div class="prerelease"> Prerelease </div>';
-		if(thisVersion)     html +=	'<div class="selectRelease"> Your network is using this version </div>';
-		html +=			'<div class="releaseHeader"> Hyperledger Commit Level: </div>';
+		if(note.prerelease) html += '<div class="prerelease"> ' + lang.prerelease +' </div>';
+		if(thisVersion)     html +=	'<div class="selectRelease"> ' + lang.your_network_msg +' </div>';
+		html +=			'<div class="releaseHeader"> ' + lang.hyperledger_commit_level +': </div>';
 		html +=			'<p><a href="' + note.commit + '" target="_blank">' + note.commit.substring(pos) + '</a></p>';
-		html +=			'<div class="releaseHeader"> New Features: </div>';
+		html +=			'<div class="releaseHeader"> ' + lang.new_features + ': </div>';
 		for(var x in note.new_features)    html +=	'<p> - ' + note.new_features[x] + '</p>';
-		if(note.new_features.length === 0) html +=	'<p> - nothing</p>';
-		html +=			'<div class="releaseHeader"> Fixes: </div>';
+		if(note.new_features.length === 0) html +=	'<p> - ' + lang.nothing + '</p>';
+		html +=			'<div class="releaseHeader"> ' + lang.fixes + ': </div>';
 		for(x in note.fixes)    	html +=	'<p> - ' + note.fixes[x] + '</p>';
-		if(note.fixes.length === 0) html +=	'<p> - nothing</p>';
-		html +=			'<div class="releaseHeader"> Known Issues: </div>';
+		if(note.fixes.length === 0) html +=	'<p> - ' + lang.nothing + '</p>';
+		html +=			'<div class="releaseHeader">' + lang.known_issues + ': </div>';
 		for(x in note.known_issues)    		html +=	'<p> - ' + note.known_issues[x] + '</p>';
-		if(note.known_issues.length === 0) 	html +=	'<p> - nothing</p>';
+		if(note.known_issues.length === 0) 	html +=	'<p> - ' + lang.nothing + '</p>';
 		html +=		'</div>';
 
 		html +=	'</div>';
@@ -2862,15 +2919,15 @@ $(document).on('ready', function() {
 		html +=			'<svg class="tipIcon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--help"></use>';
 		html +=			'</svg>';
-		html +=			'Tips';
+		html +=			lang.tips;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="tipWrapper" video="1">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Monitor</div>';
-		html +=				'<div class="tipDescription">How to navigate this dashboard</div>';
+		html +=				'<div class="tipHeadline">' + lang.dashboard + '</div>';
+		html +=				'<div class="tipDescription">' + lang.dashboard_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -2878,8 +2935,8 @@ $(document).on('ready', function() {
 		html +=		'</div>';
 		html +=		'<div class="tipWrapper" video="2">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Intro to Chaincode</div>';
-		html +=				'<div class="tipDescription">How to deploy a demo chaincode</div>';
+		html +=				'<div class="tipHeadline">' + lang.intro_to_chaincode + '</div>';
+		html +=				'<div class="tipDescription">' + lang.intro_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -2887,8 +2944,8 @@ $(document).on('ready', function() {
 		html +=		'</div>';
 		html +=		'<div class="tipWrapper" video="3">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Network Operations</div>';
-		html +=				'<div class="tipDescription">How to stop and start peers</div>';
+		html +=				'<div class="tipHeadline">' + lang.network_operations + '</div>';
+		html +=				'<div class="tipDescription">' + lang.network_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -2925,7 +2982,7 @@ $(document).on('ready', function() {
 		html +=			'<svg class="tipIcon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--help"></use>';
 		html +=			'</svg>';
-		html +=			'Tips';
+		html +=			lang.tips;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
@@ -2938,28 +2995,28 @@ $(document).on('ready', function() {
 		html +=		'<div class="bottomTip">';
 
 		if(video === 1){
-			html +=			'<div class="tipHeadline">Dashboard</div>';
-			html +=			'<div class="tipDescription">How to navigate this dashboard</div>';
+			html +=			'<div class="tipHeadline">' + lang.dashboard +'</div>';
+			html +=			'<div class="tipDescription">' + lang.dashboard_description + '</div>';
 		}
 		else if(video === 2){
-			html +=			'<div class="tipHeadline">Intro to Chaincode</div>';
-			html +=			'<div class="tipDescription">How to deploy a demo chaincode</div>';
+			html +=			'<div class="tipHeadline">' + lang.intro_to_chaincode + '</div>';
+			html +=			'<div class="tipDescription">' + lang.intro_description + '</div>';
 		}
 		else if(video === 3){
-			html +=			'<div class="tipHeadline">Network Operations</div>';
-			html +=			'<div class="tipDescription">How to stop and start peers</div>';
+			html +=			'<div class="tipHeadline">' + lang.network_operations + '</div>';
+			html +=			'<div class="tipDescription">' + lang.network_description +'</div>';
 		}
 
 		html +=			'<div class="videoNav">';
 		html +=				'<svg class="linkArrowBack loadNextVideo ' + prevCss +'" loadVideo="' + prev +'">';
 		html +=					'<use xlink:href="/img/icons/sprite.svg#common--previous"></use>';
 		html +=				'</svg>';
-		html +=				video + ' of 3';
+		html +=				video + ' ' + lang._of  +' 3';
 		html +=				'<svg class="linkArrow loadNextVideo ' + nextCss +'" loadVideo="' + next +'">';
 		html +=					'<use xlink:href="/img/icons/sprite.svg#common--previous"></use>';
 		html +=				'</svg>';
 		html +=			'</div>';
-		html +=			'<a class="helpLink" href="/' + dash_ver + '/support/' + network_id + '">More Help</a>';
+		html +=			'<a class="helpLink" href="/' + lang._LANG + '/' + dash_ver + '/support/' + network_id + '">' + lang.more_help +'</a>';
 		html +=		'</div>';
 		html +=	'</div>';
 		return html;

@@ -1,4 +1,4 @@
-/* global $, document, window*/
+/* global $, document, window, lang*/
 /* global friendly_name, rest_get_peers*/
 /* exported activate_logs_tab, deactivate_logs_tab*/
 
@@ -35,7 +35,7 @@ function build_peer_buttons(peers){
 		html += '<div>';
 		html += 	'<div class="logButtonTitle"> ' + friendly_name(peers[i].id) + '</div>';
 		html += 	'<button class="bx--btn peerLogButton" peer_id="' + peers[i].id +'">';
-		html += 	'<span>Logs</span>';
+		html += 	'<span>' + lang.logs +'</span>';
 		html += 		'<svg class="peerLogIcon">';
 		html += 			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#app-actions--go_to_icon"></use>';
 		html +=			'</svg>';

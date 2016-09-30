@@ -1,4 +1,4 @@
-/* global $, document, hideGenericPopup, dash_ver, network_id, reset_status_interval*/
+/* global $, document, hideGenericPopup, dash_ver, network_id, reset_status_interval, lang*/
 
 // =================================================================================
 // On Load
@@ -23,15 +23,15 @@ $(document).on('ready', function() {
 		html +=			'<svg class="tipIcon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--help"></use>';
 		html +=			'</svg>';
-		html +=			'Tips';
+		html +=			lang.tips;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="tipWrapper" video="1">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Monitor</div>';
-		html +=				'<div class="tipDescription">How to navigate this dashboard</div>';
+		html +=				'<div class="tipHeadline">' + lang.dashboard + '</div>';
+		html +=				'<div class="tipDescription">' + lang.dashboard_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -39,8 +39,8 @@ $(document).on('ready', function() {
 		html +=		'</div>';
 		html +=		'<div class="tipWrapper" video="2">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Intro to Chaincode</div>';
-		html +=				'<div class="tipDescription">How to deploy a demo chaincode</div>';
+		html +=				'<div class="tipHeadline">' + lang.intro_to_chaincode + '</div>';
+		html +=				'<div class="tipDescription">' + lang.intro_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -48,8 +48,8 @@ $(document).on('ready', function() {
 		html +=		'</div>';
 		html +=		'<div class="tipWrapper" video="3">';
 		html +=			'<div class="leftTip">';
-		html +=				'<div class="tipHeadline">Network Operations</div>';
-		html +=				'<div class="tipDescription">How to stop and start peers</div>';
+		html +=				'<div class="tipHeadline">' + lang.network_operations + '</div>';
+		html +=				'<div class="tipDescription">' + lang.network_description + '</div>';
 		html +=			'</div>';
 		html +=			'<div class="rightTip">';
 		html +=				'<img class="videoWrap" src="/img/video_thumbnail.png">';
@@ -89,7 +89,7 @@ $(document).on('ready', function() {
 		html +=			'<svg class="tipIcon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--help"></use>';
 		html +=			'</svg>';
-		html +=			'Tips';
+		html +=			lang.tips;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
@@ -102,28 +102,28 @@ $(document).on('ready', function() {
 		html +=		'<div class="bottomTip">';
 
 		if(video === 1){
-			html +=			'<div class="tipHeadline">Dashboard</div>';
-			html +=			'<div class="tipDescription">How to navigate this dashboard</div>';
+			html +=			'<div class="tipHeadline">' + lang.dashboard +'</div>';
+			html +=			'<div class="tipDescription">' + lang.dashboard_description + '</div>';
 		}
 		else if(video === 2){
-			html +=			'<div class="tipHeadline">Intro to Chaincode</div>';
-			html +=			'<div class="tipDescription">How to deploy a demo chaincode</div>';
+			html +=			'<div class="tipHeadline">' + lang.intro_to_chaincode + '</div>';
+			html +=			'<div class="tipDescription">' + lang.intro_description + '</div>';
 		}
 		else if(video === 3){
-			html +=			'<div class="tipHeadline">Network Operations</div>';
-			html +=			'<div class="tipDescription">How to stop and start peers</div>';
+			html +=			'<div class="tipHeadline">' + lang.network_operations + '</div>';
+			html +=			'<div class="tipDescription">' + lang.network_description +'</div>';
 		}
 
 		html +=			'<div class="videoNav">';
 		html +=				'<svg class="linkArrowBack loadNextVideo ' + prevCss +'" loadVideo="' + prev +'">';
 		html +=					'<use xlink:href="/img/icons/sprite.svg#common--previous"></use>';
 		html +=				'</svg>';
-		html +=				video + ' of 3';
+		html +=				video + ' ' + lang._of  +' 3';
 		html +=				'<svg class="linkArrow loadNextVideo ' + nextCss +'" loadVideo="' + next +'">';
 		html +=					'<use xlink:href="/img/icons/sprite.svg#common--previous"></use>';
 		html +=				'</svg>';
 		html +=			'</div>';
-		html +=			'<a class="helpLink" href="/' + dash_ver + '/support/' + network_id + '">More Help</a>';
+		html +=			'<a class="helpLink" href="/' + lang._LANG + '/' + dash_ver + '/support/' + network_id + '">' + lang.more_help +'</a>';
 		html +=		'</div>';
 		html +=	'</div>';
 		return html;

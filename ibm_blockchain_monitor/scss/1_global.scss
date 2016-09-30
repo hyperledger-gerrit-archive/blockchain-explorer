@@ -65,7 +65,7 @@
 h2{
 	padding-bottom: 6px;
 	margin-bottom: 12px;
-	font-size: 32px;
+	font-size: 24px;
 	font-weight: 100;
 }
 select, input[type="text"], input[type="password"], textarea{
@@ -167,10 +167,18 @@ svg {
 	fill: $color__white;
 }
 
+svg use svg {						//we need this to fix firefox bug
+	fill: inherit;
+}
+
 svg.actionButton:hover{
-	background:$color__navy-gray-2;
+	//background:$color__navy-gray-2;
 	use {fill: $color__blue-50;}
 	fill: $color__blue-50;
+}
+
+.statsBlockWrap .statIcon{			//we need this for firefox too, only with statIcon though..
+	use{fill: transparent;}
 }
 
 
@@ -363,6 +371,17 @@ input[type=range]:focus::-ms-fill-upper {
 	text-align: center;
 }
 
+.uppercaseMe{
+	text-transform: uppercase;
+}
+
+.fixedWidth{
+	padding: 0;
+	margin: 0;
+	width: 7px;
+	display: inline-block;
+}
+
 // ----------- Main Layout ----------- //
 #navPanel, #mainPanel{
 	display:inline-block;
@@ -370,18 +389,19 @@ input[type=range]:focus::-ms-fill-upper {
 }
 #navPanel {
 	width: 20%;
-	min-width: 200px;
 	max-width: 300px;
 	min-height: 500px;
 	z-index: 300;
-	min-width: 225px;
+	min-width: 260px;
 }
 #navPanelContent{
 	padding: 30px;
+	padding-right: 0;
 }
 
 .navLink{
 	padding: 10px;
+	padding-right: 0;
 	font-size: 18px;
 	font-weight: 100;
 	display: block;
@@ -402,7 +422,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #mainPanel, #mainPanel100 {
-	width: 76%;
+	width: 74%;
 	margin-top:30px;
 	min-width: 435px;
 }
@@ -676,6 +696,10 @@ svg.bx--modal__close--icon{
 	float: right;
 	width: 28px;
 	cursor: pointer;
+}
+
+.peerNotificationClose{
+	width: 14px;
 }
 
 

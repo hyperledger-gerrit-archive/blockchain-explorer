@@ -1,4 +1,4 @@
-/* global $, document, window, atob, rest_get_peers, friendly_name, peer_rest_get_blockheight*/
+/* global $, document, window, atob, lang, rest_get_peers, friendly_name, peer_rest_get_blockheight*/
 /* global peer_rest_blockstats */
 /* exported activate_blockchain_tab, deactivate_blockchain_tab*/
 
@@ -30,7 +30,7 @@ var TYPE_QUERY = 3;								//i don't think this is in use yet 5/9/2016
 var TYPE_TERMINATE = 4;							//^^ nor this one
 
 var loadMoreRowHtml =  '<tr id="loadMore" class="blockchainTabRow">';
-	loadMoreRowHtml += 		'<td colspan="5">Load More</td>';
+	loadMoreRowHtml += 		'<td colspan="5">' + lang.load_more + '</td>';
 	loadMoreRowHtml +=	'</tr>';
 
 
@@ -115,7 +115,7 @@ function check_height(){
 	$('.dateText').each(function(){
 		var i = $(this).attr('blockheight');
 		if(known_blocks[i] && known_blocks[i].transactions > 0){
-			$(this).html(formatTime(known_blocks[i].transactions[0].timestamp.seconds) + ' <br/>ago');
+			$(this).html(formatTime(known_blocks[i].transactions[0].timestamp.seconds) + ' <br/>' + lang.ago);
 		}
 	});
 }
@@ -124,7 +124,7 @@ function check_height(){
 function cb_got_chainstats(e, resp){
 	$('#loadingSpinner').fadeOut();
 	if(e != null){
-		$('#loadingTxt').html('Error - could not contact network');
+		$('#loadingTxt').html(lang.could_not_contact);
 		$('#loadingRow').show();
 		$('#userTipRow').remove();
 		$('#blockchainPeer').html('[ ! ]');
@@ -150,7 +150,7 @@ function cb_got_chainstats(e, resp){
 		}
 		if(resp.height === 0 || next === 0) $('#loadMore').remove();	//there are no more blocks, remove more button
 		if(resp.height === 0){
-			$('#loadingTxt').html('Genesis');
+			$('#loadingTxt').html(lang.genesis);
 			$('#loadingRow').show();
 		}
 	}
@@ -258,7 +258,7 @@ function build_chain_row(block){
 		if(block.height === 0){													//build inner div for genesis
 			html += '<tr class="blockchainTabRow" blockheight="' + block.height + '">';
 			html += 	'<td><div class="blockIcon ' + css + '"></td>';
-			html +=		'<td class="blockTime">' + time + ' ago</td>';
+			html +=		'<td class="blockTime">' + time + ' ' + lang.ago + '</td>';
 			html +=		'<td>0</td>';
 			html +=		'<td>Genesis</td>';
 			html +=		'<td></td>';
@@ -267,7 +267,7 @@ function build_chain_row(block){
 		else{																	//build inner div for regular block
 			html += '<tr class="blockchainTabRow" blockheight="' + block.height + '">';
 			html += 	'<td><div class="blockIcon ' + css + '"></td>';
-			html +=		'<td class="blockTime">' + time + ' ago</td>';
+			html +=		'<td class="blockTime">' + time + ' ' + lang.ago + '</td>';
 			html +=		'<td>' + block.height + '</td>';
 			html +=		'<td>' + deploys + '</td>';
 			html +=		'<td>' + invokes + '</td>';
@@ -299,8 +299,8 @@ function build_block_details_row(height){
 		var displayccid = ccid;
 		if(pos === -1) encrypted = true;
 		if(encrypted){																	//payload is encrypted or malformed, either way leave it
-			payload = '(encrypted) ' + known_blocks[height].transactions[i].payload;	//assume encrypted...
-			displayccid = '(encrypted) ' + known_blocks[height].transactions[i].chaincodeID;
+			payload = '(' + lang.encrypted + ') ' + known_blocks[height].transactions[i].payload;	//assume encrypted...
+			displayccid = '(' + lang.encrypted + ') ' + known_blocks[height].transactions[i].chaincodeID;
 		}
 		else{
 			payload = payload.substring(pos + ccid.length + 2);
@@ -309,15 +309,15 @@ function build_block_details_row(height){
 			uuid = 'n/a &nbsp;&nbsp;';
 			if(!encrypted) displayccid = known_blocks[height].transactions[i].uuid;
 		}
-		else if(!encrypted) displayccid = ccid.substring(0, 14);
+		else if(!encrypted) displayccid = ccid.substring(0, 14) + '...';
 
 		html += '<tr>';
 		html +=		'<td style="word-break: break-word;">';
 		html +=			formatDate(known_blocks[height].transactions[i].timestamp.seconds * 1000, '%M/%d %I:%m%p') + ' UTC';
 		html +=		'</td>';
-		html += 	'<td>' + type2word(known_blocks[height].transactions[i].type) + '</td>';
+		html += 	'<td class="uppercaseMe">' + type2word(known_blocks[height].transactions[i].type) + '</td>';
 		html += 	'<td>' + uuid + '</td>';
-		html += 	'<td><div>' + displayccid + '...</div></td>';
+		html += 	'<td><div>' + displayccid + '</div></td>';
 		html += 	'<td>' + payload + '</td>';
 		html += '</tr>';
 	}
@@ -326,10 +326,10 @@ function build_block_details_row(height){
 
 //convert type to transactions name
 function type2word(type){
-	if(type === TYPE_DEPLOY) return 'DEPLOY';											//type is numeric
-	if(type === TYPE_INVOKE) return 'INVOKE';
-	if(type === TYPE_QUERY) return 'QUERY';
-	if(type === TYPE_TERMINATE) return 'TERMINATE';
+	if(type === TYPE_DEPLOY) return lang.deploy;											//type is numeric
+	if(type === TYPE_INVOKE) return lang.invoke;
+	if(type === TYPE_QUERY) return lang.query;
+	if(type === TYPE_TERMINATE) return lang.terminate;
 	return type;
 }
 
@@ -414,7 +414,7 @@ function rest_chainstats(cb){
 			else{
 				json.height--;
 				console.log('Success - getting chainstats on peer', selected_peer);
-				$('#blockchainPeer').html('[ Connected to ' + friendly_name(bag.peers[selected_peer].id) + ' ]');
+				$('#blockchainPeer').html('[ ' + lang.connected_to + ' ' + friendly_name(bag.peers[selected_peer].id) + ' ]');
 				if(cb) cb(null, json);
 			}
 		});
@@ -463,25 +463,25 @@ function formatTime(ms){
 	
 	if(elasped >= 60*60*24){
 		levels++;
-		str =  Math.floor(elasped / (60*60*24)) + 'days ';
+		str =  Math.floor(elasped / (60*60*24)) + lang.days + ' ';
 		elasped = elasped % (60*60*24);
 	}
 	if(elasped >= 60*60){
 		levels++;
 		if(levels < 2){
-			str =  Math.floor(elasped / (60*60)) + 'hr ';
+			str =  Math.floor(elasped / (60*60)) + lang.hr + ' ';
 			elasped = elasped % (60*60);
 		}
 	}
 	if(elasped >= 60){
 		if(levels < 2){
 			levels++;
-			str +=  Math.floor(elasped / 60) + 'min ';
+			str +=  Math.floor(elasped / 60) + lang.min + ' ';
 			elasped = elasped % 60;
 		}
 	}
 	if(levels < 2){
-		str +=  elasped + 'sec ';
+		str +=  elasped + lang.sec + ' ';
 	}
 	
 	return str;
@@ -511,12 +511,12 @@ function formatDate(date, fmt) {
 			return pad(tmp);
 		case 'p':								//am / pm
 			tmp = date.getUTCHours();
-			if(tmp >= 12) return 'pm';
-			return 'am';
+			if(tmp >= 12) return lang.time_pm;
+			return lang.time_am;
 		case 'P':								//AM / PM
 			tmp = date.getUTCHours();
-			if(tmp >= 12) return 'PM';
-			return 'AM';
+			if(tmp >= 12) return lang.time_pm.toUpperCase();
+			return  lang.time_am.toUpperCase();
 		case 'm':								//Minutes 0 padded
 			return pad(date.getUTCMinutes());
 		case 's':								//Seconds 0 padded

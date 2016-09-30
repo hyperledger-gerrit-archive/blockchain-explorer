@@ -1,16 +1,17 @@
 var express 	= require('express');
-var fs = require('fs');
+var fs 			= require('fs');
+var languages 	= require('../../lang/language_picker.js');
 
-module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
+module.exports = function(logger, dbConnectionString, ev, sessionMiddleware, crud) {
 	var app = express();
 	var dashSessionAuth = [];
-	var middleware = require('../../libs/mine/middleware')(logger, dbConnectionString, ev);
+	var middleware = require('../../libs/mine/middleware')(logger, dbConnectionString, ev, crud);
 	if(process.env.RUN_MODE === 'IBM-BCS'){
 		dashSessionAuth = [sessionMiddleware, middleware.enforce_dash_session];
 	}
 	else if(process.env.RUN_MODE === 'YETI'){
 		dashSessionAuth = [middleware.check_basic_auth];
-	}
+	} 
 
 	//shorter network id for title bar
 	function short_net(network_id){
@@ -21,17 +22,19 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 
 	//build obj to pass to jade
 	function build_jade_obj(req){
+		var language = languages.get_from_url(req);
 		if(!req.session || !req.session.network_ids || !req.session.network_ids[req.params.network_id]) {
 			return {															//fallback... code should not actually get here, just in case
 					show_getting_started: false,
 					network_id: false,
 					display_name: '?',
-					title: 'Network · ?',
+					title: language.network + ' · ?',
 					dash_ver: 'v2',
 					jshash: process.env.cachebust_js,
 					csshash: process.env.cachebust_css,
 					elk: false,
 					ZONE: ev.ZONE,
+					RUN_MODE: process.env.RUN_MODE,
 					swarm_name: '',
 					swarm_arch: '',
 					swarm_region: '',
@@ -44,7 +47,9 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 						reset: false,
 						chaincode_table: false,
 						api_enroll_ids: false,
-					}
+						support_ticket: true,
+					},
+					lang: language
 				};
 		}
 
@@ -71,21 +76,24 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 
 		var cc_api = true;
 		var api_enroll_ids = true;
+		var support_ticket = true;
 		if(req.session.network_ids[req.params.network_id].swarm_name === 'yeti'){
 			cc_api = false;														//yeti networks have no chaincode list api
 			api_enroll_ids = false;												//yeti networks have no enrollID/secrets for api tab
+			support_ticket = false;
 		}
 
 		return 	{
 					show_getting_started: req.session.show_getting_started,
 					network_id: req.params.network_id,
 					display_name: req.session.network_ids[req.params.network_id].display_name,
-					title: 'Network · ' + short_net(req.params.network_id),
+					title: language.network + ' · ' + short_net(req.params.network_id),
 					dash_ver: dash_ver,
 					jshash: process.env.cachebust_js,
 					csshash: process.env.cachebust_css,
 					elk: req.session.network_ids[req.params.network_id].elk,
 					ZONE: ev.ZONE,
+					RUN_MODE: process.env.RUN_MODE,
 					swarm_name: req.session.network_ids[req.params.network_id].swarm_name,
 					swarm_arch: req.session.network_ids[req.params.network_id].swarm_arch,
 					swarm_region: req.session.network_ids[req.params.network_id].swarm_region,
@@ -98,7 +106,9 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 						reset: enable_reset,
 						cc_api: cc_api,
 						api_enroll_ids: api_enroll_ids,
-					}
+						support_ticket: support_ticket,
+					},
+					lang: language
 				};
 	}
 
@@ -107,7 +117,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	//---------------------------------------------------------------------------------------------
 
 	// ------------ Network Tab (peers) -------------- //
-	app.get('/:id/network/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/network/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v1' && req.params.id !== 'v2') next();
 		else{
 			logger.debug('Network tab - network id is: ' + req.params.network_id, req.params.id);
@@ -116,7 +126,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 	
 	// ------------ Logs Tab -------------- //
-	app.get('/:id/logs/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/logs/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v1' && req.params.id !== 'v2') next();
 		else{
 			res.render('routes/z_single_page_app', build_jade_obj(req));
@@ -124,7 +134,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 	
 	// ------------ Blockchain Tab -------------- //
-	app.get('/:id/blockchain/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/blockchain/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v1' && req.params.id !== 'v2') next();
 		else{
 			res.render('routes/z_single_page_app', build_jade_obj(req));
@@ -132,7 +142,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 	
 	// ------------ API Tab -------------- //
-	app.get('/:id/apis/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/apis/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v2') next();
 		else{
 			logger.debug('API tab - network id is: ' + req.params.network_id, req.params.id);
@@ -141,7 +151,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 	
 	// ------------ Demo Tab (examples/templates) -------------- //
-	app.get('/:id/demo/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/demo/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v2') next();
 		else{
 			res.render('routes/z_single_page_app', build_jade_obj(req));
@@ -149,7 +159,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 	
 	// ------------ Support Tab (contact us / status) -------------- //
-	app.get('/:id/support/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/support/:network_id', dashSessionAuth, function(req, res, next) {
 		if(req.params.id !== 'v1' && req.params.id !== 'v2') next();
 		else{
 			res.render('routes/z_single_page_app', build_jade_obj(req));
@@ -157,7 +167,7 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 	});
 
 	// ------------ Service Status Tab -------------- //
-	app.get('/:id/service/:network_id', dashSessionAuth, function(req, res, next) {
+	app.get('/:lang/:id/service/:network_id', dashSessionAuth, function(req, res, next) {
 		if(process.env.RUN_MODE === 'YETI') next();
 		else{
 			if(req.params.id !== 'v1' && req.params.id !== 'v2') next();
@@ -167,24 +177,22 @@ module.exports = function(logger, dbConnectionString, ev, sessionMiddleware) {
 		}
 	});
 
-	// ------------ Public Swagger -------------- //
-	app.get('/swagger', dashSessionAuth, function(req, res, next) {		//don't auth, on purpose!
-		res.render('routes/z_single_page_app', build_jade_obj(req));
-	});
-
 	// ------------ Log Out -------------- //
-	app.get('/logout', dashSessionAuth, function(req, res, next) {
-		req.session.reload(function(err){
-			req.session.destroy();
-			res.render('routes/logout', build_jade_obj(req));
-		});
+	app.get('/:lang/logout', dashSessionAuth, function(req, res, next) {
+		req.session.destroy();
+		res.render('routes/logout', build_jade_obj(req));
 	});
 
 	//--------------------------------
 	// YETI APIs 
 	//--------------------------------
 	//yeti api - setup page
-	app.get('/setup', dashSessionAuth, function(req, res, next) {
+	app.get('/setup', function(req, res, next) {
+		res.redirect('/en-us/setup');
+	});
+
+	//yeti api - setup page
+	app.get('/:lang/setup', dashSessionAuth, function(req, res, next) {
 		if(process.env.RUN_MODE === 'IBM-BCS') next();
 		else{
 			fs.readFile('./json_docs/yeti_network_doc.json', function (err, net_doc) {

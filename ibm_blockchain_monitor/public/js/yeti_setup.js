@@ -1,7 +1,7 @@
 // =================================================================================
 // yeti_setup.js - JS on load code for stand alone yeti ui
 // =================================================================================
-/*global $, document*/
+/*global $, document, lang*/
 /*global peer_rest_get_peers, peer_rest_post_registrar, peer_rest_get_registrar, net_doc*/
 var nxt_peer_num = 0;
 var selected_peer = 0;
@@ -54,17 +54,17 @@ $(document).on('ready', function() {
 	//1st next button
 	$('#quickNext').click(function(){
 		var tls = false;
-		$('#quickStatusResults').html('Talking to peer...');
+		$('#quickStatusResults').html(lang.talking_to_peer + '...');
 		if($('#quickTLSyes').hasClass('toggleButtonOn')) tls = true;
 		peer_rest_get_peers($('input[name="quick_api_hostname"]').val(), $('input[name="quick_api_port"]').val(), tls, 1, function(err, data){
 			//err = null;
 			inputHighlight(['input[name="quick_api_hostname"]', 'input[name="quick_api_port"]'], err);
 			if(err){
 				console.log(err);
-				$('#quickStatusResults').append('<br/>Error - could not reach peer API');
+				$('#quickStatusResults').append('<br/>' + lang.error_reaching_peer);
 			}
 			else{
-				$('#quickStatusResults').append('<br/>Okay!');
+				$('#quickStatusResults').append('<br/>' + lang.okay + '!');
 				$('#caPanel').slideDown();
 				nxt_peer_num = 0;
 				for(var i in data.peers){
@@ -111,7 +111,7 @@ $(document).on('ready', function() {
 			$('#setup_' + selected_peer).show();
 			$('.setupName').html($(this).find('.name').html());
 
-			if(selected_peer > 0) $('#copyFromLeft').html('Copy VP' + (selected_peer - 1)).attr('number', selected_peer).fadeIn();
+			if(selected_peer > 0) $('#copyFromLeft').html(lang.copy + ' VP' + (selected_peer - 1)).attr('number', selected_peer).fadeIn();
 			else $('#copyFromLeft').hide();
 			if(Number(selected_peer) === -1) $('#testPeer').hide();
 			else $('#testPeer').fadeIn();
@@ -138,7 +138,7 @@ $(document).on('ready', function() {
 	
 	//test the select peer input fields
 	$('#testPeer').click(function(){
-		$('#setupStatusResults').html('Talking to peer ' + selected_peer + '...');
+		$('#setupStatusResults').html(lang.talking_to_peer + ' ' + selected_peer + '...');
 		var tls = false;
 		if($('#setup_tls_yes_' + selected_peer).hasClass('toggleButtonOn')) tls = true;
 		var host = $('input[name="setup_api_hostname_' + selected_peer + '"]').val();
@@ -150,7 +150,7 @@ $(document).on('ready', function() {
 			toggleStatusIcon(selected_peer, err);
 			if(err){
 				console.log(err);
-				$('#setupStatusResults').append('<br/>Error - could not reach peer API');
+				$('#setupStatusResults').append('<br/>' + lang.error_reaching_peer);
 			}
 			else{
 				$('#setupStatusResults').append('<br/>Okay!');
@@ -160,7 +160,7 @@ $(document).on('ready', function() {
 				if(ids.length === 0 && selected_peer === 0){									//if its the first peer, must have enrollID
 					inputHighlight(['input[name="setup_enrollID_' + selected_peer + '"]'], true);
 					toggleStatusIcon(selected_peer, true);
-					$('#setupStatusResults').append('<br/>Error - enrollID is not registered for peer ' + selected_peer);
+					$('#setupStatusResults').append('<br/>' + lang.register_error1 + ' ' + selected_peer);
 				}
 				else if(ids.length > 0){														//if ids are present check them
 					$('#setupStatusResults').append('<br/>Checking enrollID ' + ids[0] + '...');
@@ -169,10 +169,10 @@ $(document).on('ready', function() {
 						toggleStatusIcon(selected_peer, err);
 						if(err){
 							console.log(err);
-							$('#setupStatusResults').append('<br/>Error - enrollID is not registered');
+							$('#setupStatusResults').append('<br/>' + lang.register_error2);
 						}
 						else{
-							$('#setupStatusResults').append('<br/>enrollID Okay!');
+							$('#setupStatusResults').append('<br/>' + lang.enrollid + ' ' + lang.okay + '!');
 						}
 					});
 				}
@@ -187,7 +187,7 @@ $(document).on('ready', function() {
 	//setup panel next button
 	$('#setupNext').click(function(){
 		checking = 0;
-		$('#setupStatusResults').html('Checking peers');
+		$('#setupStatusResults').html(lang.checking_peers);
 		for(var i=0; i < nxt_peer_num; i++){
 			$('#setupStatusResults').append('<br/>Talking to peer ' + i + '...');
 			var host = $('input[name="setup_api_hostname_' + i + '"]').val();
@@ -200,18 +200,18 @@ $(document).on('ready', function() {
 				inputHighlight(['input[name="setup_api_hostname_' + data.shortname + '"]', 'input[name="setup_api_port_' + data.shortname + '"]'], err);
 				if(err){
 					console.log(err);
-					$('#setupStatusResults').append('<br/>Error - could not reach peer API peer ' + data.shortname);
+					$('#setupStatusResults').append('<br/>' + lang.error_reaching_peer +' ' + data.shortname);
 				}
 				else{
 					checking++;
-					$('#setupStatusResults').append('<br/>Okay! peer ' + data.shortname);
+					$('#setupStatusResults').append('<br/>' + lang.okay +'! ' + lang.peer + ' ' + data.shortname);
 
 					// ---- check enroll id ---- //
 					var ids = parseEnrollIDField(data.shortname);
 					if(ids.length === 0 && data.shortname === 0){										//if its the first peer, must have enrollID
 						inputHighlight(['input[name="setup_enrollID_' + data.shortname + '"]'], true);
 						toggleStatusIcon(data.shortname, true);
-						$('#setupStatusResults').append('<br/>Error - enrollID is not registered for peer ' + data.shortname);
+						$('#setupStatusResults').append('<br/>' + lang.register_error1 + ' ' + data.shortname);
 					}
 					else if(ids.length > 0){															//if ids are present check them
 						var host = $('input[name="setup_api_hostname_' + data.shortname + '"]').val();
@@ -224,10 +224,10 @@ $(document).on('ready', function() {
 							toggleStatusIcon(data.shortname, err);
 							if(err){
 								console.log(err);
-								$('#setupStatusResults').append('<br/>Error - enrollID is not registered');
+								$('#setupStatusResults').append('<br/>' + lang.register_error2);
 							}
 							else{
-								$('#setupStatusResults').append('<br/>enrollID Okay!');
+								$('#setupStatusResults').append('<br/>' + lang.enrollid + ' ' + lang.okay + '!');
 								checking_complete();
 							}
 						});
@@ -262,7 +262,7 @@ $(document).on('ready', function() {
 		inputHighlight(['input[name="basic_password"]', 'input[name="basic_confirm"]'], err);
 
 		if(!err){
-			$(this).addClass('saveButton').html('Save');
+			$(this).addClass('saveButton').html(lang.save);
 			build_network_doc();
 			$('#jsonDump').html(JSON.stringify(network_obj, null, 4));
 			$('#jsonPanel').slideDown();
@@ -312,16 +312,16 @@ $(document).on('ready', function() {
 
 		$('input[name="setup_enrollID_' + selected_peer + ']').val('test');
 
-		$('#setupStatusResults').html('Talking to peer ' + selected_peer + '...');
+		$('#setupStatusResults').html(lang.talking_to_peer + ' ' + selected_peer + '...');
 		peer_rest_post_registrar(host, port, true, id, secret, function(err, resp){
 			inputHighlight(['input[name="setup_enrollSecret"]', 'input[name="setup_enrollID"]'], err);
 			toggleStatusIcon(selected_peer, err);
 			if(err){
-				$('#setupStatusResults').append('<br/>Error - could not register to peer');
+				$('#setupStatusResults').append('<br/>' + lang.register_error3);
 			}
 			else{
 				var append = $('input[name="setup_enrollID_' + selected_peer + '"]').val() + ',' + id;
-				$('#setupStatusResults').append('<br/>Done!');
+				$('#setupStatusResults').append('<br/>' + lang.done + '!');
 				$('input[name="setup_enrollID_' + selected_peer + '"]').val(append);			 //append
 				$('input[name="setup_enrollID"]').val('');										//clear the field
 				$('input[name="setup_enrollSecret"]').val('');
@@ -338,7 +338,7 @@ $(document).on('ready', function() {
 //see if the setup is done checking each peer
 function checking_complete(){
 	if(checking >= nxt_peer_num - 1){
-		$('#setupNext').addClass('saveButton').html('Resave');
+		$('#setupNext').addClass('saveButton').html(lang.resave);
 		build_network_doc();
 		$('#jsonDump').html(JSON.stringify(network_obj, null, 4));
 		$('#sessionPanel').slideDown();
@@ -371,48 +371,48 @@ function toggleButton(id1, id2){
 
 //build html for peer setup sub panel
 function build_peer_config_panel(number){
-	var required = '<span class="required">*</span>';
-	var spacer = '<span class="required">&nbsp;</span>';
+	var required = '<span class="setupRequired">*</span>';
+	var spacer = '<span class="setupRequired">&nbsp;</span>';
 	//var copyUp = '<svg class="copyUp"><use xlink:href="/img/icons/sprite.svg#common--previous"></use></svg>';
 	//var copyDown = '<svg class="copyDown""><use xlink:href="/img/icons/sprite.svg#common--previous"></use></svg>';
 	var html = '';
 	html = '<div class="inputWrap setupWrap" id="setup_' + number + '" number="' + number +'">';
 	html += 	'<p>';
 	html +=			required;
-	html +=			'<span class="setupLegend"> HTTP Hostname </span>';
+	html +=			'<span class="setupLegend"> ' + lang.http_hostname + ' </span>';
 	html +=			'<input type="text" name="setup_api_hostname_' + number + '" class="doubleInput" placeholder="ex 127.0.0.1">';
 	html +=		'</p>';
 	
 	html += 	'<p>';
 	html +=			required;
-	html +=			'<span class="setupLegend"> HTTP Port </span>';
+	html +=			'<span class="setupLegend"> ' + lang.http_port + ' </span>';
 	html +=			'<input type="text" name="setup_api_port_' + number + '" class="halfInput" placeholder="ex 443">';
 	html +=		'</p>';
 
 	html += 	'<p name="setup_api_tls_' + number + '">';
 	html +=			spacer;
-	html +=			'<span class="setupLegend"> HTTP TLS </span>';
-	html +=			'<button class="toggleButtonOn bx--btn" id="setup_tls_yes_' + number +'"> Yes </button>';
+	html +=			'<span class="setupLegend"> ' + lang.http_tls + ' </span>';
+	html +=			'<button class="toggleButtonOn bx--btn" id="setup_tls_yes_' + number +'"> ' + lang.yes + ' </button>';
 	html +=			'<span>&nbsp</span>';
-	html +=			'<button class="toggleButtonOff bx--btn" id="setup_tls_no_' + number +'"> No </button>';
+	html +=			'<button class="toggleButtonOff bx--btn" id="setup_tls_no_' + number +'"> ' + lang.no + ' </button>';
 	html +=		'</p>';
 	
 	html += 	'<p>';
 	html +=			required;
-	html +=			'<span class="setupLegend"> gRPC Hostname </span>';
+	html +=			'<span class="setupLegend"> ' + lang.grpc_hostname + ' </span>';
 	html +=			'<input type="text" name="setup_grpc_hostname_' + number + '" class="doubleInput" placeholder="ex 127.0.0.1">';
 	html +=		'</p>';
 			
 	html += 	'<p>';
 	html +=			required;
-	html +=			'<span class="setupLegend"> gRPC Port </span>';
+	html +=			'<span class="setupLegend"> ' + lang.grpc_lang + ' </span>';
 	html +=			'<input type="text" name="setup_grpc_port_' + number + '" class="halfInput" placeholder="ex 30303">';
 	html +=		'</p>';
 
 	html += 	'<p>';
 	if(number === 0) html += required;
 	else html += spacer;
-	html +=			'<span class="setupLegend"> Enroll ID </span>';
+	html +=			'<span class="setupLegend"> ' + lang.enrollid + ' </span>';
 	html +=			'<input type="text" name="setup_enrollID_' + number + '" placeholder="ex id1">';
 	html +=		'</p>';
 

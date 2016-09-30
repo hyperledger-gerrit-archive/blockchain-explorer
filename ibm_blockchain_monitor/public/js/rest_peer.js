@@ -11,7 +11,6 @@ function peer_rest_get_peers(host, port, tls, i, cb){
 	var proto = 'http';
 	if(tls === true) proto = 'https';
 	if(tls === 'https') proto = 'https';
-	console.log('here', host, port, tls);
 
 	if(!host || !port || isNaN(port)){
 		if(cb) cb({error: 'no host or port'}, {shortname: i});
@@ -21,7 +20,7 @@ function peer_rest_get_peers(host, port, tls, i, cb){
 		$.ajax({
 			method: 'GET',
 			url: proto + '://' + host.trim() + ':' + Number(port) + '/network/peers',
-			//data: JSON.stringify(data),
+			timeout: 20000,
 			contentType: 'application/json',
 			success: function(json){
 				json.peers.sort(function(a, b) {										//alpha sort me
@@ -55,7 +54,7 @@ function peer_rest_get_registrar(host, port, tls, id, cb){
 		$.ajax({
 			method: 'GET',
 			url: proto + '://' + host.trim() + ':' + Number(port) + '/registrar/' + id,
-			//data: JSON.stringify(data),
+			timeout: 20000,
 			contentType: 'application/json',
 			success: function(json){
 				json.id = id;
@@ -93,6 +92,7 @@ function peer_rest_post_registrar(host, port, tls, id, secret, cb){
 		$.ajax({
 			method: 'POST',
 			url: url,
+			timeout: 20000,
 			data: JSON.stringify({
 									enrollId: id,
 									enrollSecret: secret
@@ -123,6 +123,7 @@ function peer_rest_get_blockheight(host, port, tls, peer_id, cb){
 	}
 	else{
 		$.ajax({
+			timeout: 15000,
 			method: 'GET',
 			url: url,
 			success: function(json){
@@ -149,6 +150,7 @@ function peer_rest_blockstats(host, port, tls, height, peer_id, cb){
 	$.ajax({
 		method: 'GET',
 		url: url,
+		timeout: 20000,
 		contentType: 'application/json',
 		success: function(json){
 			json.id = peer_id;
@@ -172,6 +174,7 @@ function peer_rest_deploy(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){
@@ -196,6 +199,7 @@ function peer_rest_invoke(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){
@@ -220,6 +224,7 @@ function peer_rest_query(host, port, tls, data, peer_id, cb){
 	$.ajax({
 		method: 'POST',
 		url: url,
+		timeout: 20000,
 		data: JSON.stringify(data),
 		contentType: 'application/json',
 		success: function(json){

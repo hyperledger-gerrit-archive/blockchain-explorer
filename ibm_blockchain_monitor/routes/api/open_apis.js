@@ -1,12 +1,9 @@
 var express = require('express');
 
-module.exports = function(dbConnectionString, logger, ev, sessionMiddleware) {
+module.exports = function(dbConnectionString, logger, ev, sessionMiddleware, crud) {
 	var nano = require('nano')(dbConnectionString);
 	//var dbNetworks = nano.use(ev.DB_PREFIX + 'networks');
 	var dbConfig = nano.use(ev.DB_PREFIX + 'config');
-	var crud = {};
-	if(process.env.RUN_MODE === 'IBM-BCS') crud = require('../../libs/crud_core_cl.js');
-	else crud = require('../../libs/crud_core_fs.js');
 	var app = express();
 	
 	//get known chaincode demos

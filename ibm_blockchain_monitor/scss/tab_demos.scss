@@ -2,7 +2,7 @@
 
 .demoAppWrap{
 	display:block;
-	margin-bottom: 5px;
+	//margin-bottom: 5px;
 	font-size: 14px;
 }
 
@@ -30,7 +30,7 @@
 	vertical-align: bottom;
 	margin-bottom: 4px;
 	position: relative;
-	width: 145px;
+	width: 200px;
 }
 
 .demoAppName{
@@ -40,13 +40,14 @@
 
 .demoAppDescr{
 	margin-right: 5px;
-	width: 460px;
+	width: 440px;
 }
 
 .demoDetails, .demoInteract{
 	font-size: 13px;
 	margin-right: 5px;
 	width:150px;
+	word-break: break-word;
 }
 
 .demoInteract{
@@ -58,10 +59,13 @@
 }
 
 #cpLoading, #marblesLoading, #example02Loading{
-	position: absolute;
-	right: 4px;
-	top: -3px;
+	//position: absolute;
+	//right: 4px;
+	//top: -3px;
 	display:none;
+	display: inline;
+	margin: 0;
+	margin-left: 10px;
 }
 
 #deployWrap{
@@ -96,20 +100,34 @@
 	margin-right: 10px;
 }
 
+.selectAction{
+	width: 160px;
+}
+
 .selectCC:focus{
 	border: 1px $color__white solid;
 }
 
+#demoLogs, #demoLogsToolbar{
+	background: $color__blue-90;
+	color: $color__white;
+}
+
 #demoLogs{
 	font-family: Lucida Console, 'Courier';
-	background: $color__blue-90;
 	min-height: 150px;
-	margin-top: 4px;
-	color: $color__white;
+	//margin-top: 4px;
 	font-size: 12px;
 	padding: 10px;
 	overflow: auto;
 	max-height: 550px;
+}
+
+#demoLogsToolbar{
+	height: 30px;
+	margin: 0;
+	margin-top: 4px;
+	border-bottom: 1px solid $color__navy-gray-5;
 }
 
 //log api req/response
@@ -130,14 +148,10 @@
 	position: relative;
 }
 
-.logControls{
-	display: none;
-}
-
 #clearLogs{
 	position: absolute;
-	right: 10px;
-	top: 0;
+	right: 5px;
+	top: -4px;
 	cursor: pointer;
 }
 

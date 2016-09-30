@@ -1,17 +1,41 @@
 {
-    "_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
+    "_id": "6d034331-553b-409e-8c27-cd912434cbdf",
     "peers": {
-        "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0": {
-            "url": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0.us.blockchain.ibm.com",
+        "6d034331-553b-409e-8c27-cd912434cbdf_vp0": {
+            "url": "6d034331-553b-409e-8c27-cd912434cbdf_vp0.us.blockchain.ibm.com",
             "companion": {},
-            "discovery_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0.us.blockchain.ibm.com",
+            "discovery_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp0.us.blockchain.ibm.com",
             "discovery_port": "30303",
-            "api_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0.us.blockchain.ibm.com",
+            "api_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp0.us.blockchain.ibm.com",
             "tls": true,
             "api_port": "443",
             "api_port_tls": "443",
             "type": "peer",
-            "network_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
+            "network_id": "6d034331-553b-409e-8c27-cd912434cbdf",
+            "container_id": "",
+            "security": {
+                "enabled": true,
+                "enrollId": "",
+                "enrollSecret": "",
+                "eca_paddr": "",
+                "tca_paddr": "",
+                "tlsca_paddr": ""
+            },
+            "users": [
+                "dashboarduser_type1_704279bb3f"
+            ]
+        },
+        "6d034331-553b-409e-8c27-cd912434cbdf_vp1": {
+            "url": "6d034331-553b-409e-8c27-cd912434cbdf_vp1.us.blockchain.ibm.com",
+            "companion": {},
+            "discovery_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp1.us.blockchain.ibm.com",
+            "discovery_port": "30303",
+            "api_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp1.us.blockchain.ibm.com",
+            "tls": true,
+            "api_port": "443",
+            "api_port_tls": "443",
+            "type": "peer",
+            "network_id": "6d034331-553b-409e-8c27-cd912434cbdf",
             "container_id": "",
             "security": {
                 "enabled": true,
@@ -23,17 +47,17 @@
             },
             "users": []
         },
-        "6183e812-a6fe-4bd4-b21c-adf12840b460_vp1": {
-            "url": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp1.us.blockchain.ibm.com",
+        "6d034331-553b-409e-8c27-cd912434cbdf_vp2": {
+            "url": "6d034331-553b-409e-8c27-cd912434cbdf_vp2.us.blockchain.ibm.com",
             "companion": {},
-            "discovery_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp1.us.blockchain.ibm.com",
+            "discovery_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp2.us.blockchain.ibm.com",
             "discovery_port": "30303",
-            "api_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp1.us.blockchain.ibm.com",
+            "api_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp2.us.blockchain.ibm.com",
             "tls": true,
             "api_port": "443",
             "api_port_tls": "443",
             "type": "peer",
-            "network_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
+            "network_id": "6d034331-553b-409e-8c27-cd912434cbdf",
             "container_id": "",
             "security": {
                 "enabled": true,
@@ -45,39 +69,17 @@
             },
             "users": []
         },
-        "6183e812-a6fe-4bd4-b21c-adf12840b460_vp2": {
-            "url": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp2.us.blockchain.ibm.com",
+        "6d034331-553b-409e-8c27-cd912434cbdf_vp3": {
+            "url": "6d034331-553b-409e-8c27-cd912434cbdf_vp3.us.blockchain.ibm.com",
             "companion": {},
-            "discovery_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp2.us.blockchain.ibm.com",
+            "discovery_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp3.us.blockchain.ibm.com",
             "discovery_port": "30303",
-            "api_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp2.us.blockchain.ibm.com",
+            "api_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp3.us.blockchain.ibm.com",
             "tls": true,
             "api_port": "443",
             "api_port_tls": "443",
             "type": "peer",
-            "network_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
-            "container_id": "",
-            "security": {
-                "enabled": true,
-                "enrollId": "",
-                "enrollSecret": "",
-                "eca_paddr": "",
-                "tca_paddr": "",
-                "tlsca_paddr": ""
-            },
-            "users": []
-        },
-        "6183e812-a6fe-4bd4-b21c-adf12840b460_vp3": {
-            "url": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp3.us.blockchain.ibm.com",
-            "companion": {},
-            "discovery_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp3.us.blockchain.ibm.com",
-            "discovery_port": "30303",
-            "api_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp3.us.blockchain.ibm.com",
-            "tls": true,
-            "api_port": "443",
-            "api_port_tls": "443",
-            "type": "peer",
-            "network_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
+            "network_id": "6d034331-553b-409e-8c27-cd912434cbdf",
             "container_id": "",
             "security": {
                 "enabled": true,
@@ -92,21 +94,21 @@
     },
     "instance": {},
     "type": "network",
-    "timestamp": 1473358131849,
+    "timestamp": 1474296902935,
     "swarm": {
         "arch": "x86",
         "name": "yeti",
         "region": "somewhere"
     },
     "ca": {
-        "6183e812-a6fe-4bd4-b21c-adf12840b460_ca": {
-            "url": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0.us.blockchain.ibm.com",
-            "discovery_host": "6183e812-a6fe-4bd4-b21c-adf12840b460_vp0.us.blockchain.ibm.com",
+        "6d034331-553b-409e-8c27-cd912434cbdf_ca": {
+            "url": "6d034331-553b-409e-8c27-cd912434cbdf_vp0.us.blockchain.ibm.com",
+            "discovery_host": "6d034331-553b-409e-8c27-cd912434cbdf_vp0.us.blockchain.ibm.com",
             "discovery_port": "443",
             "api_host": "-",
             "api_port": "-",
             "type": "ca",
-            "network_id": "6183e812-a6fe-4bd4-b21c-adf12840b460",
+            "network_id": "6d034331-553b-409e-8c27-cd912434cbdf",
             "container_id": "",
             "users": {}
         }

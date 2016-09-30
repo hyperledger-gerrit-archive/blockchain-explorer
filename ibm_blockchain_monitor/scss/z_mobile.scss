@@ -1,15 +1,21 @@
 @import '0_bluemix-colors-6.7.0';
 
-@media (max-width: 1400px) {
-	// !
+@media (max-width: 1500px) {
 	.demoAppDescr{
-		width: 310px;
+		width: 350px;
+	}
+}
+
+@media (max-width: 1400px) {
+	.demoAppDescr{
+		width: 250px;
 	}
 	.demoActionWrap {
 		width: 852px;
 	}
 	#navPanelContent{
 		padding: 40px 15px;
+		padding-right: 0;
 	}
 	.helpfulHints{
 		width: 285px;
@@ -17,9 +23,11 @@
 }
 
 @media (max-width: 1200px) {
-	//!
 	.demoAppDescr{
 		width: 190px;
+	}
+	.demoDetails{
+		display:none;
 	}
 	.demoActionWrap {
 		width: 733px;
@@ -51,10 +59,6 @@
 }
 
 @media (max-width: 1100px){
-	//!
-	.demoDetails{
-		display:none;
-	}
 	#urlFullPath, .peerOptionWrap{							//swagger field
 		margin-left:5px;
 	}
@@ -72,9 +76,8 @@
 }
 
 @media (max-width: 1000px) {
-	//!
 	.demoAppDescr{
-		width: 150px;
+		width: 148px;
 	}
 	.demoActionWrap {
 		text-align: center;
@@ -85,9 +88,10 @@
 	}
 	#navPanelContent{
 		padding: 40px 5px;
+		padding-right: 0;
 	}
 	#navPanel{
-		min-width: 165px;
+		min-width: 195px;
 	}
 	.navLink{
 		font-size: 13px;
@@ -115,7 +119,10 @@
 	#openTipsLink{							//getting started link
 		margin-top: -50px;
 	}
-	.mainContentWrap tr td:nth-of-type(2), .mainContentWrap tr th:nth-of-type(2){
+	.mainContentWrap tr td:nth-of-type(2), .mainContentWrap tr th:nth-of-type(2){	//hide http/grpc column
+		display:none;
+	}
+	.mainContentWrap tr td:nth-of-type(3), .mainContentWrap tr th:nth-of-type(3){	//hide discovery column
 		display:none;
 	}
 	#passive-modal, #transactional-modal {
@@ -193,5 +200,14 @@
 	}
 	#mainPanel{
 		width: 100%;
+	}
+}
+
+@media (max-height: 800px){
+	.bx--modal{
+		position: absolute;
+	}
+	.bx--modal .bx--modal-inner{
+		max-height: 100%;
 	}
 }

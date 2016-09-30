@@ -25,7 +25,8 @@ Why are there so many differences?  Consider, for example, that there is an auth
 - `ENFORCE_BACKEND_SSL`: Whether or not to require a valid SSL certificate when connecting to backend HTTPS APIs from the broker.
 - `COMMIT`: The hash of this git commit for the service broker; useful for determining what code is actually running where.  This is set by the build script at deploy time.
 - `REGION`: One of `us_south`, `eu_gb`, `au_syd`. Dictates the selection from the statics object as well as other behaviors depending on which region the broker is located in.
-- `RUN_MODE`: Which mode to run in. 'IBM-BCS' or 'YETI'
+- `RUN_MODE`: Which mode to run in. `IBM-BCS` or `YETI`
+- `HOSTNAME`: The hostname to access the node application, should NOT include http:// or port.  ex `ibm-bcs-passenger-prod.mybluemix.net`
 
 ## Statics Object
 

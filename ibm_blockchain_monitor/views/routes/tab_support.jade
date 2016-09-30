@@ -1,42 +1,42 @@
 #support_content
 	.mainContentWrap
 		.thinTxtWrap
-			h2.thinBorder FAQs
-			span A list of
+			h2.thinBorder #{lang.faqs}
+			span #{lang.faq_msg1}
 			svg.linkArrow
 				use(xlink:href="/img/icons/sprite.svg#common--previous")
-			a(href="https://github.com/hyperledger/hyperledger/wiki/Frequently-Asked-Questions-(FAQ)" target="_blank") frequently asked questions
-			span &nbsp;on our blockchain service.
+			a(href="https://github.com/hyperledger/hyperledger/wiki/Frequently-Asked-Questions-(FAQ)" target="_blank") #{lang.faq_msg2}
+			span &nbsp;#{lang.faq_msg3}
 
 		.thinTxtWrap
-			h2.thinBorder Community
-			span Connect with the community on
+			h2.thinBorder #{lang.community}
+			span #{lang.comm_msg1}
 			svg.linkArrow
 				use(xlink:href="/img/icons/sprite.svg#common--previous")
-			a(href="https://developer.ibm.com/answers/search.html?f=&type=question&redirect=search%2Fsearch&sort=relevance&smartspace=&q=blockchain" target="_blank") IBM Developer Works
-			//span &nbsp;where you can post questions.
+			a(href="https://developer.ibm.com/answers/search.html?f=&type=question&redirect=search%2Fsearch&sort=relevance&smartspace=&q=blockchain" target="_blank") #{lang.ibm_developer_works}
 			
 			br
 			br
 
-			span Get the latest
+			span #{lang.comm_msg2}
 			svg.linkArrow
 				use(xlink:href="/img/icons/sprite.svg#common--previous")
-			a(href="https://github.com/hyperledger/fabric" target="_blank") Hyperledger
-			span &nbsp;code from GitHub.
+			a(href="https://github.com/hyperledger/fabric" target="_blank") #{lang.hyperledger}
+			span &nbsp;#{lang.comm_msg3}
+
+		if(ui_options.support_ticket === true)
+			.thinTxtWrap
+				h2.thinBorder #{lang.support_ticket}
+				span #{lang.support_msg1}
+				svg.linkArrow
+					use(xlink:href="/img/icons/sprite.svg#common--previous")
+				a(href="https://github.com/IBM-Blockchain/ibm-blockchain-issues/issues" target="_blank") #{lang.support_ticket} 
+				span &nbsp;#{lang.support_msg2}
 
 		.thinTxtWrap
-			h2.thinBorder Support Ticket
-			span Generate a
+			h2.thinBorder #{lang.Blockchain} #{lang.sample_apps}
+			span #{lang.sample_msg1}
 			svg.linkArrow
 				use(xlink:href="/img/icons/sprite.svg#common--previous")
-			a(href="https://github.com/IBM-Blockchain/ibm-blockchain-issues/issues" target="_blank") support ticket 
-			span &nbsp;describing your issues regarding you blockchain service.
-
-		.thinTxtWrap
-			h2.thinBorder Blockchain Sample Applications
-			span Browse our 
-			svg.linkArrow
-				use(xlink:href="/img/icons/sprite.svg#common--previous")
-			a(href="https://github.com/ibm-blockchain/" target="_blank") sample applications 
-			span &nbsp;on GitHub to get you started on building your own blockchain applications.
+			a(href="https://github.com/ibm-blockchain/" target="_blank") #{lang.sample_apps} 
+			span &nbsp;#{lang.sample_msg2}

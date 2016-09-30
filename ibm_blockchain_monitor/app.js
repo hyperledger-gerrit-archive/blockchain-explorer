@@ -1,3 +1,10 @@
+//------------------------------------------------------------
+// app.js - start of app
+//
+// Copyright (c) 2016 IBM Corp.
+// All rights reserved. 
+//------------------------------------------------------------
+
 var express 		= require('express');
 var bodyParser 		= require('body-parser');
 var cookieParser	= require('cookie-parser');
@@ -8,12 +15,11 @@ var app 			= express();
 var passport		= require('passport');
 var BlueMixOAuth2Strategy = require('passport-bluemix-obc').BlueMixOAuth2Strategy;
 var session			= require('express-session');
-var sessionstore 	= require('sessionstore-cloudant');
-var url				= require('url');
 var cors 			= require('cors');
 var compression 	= require('compression');
 var packageJson 	= require('./package.json');
 var path			= require('path');
+var languages 		= require('./lang/language_picker.js');
 var crud = {};
 var ev = {};
 var sessionMiddleware = {};
@@ -46,7 +52,9 @@ var logger = new (winston.Logger)({
 		new (winston.transports.Console)({colorize: true}),
 	]
 });
-var misc = require('./libs/misc.js')(logger);
+var misc = require('./libs/mine/misc.js')(logger);
+var common_misc = require('./libs/common_misc.js')(logger);
+var CouchdbStore = require('./libs/cloudant-store.js')(session, logger);
 
 //---------------------
 // RUN MODE -  can be 'IBM-BCS' or 'YETI'
@@ -96,6 +104,7 @@ if(process.env.RUN_MODE === 'IBM-BCS'){
 	ev = {													//defaults env settings
 		ZONE: '',											//leave blank (gets replaced below)
 		REGION: '',											//leave blank (gets replaced below)
+		HOSTNAME: '',										//leave blank (gets replaced below)
 		DB_CONNECTION_STRING: 'https://example.com',		//leave as dummy url
 		ENFORCE_BACKEND_SSL: 'true',
 		OVERRIDE_CONTENT_URL: '',							//leave blank (gets replaced below)
@@ -112,17 +121,16 @@ if(process.env.RUN_MODE === 'IBM-BCS'){
 	//setup crud
 	var nano = require('nano')(ev.DB_CONNECTION_STRING);
 	var dbConfig = nano.use(ev.DB_PREFIX + 'config');
-	crud = require('./libs/crud_core_cl.js');
+	crud = require('./libs/mine/crud_cl.js')(ev, logger);
 
 	// Add the design doc to the database, 2nd param controls if we overwrite! be careful...
-	misc.store_json_doc(nano.use(ev.DB_PREFIX + 'networks'), 'network_design_doc.json', true);
-	misc.store_json_doc(nano.use(ev.DB_PREFIX + 'config'), 'config_design_doc.json', true);
-	misc.store_json_doc(nano.use(ev.DB_PREFIX + 'config'), 'cc_demo_hashes.json', true);
+	common_misc.store_json_doc(nano.use(ev.DB_PREFIX + 'config'), 'cc_demo_hashes.json', true);
+	common_misc.store_json_doc(nano.use(ev.DB_PREFIX + 'networks'), 'test_network.json', false);
 
 	// ---- Get ENV settings ---- //
 	crud.get_env_config(dbConfig, function(err, results){
 		if (err){
-			logger.error('An error occurred obtaining env configuration:', err, results);
+			logger.error('An error occured obtaining env configuration:', err, results);
 		}
 		else{
 			ev.ADMIN_LIST = results.admin_list;
@@ -138,45 +146,46 @@ if(process.env.RUN_MODE === 'IBM-BCS'){
 			ev.X86_NAME = results[ev.ZONE][ev.REGION].x86_name;
 			ev.Z_NAME = results[ev.ZONE][ev.REGION].z_name;
 			ev.SP_URL = results[ev.ZONE][ev.REGION].sp_url;
-			ev.CONTENT_URL = results[ev.ZONE][ev.REGION].content_url;
 			ev.DB_PREFIX = results[ev.ZONE][ev.REGION].db_prefix;
+			
+			//content url is set differently
+			ev.CONTENT_URL = 'https://' + ev.HOSTNAME;
+			if(ev.ZONE === 'local') ev.CONTENT_URL = 'http://' + ev.HOSTNAME + ':' + port;
 			if(ev.OVERRIDE_CONTENT_URL) ev.CONTENT_URL = ev.OVERRIDE_CONTENT_URL;			//when running locally set overide to "http://localhost:3000"
-			if(ev.ZONE === 'local') ev.CONTENT_URL = results[ev.ZONE][ev.REGION].content_url + ':' + port;
+
 
 			//---------------------
 			// Session Store
 			//---------------------
-			var database = url.parse(ev.DB_CONNECTION_STRING);
-			var user = database.auth.split(':')[0];
-			var pass = database.auth.split(':')[1];
-			var cl_port = 80;
-			if (database.protocol == 'https:') cl_port = 443;
-
-			var cloudantSessionStore = sessionstore.createSessionStore({
-				type: 'couchdb',
-				host: database.protocol + '//' + database.hostname,
-				port: cl_port,
-				dbName: ev.DB_PREFIX + 'sessions',
-				options: {
-					auth: {
-						username: user,
-						password: pass
-					},
-					cache: false
-				}
-			});
-			cloudantSessionStore.on('connect', function() {
-				logger.info('Connected to session store successfully!');
-			});
-
-			var secure = true;
-			if(ev.ZONE === 'local') secure = false;
+			var store = new CouchdbStore({
+											name: process.env.APP_NAME,
+											DB_CONNECTION_STRING: ev.DB_CONNECTION_STRING,
+											DB_SESSIONS: ev.DB_PREFIX + 'sessions',
+											expire_ms: 10 * 60 * 60 * 1000					//good for 10 hours
+										});
 			sessionMiddleware = session({
 				secret: ev.SESSION_SECRET,
-				store: cloudantSessionStore,
-				saveUninitialized: true,
+				store: store,
+
+				//if true "new but unmodified sessions" are saved to store [dsh: leave it false, helps avoid race cond]
+				saveUninitialized: false,
+
+				//if true session is saved to store after each request even if no changes [dsh: leave it true, our store is smart]
 				resave: true,
-				cookie: { secure: false }
+
+				cookie: {
+							//if true cookie only sent in connections that have tls	[dsh: leave it false]
+							//I'd like to have this true when zone !== local, but we need to change to https and make certs
+							secure: false,
+
+							//if true it blocks client side access to cookie [dsh: leave it true, better security]
+							httpOnly: true,
+
+							path: '/',
+
+							//if this doesn't match the url the cookie will not be set, use caution
+							domain: ev.HOSTNAME,
+						}
 			});
 
 			//---------------------
@@ -210,25 +219,8 @@ if(process.env.RUN_MODE === 'IBM-BCS'){
 			app.use(passport.initialize());
 			app.use(passport.session());
 			
-			// ---- Create Blockchain Configs ---- //
-			crud.get_blockchain_configs(dbConfig, function(err, configs) {
-				if (err){
-					logger.error('An error occurred getting blockchain configuration docs: ', err, configs);
-				}
-				else{
-					logger.info('Found ' + configs.length + ' swarm configurations...');
-
-					// --- x86 OR Z --- //
-					var blockchain_configs = [];
-					for (var j in configs){
-						var bc_config = misc.build_blockchain_config(configs[j], ev);
-						blockchain_configs.push(bc_config);
-					}
-
-					//gogo app
-					start_app(blockchain_configs);
-				}
-			});
+			//gogo app
+			start_app();
 		}
 	});
 }
@@ -245,7 +237,7 @@ else if(process.env.RUN_MODE === 'YETI'){
 		DB_PREFIX: '',										//leave blank
 		VERSION: packageJson.version
 	};
-	crud = require('./libs/crud_core_fs.js');
+	crud = require('./libs/mine/crud_fs.js')(ev, logger);
 	app.use(session({secret:'looseLipsSinkTanks?', resave:true, saveUninitialized:true}));
 	sessionMiddleware = function(req, res, next){
 		next();
@@ -256,7 +248,7 @@ else if(process.env.RUN_MODE === 'YETI'){
 //---------------------
 // Start Server
 //---------------------
-function start_app(blk_configs){
+function start_app(){
 
 	// catch errors on non-local zones //
 	if(ev.ZONE !== 'local'){
@@ -265,6 +257,7 @@ function start_app(blk_configs){
 		process.on('uncaughtException', function (err) {
 			logger.error('Caught exception: ' + JSON.stringify(err, null, '\t'));
 		});
+		app.set('trust proxy', 1); 								//trust first proxy [dsh needed for secure cookies!]
 	}
 	else{
 		logger.warn('Will not catch errors');
@@ -277,10 +270,10 @@ function start_app(blk_configs){
 	}
 
 	// --- All Routes here --- //
-	app.use('/', require('./routes/ui/monitor.js')(logger, ev.DB_CONNECTION_STRING, ev, sessionMiddleware));
-	app.use('/', require('./routes/api/session_auth_apis.js')(ev.DB_CONNECTION_STRING, blk_configs, logger, ev, sessionMiddleware));
-	app.use('/', require('./routes/api/open_apis.js')(ev.DB_CONNECTION_STRING, logger, ev, sessionMiddleware));
-	app.use('/', require('./routes/ui/dashboard.js')(ev.DB_CONNECTION_STRING, logger, ev, sessionMiddleware));
+	app.use('/', require('./routes/ui/monitor.js')(logger, ev.DB_CONNECTION_STRING, ev, sessionMiddleware, crud));
+	app.use('/', require('./routes/api/session_auth_apis.js')(ev.DB_CONNECTION_STRING, logger, ev, sessionMiddleware, crud));
+	app.use('/', require('./routes/api/open_apis.js')(ev.DB_CONNECTION_STRING, logger, ev, sessionMiddleware, crud));
+	app.use('/', require('./routes/ui/bluemix_welcome.js')(ev.DB_CONNECTION_STRING, logger, ev, sessionMiddleware, crud));
 
 	http.createServer(app).listen(port, function() {
 		logger.debug('-----------------------------------------------------------------------------------');
@@ -302,7 +295,8 @@ function start_app(blk_configs){
 	app.use(function(req, res, next){
 		//respond with html page
 		if(req.accepts('html')) {
-			res.status(404).render(path.join(__dirname, '/views/routes/error'), {lines: ['404: Page not found :(']});
+			var lang = languages.get_from_headers(req);				//it might not exist in url, so grab it form headers
+			res.status(404).render(path.join(__dirname, '/views/routes/error'), {lines: ['404: ' + lang.page_not_found + ' :('], lang: lang});
 			return;
 		}
 

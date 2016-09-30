@@ -1,5 +1,5 @@
-/* global $, document, Circles, Chart*/
-/* global network_timestamp, broker_ver, rest_get_service_status, formatDate, escapeHtml, toTitleCase, ZONE*/
+/* global $, document, Circles, Chart, lang*/
+/* global network_timestamp, broker_ver, rest_get_service_status, formatDate, escapeHtml, ZONE*/
 /* exported activate_service_tab, deactivate_service_tab*/
 
 //globals for this tab
@@ -47,7 +47,7 @@ function activate_service_tab(){
 
 	// --- Parse for Environment --- //
 	console.log('on env', ZONE);
-	var prettyEnv = {'prod': 'Production', 'stage': 'Staging', 'dev': 'Development'};
+	var prettyEnv = {'prod': lang.production, 'stage': lang.staging, 'dev': lang.development};
 	$('#envText').html(prettyEnv[ZONE]);
 
 	//get service status data
@@ -181,7 +181,7 @@ function build_histogram_graph(data){
 							labels: labels,
 							datasets: [
 								{
-									label: '% Success',
+									label: '% ' + lang.success,
 									backgroundColor: 'rgba(86,155,227,.5)',
 									borderColor: 'rgba(86,155,227,1)',
 									radius: 4,
@@ -225,12 +225,13 @@ function build_histogram_graph(data){
 function build_status_msgs(messages){
 	var html = '';
 	var msgEnv = {'prod': 'production', 'stage': 'staging', 'dev': 'development'};
+	var prettyEnv = {'production': lang.production, 'staging': lang.staging, 'development': lang.development, 'general': lang.general};
 	for(var i in messages){
 		var status = 'generalStatus';
 		if(messages[i].doc.env === msgEnv[ZONE]) status = 'altStatus';
 		if(messages[i].doc.env ===  msgEnv[ZONE] || messages[i].doc.env === 'general'){
 			html += '<div class="messagesWrap">';
-			html += 	'<div class="messageEnv ' + status + '"> ' + toTitleCase(messages[i].doc.env) +' </div>';
+			html += 	'<div class="messageEnv ' + status + '"> ' + prettyEnv[messages[i].doc.env] +' </div>';
 			html +=		'<div class="messageInnerWrap">';
 			html +=			'<div class="notes">' + escapeHtml(messages[i].doc.text) + '</div>';
 			html +=			'<div class="redate">' + formatDate(messages[i].doc.timestamp, '%M/%d %I:%m %p UTC') + '</div>';
@@ -300,19 +301,19 @@ function build_release_notes(release_notes){
 		html +=		'</div>';
 
 		html +=		'<div class="releaseNotes">';
-		if(note.prerelease) html += '<div class="prerelease"> Prerelease </div>';
-		if(thisVersion)     html +=	'<div class="selectRelease"> Your network is using this version </div>';
-		html +=			'<div class="releaseHeader"> Hyperledger Commit Level: </div>';
+		if(note.prerelease) html += '<div class="prerelease"> ' + lang.prerelease +' </div>';
+		if(thisVersion)     html +=	'<div class="selectRelease"> ' + lang.your_network_msg +' </div>';
+		html +=			'<div class="releaseHeader"> ' + lang.hyperledger_commit_level +': </div>';
 		html +=			'<p><a href="' + note.commit + '" target="_blank">' + note.commit.substring(pos) + '</a></p>';
-		html +=			'<div class="releaseHeader"> New Features: </div>';
+		html +=			'<div class="releaseHeader"> ' + lang.new_features + ': </div>';
 		for(var x in note.new_features)    html +=	'<p> - ' + note.new_features[x] + '</p>';
-		if(note.new_features.length === 0) html +=	'<p> - nothing</p>';
-		html +=			'<div class="releaseHeader"> Fixes: </div>';
+		if(note.new_features.length === 0) html +=	'<p> - ' + lang.nothing + '</p>';
+		html +=			'<div class="releaseHeader"> ' + lang.fixes + ': </div>';
 		for(x in note.fixes)    	html +=	'<p> - ' + note.fixes[x] + '</p>';
-		if(note.fixes.length === 0) html +=	'<p> - nothing</p>';
-		html +=			'<div class="releaseHeader"> Known Issues: </div>';
+		if(note.fixes.length === 0) html +=	'<p> - ' + lang.nothing + '</p>';
+		html +=			'<div class="releaseHeader">' + lang.known_issues + ': </div>';
 		for(x in note.known_issues)    		html +=	'<p> - ' + note.known_issues[x] + '</p>';
-		if(note.known_issues.length === 0) 	html +=	'<p> - nothing</p>';
+		if(note.known_issues.length === 0) 	html +=	'<p> - ' + lang.nothing + '</p>';
 		html +=		'</div>';
 
 		html +=	'</div>';

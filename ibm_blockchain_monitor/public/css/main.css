@@ -5581,7 +5581,7 @@ _::-webkit-full-page-media, _:future, :root .bx--search__input {
 h2 {
   padding-bottom: 6px;
   margin-bottom: 12px;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 100; }
 
 select, input[type="text"], input[type="password"], textarea {
@@ -5671,11 +5671,16 @@ svg {
   svg g {
     fill: inherit; }
 
+svg use svg {
+  fill: inherit; }
+
 svg.actionButton:hover {
-  background: #20343e;
   fill: #4178be; }
   svg.actionButton:hover use {
     fill: #4178be; }
+
+.statsBlockWrap .statIcon use {
+  fill: transparent; }
 
 input[type=range] {
   -webkit-appearance: none;
@@ -5835,23 +5840,33 @@ input[type=range]:focus::-ms-fill-upper {
 .centerTxt {
   text-align: center; }
 
+.uppercaseMe {
+  text-transform: uppercase; }
+
+.fixedWidth {
+  padding: 0;
+  margin: 0;
+  width: 7px;
+  display: inline-block; }
+
 #navPanel, #mainPanel {
   display: inline-block;
   vertical-align: top; }
 
 #navPanel {
   width: 20%;
-  min-width: 200px;
   max-width: 300px;
   min-height: 500px;
   z-index: 300;
-  min-width: 225px; }
+  min-width: 260px; }
 
 #navPanelContent {
-  padding: 30px; }
+  padding: 30px;
+  padding-right: 0; }
 
 .navLink {
   padding: 10px;
+  padding-right: 0;
   font-size: 18px;
   font-weight: 100;
   display: block;
@@ -5870,7 +5885,7 @@ input[type=range]:focus::-ms-fill-upper {
   color: #7cc7ff; }
 
 #mainPanel, #mainPanel100 {
-  width: 76%;
+  width: 74%;
   margin-top: 30px;
   min-width: 435px; }
 
@@ -6122,6 +6137,9 @@ svg.bx--modal__close--icon {
   float: right;
   width: 28px;
   cursor: pointer; }
+
+.peerNotificationClose {
+  width: 14px; }
 
 svg.notificationImg {
   fill: #5aaafa; }
@@ -6632,7 +6650,7 @@ svg.notifcationAlt {
 .hintSetupLegend {
   color: #8c9ba5; }
 
-.required {
+.setupRequired {
   color: #e71d32;
   width: 5px;
   display: inline-block;
@@ -8007,6 +8025,7 @@ svg.notifcationAlt {
   display: none; }
 
 #enrollWrapToggle {
+  font-size: 24px;
   margin-top: 25px;
   cursor: pointer; }
 
@@ -8069,12 +8088,17 @@ svg.notifcationAlt {
   padding-left: 15px !important; }
 
 #apiTxtWrap {
-  background: #394b54;
   padding: 20px 10px;
   padding-bottom: 40px;
   min-width: 585px; }
 
 .options li:first-of-type {
+  display: none; }
+
+.swagger-section .swagger-ui-wrap .footer {
+  display: none; }
+
+.operation-status .headers {
   display: none; }
 
 .deploy, .invoke {
@@ -8130,11 +8154,14 @@ svg.notifcationAlt {
   vertical-align: top; }
 
 .statLegend {
+  text-transform: uppercase;
   font-size: 13px;
   font-weight: 600;
   color: #dfe6eb;
   display: block !important;
-  margin-top: 4px; }
+  margin-top: 4px;
+  position: relative;
+  z-index: 310; }
 
 .hint {
   position: absolute;
@@ -8150,8 +8177,8 @@ svg.notifcationAlt {
 
 .statsBlockWrap {
   display: inline-block;
-  width: 120px;
-  margin-right: 35px;
+  width: 140px;
+  margin-right: 30px;
   vertical-align: top; }
 
 .statIcon {
@@ -8283,7 +8310,6 @@ svg.notifcationAlt {
 
 .demoAppWrap {
   display: block;
-  margin-bottom: 5px;
   font-size: 14px; }
 
 .demoAppWrap:nth-child(odd) {
@@ -8307,7 +8333,7 @@ svg.notifcationAlt {
   vertical-align: bottom;
   margin-bottom: 4px;
   position: relative;
-  width: 145px; }
+  width: 200px; }
 
 .demoAppName {
   width: 145px;
@@ -8315,12 +8341,13 @@ svg.notifcationAlt {
 
 .demoAppDescr {
   margin-right: 5px;
-  width: 460px; }
+  width: 440px; }
 
 .demoDetails, .demoInteract {
   font-size: 13px;
   margin-right: 5px;
-  width: 150px; }
+  width: 150px;
+  word-break: break-word; }
 
 .demoInteract {
   width: 125px; }
@@ -8329,10 +8356,10 @@ svg.notifcationAlt {
   text-decoration: underline; }
 
 #cpLoading, #marblesLoading, #example02Loading {
-  position: absolute;
-  right: 4px;
-  top: -3px;
-  display: none; }
+  display: none;
+  display: inline;
+  margin: 0;
+  margin-left: 10px; }
 
 #deployWrap {
   margin: auto;
@@ -8360,19 +8387,29 @@ svg.notifcationAlt {
   margin-bottom: 10px;
   margin-right: 10px; }
 
+.selectAction {
+  width: 160px; }
+
 .selectCC:focus {
   border: 1px #fff solid; }
 
+#demoLogs, #demoLogsToolbar {
+  background: #152935;
+  color: #fff; }
+
 #demoLogs {
   font-family: Lucida Console, 'Courier';
-  background: #152935;
   min-height: 150px;
-  margin-top: 4px;
-  color: #fff;
   font-size: 12px;
   padding: 10px;
   overflow: auto;
   max-height: 550px; }
+
+#demoLogsToolbar {
+  height: 30px;
+  margin: 0;
+  margin-top: 4px;
+  border-bottom: 1px solid #42535c; }
 
 .apiDetailsCheck {
   font-size: 13px;
@@ -8389,13 +8426,10 @@ svg.notifcationAlt {
   margin: auto;
   position: relative; }
 
-.logControls {
-  display: none; }
-
 #clearLogs {
   position: absolute;
-  right: 10px;
-  top: 0;
+  right: 5px;
+  top: -4px;
   cursor: pointer; }
 
 svg#clearLogs {
@@ -8436,7 +8470,7 @@ svg#clearLogs {
 .logButtonTitle {
   background: #20343e;
   display: inline-block;
-  width: 175px;
+  width: 200px;
   color: #fff;
   padding: 12px;
   margin-right: -10px;
@@ -8445,12 +8479,6 @@ svg#clearLogs {
   vertical-align: bottom;
   margin-bottom: 10px;
   font-size: 14px; }
-
-#health_data table tbody tr {
-  border: 4px solid #333C47; }
-
-#health_data table th {
-  cursor: pointer; }
 
 .sample {
   display: none; }
@@ -8705,7 +8733,8 @@ svg#clearLogs {
 
 .circleLegend {
   font-weight: bold;
-  margin: 15px 0 10px 0; }
+  margin: 15px 0 10px 0;
+  text-transform: uppercase; }
 
 .circleHint {
   font-size: 13px; }
@@ -8861,19 +8890,26 @@ svg#clearLogs {
 .circles-percentage, .circles-fraction {
   font-size: 22px; }
 
+@media (max-width: 1500px) {
+  .demoAppDescr {
+    width: 350px; } }
+
 @media (max-width: 1400px) {
   .demoAppDescr {
-    width: 310px; }
+    width: 250px; }
   .demoActionWrap {
     width: 852px; }
   #navPanelContent {
-    padding: 40px 15px; }
+    padding: 40px 15px;
+    padding-right: 0; }
   .helpfulHints {
     width: 285px; } }
 
 @media (max-width: 1200px) {
   .demoAppDescr {
     width: 190px; }
+  .demoDetails {
+    display: none; }
   .demoActionWrap {
     width: 733px; }
   .mainContentWrap {
@@ -8895,8 +8931,6 @@ svg#clearLogs {
     width: 190px; } }
 
 @media (max-width: 1100px) {
-  .demoDetails {
-    display: none; }
   #urlFullPath, .peerOptionWrap {
     margin-left: 5px; }
   .releaseNotes {
@@ -8910,16 +8944,17 @@ svg#clearLogs {
 
 @media (max-width: 1000px) {
   .demoAppDescr {
-    width: 150px; }
+    width: 148px; }
   .demoActionWrap {
     text-align: center;
     width: 570px; }
   .selectedNavChev {
     margin-top: -5px; }
   #navPanelContent {
-    padding: 40px 5px; }
+    padding: 40px 5px;
+    padding-right: 0; }
   #navPanel {
-    min-width: 165px; }
+    min-width: 195px; }
   .navLink {
     font-size: 13px; }
   .mainContentWrap {
@@ -8938,6 +8973,8 @@ svg#clearLogs {
   #openTipsLink {
     margin-top: -50px; }
   .mainContentWrap tr td:nth-of-type(2), .mainContentWrap tr th:nth-of-type(2) {
+    display: none; }
+  .mainContentWrap tr td:nth-of-type(3), .mainContentWrap tr th:nth-of-type(3) {
     display: none; }
   #passive-modal, #transactional-modal {
     left: 10%; }
@@ -8991,3 +9028,9 @@ svg#clearLogs {
     display: none; }
   #mainPanel {
     width: 100%; } }
+
+@media (max-height: 800px) {
+  .bx--modal {
+    position: absolute; }
+  .bx--modal .bx--modal-inner {
+    max-height: 100%; } }

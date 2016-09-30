@@ -1,7 +1,7 @@
 extends ../templates/bare
 
 block js
-	script(src="/js/concat/main.js?v=#{jshash}")
+	script(src="/js/concat/main.js?v=#{jshash}" type='text/javascript')
 
 block content
 	include ../templates/nav
@@ -21,7 +21,7 @@ block content
 
 		#loadingPageWrapper
 			br
-			h3 Loading monitor...
+			h3 #{lang.loading_monitor}
 			#singlePageSpinner.loadingdiv
 				span
 				span

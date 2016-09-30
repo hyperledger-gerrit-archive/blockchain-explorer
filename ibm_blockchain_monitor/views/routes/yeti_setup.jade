@@ -1,9 +1,9 @@
 extends ../templates/bare
 
 block js
-	script(src='/js/0_helper.js')
-	script(src='/js/rest_peer.js')
-	script(src='/js/yeti_setup.js')
+	script(src='/js/0_helper.js' type='text/javascript')
+	script(src='/js/rest_peer.js' type='text/javascript')
+	script(src='/js/yeti_setup.js' type='text/javascript')
 	script.
 		var net_doc = !{JSON.stringify(net_doc)};
 		console.log('!', net_doc);
@@ -14,81 +14,82 @@ block content
 			.setupContent
 				// service name
 				h1.setuph1 
-					span Welcome to Setup!&nbsp;
+					span #{lang.setup_title}&nbsp;
 
 				if(network_id)
 					#alreadySetupMsg
+						h2(style="text-align: center;") #{lang.warning}
 						.otherErroMsgWrap
 							#warningSetupWrap
 								svg#warningSetup
 									use(xlink:href="/img/icons/sprite.svg#common--warning")
 							br
-							p
-								span Warning: You have already configured this UI for 
-								span.hintSetupLegend #{network_id}
+							p  #{lang.warning_msg}: #{network_id}
 							br
-							p.small
-								a(href="/v2/network/#{network_id}") Go to dashboard
-							p.small
-								a(href="#")#doitagain Setup Again
+							p
+								a(href="/#{lang._LANG}/v2/network/#{network_id}")
+									button.bx--btn #{lang.go_to_dashboard}
+								span &nbsp;&nbsp;
+								a(href="#")#doitagain
+									button.bx--btn #{lang.setup_again}
 
 				#setupOptionsWrap
 					p(style="margin-left:1px;")
-						span Choose an option to configure this UI to your network
-						.statusHint &nbsp;This app must be able to reach your network's peers
+						span #{lang.setup_msg1}
+						.statusHint &nbsp; #{lang.setup_msg2}
 					br
 
 					.centerTxt
-						button.helpButtons.bx--btn#walkButton Walk Me Through Setup
+						button.helpButtons.bx--btn#walkButton #{lang.walk_button}
 					
-						button.helpButtons.bx--btn#jsonDumpButton JSON Dump
-							span.buttonHint (advanced)
+						button.helpButtons.bx--btn#jsonDumpButton #{lang.dump_button}
+							span.buttonHint (#{lang.advanced})
 					
 					hr.setupBorder
 				
 				//Quick setup panel
 				.stepPanel.walkThrough#quickPanel
-					button#clearButton.bx--btn Clear All Fields
+					button#clearButton.bx--btn #{lang.clear_all_fields}
 					.sideLegend
-						span Quick
+						span #{lang.quick}
 						br
-						span Setup
+						span #{lang.setup}
 						
 					.inputWrap
-						strong First Peer
+						strong #{lang.first_peer}
 						p
-							.setupLegend Network ID
+							.setupLegend #{lang.network_id} 
 							input(type="text" name="quick_network_id" placeholder="Name").doubleInput
 						p
-							.setupLegend HTTP Hostname
+							.setupLegend #{lang.http_hostname} 
 							input(type="text" name="quick_api_hostname" placeholder="ex 127.0.0.1").doubleInput
 						p
-							.setupLegend HTTP Port
+							.setupLegend #{lang.http_port} 
 							input(type="text" name="quick_api_port" placeholder="ex 443").halfInput
 						p
-							.setupLegend HTTP TLS
-							button.bx--btn.toggleButtonOn#quickTLSyes Yes
+							.setupLegend #{lang.http_tls} 
+							button.bx--btn.toggleButtonOn#quickTLSyes #{lang.yes} 
 							span &nbsp;
-							button.bx--btn.toggleButtonOff#quickTLSno No
+							button.bx--btn.toggleButtonOff#quickTLSno #{lang.no} 
 					
 					.helpfulHints
 						p.centerTxt
-							span.hintSetupLegend Hints
+							span.hintSetupLegend #{lang.hints}
 						.helphint
-							strong Network ID 
-							span - The name of this network. Should be a string of your choice.
+							strong #{lang.network_id} 
+							span - #{lang.net_id_description}
 						.helphint
-							strong HTTP Hostname 
-							span - The hostname or IP for the HTTP APIs of this network's first peer. Do not include http:// or https://.
+							strong #{lang.http_hostname} 
+							span - #{lang.hostname_description}
 						.helphint
-							strong HTTP Port 
-							span - The port number for the HTTP APIs of this network's first peer.
+							strong #{lang.http_port} 
+							span - #{lang.port_description}
 						.helphint
-							strong HTTP TLS 
-							span - Whether or not TLS/SSL is needed to reach your HTTP APIs.
+							strong #{lang.http_tls} 
+							span - #{lang.tls_description}
 							
 					.buttonWrap
-						button.bx--btn.nextButton#quickNext Next
+						button.bx--btn.nextButton#quickNext #{lang.next}
 						pre.statusResults#quickStatusResults
 
 					hr.setupBorder(style="margin-bottom: 0;")
@@ -100,21 +101,21 @@ block content
 						span &nbsp;
 						
 					.inputWrap
-						p Does your network have a CA?
+						p #{lang.ca_title}
 						p
-							button.bx--btn.toggleButtonOn#caYes.caExists Yep
+							button.bx--btn.toggleButtonOn#caYes.caExists #{lang.yes} 
 							span &nbsp;
-							button.bx--btn.toggleButtonOff#caNo.caExists Nope
+							button.bx--btn.toggleButtonOff#caNo.caExists #{lang.no} 
 				
 					.helpfulHints
 						p.centerTxt
-							span.hintSetupLegend Hints
+							span.hintSetupLegend #{lang.hints}
 						.helphint
-							strong CA 
-							span - CA stands for Certificate Authority. If your blockchain network enabled membership services then you have a one. ie the peer's API requires a registered enrollID.
+							strong #{lang.ca} 
+							span - #{lang.ca_description}
 
 					.buttonWrap
-						button.bx--btn.nextButton#caNext Next
+						button.bx--btn.nextButton#caNext #{lang.next}
 					hr.setupBorder(style="margin-bottom: 0;")
 				
 				
@@ -127,77 +128,77 @@ block content
 									use(xlink:href="/img/icons/sprite.svg#common--cancel")
 								svg.statusIconValid(number="-1" style="display: inline-block")
 									use(xlink:href="/img/icons/sprite.svg#common--healthy")
-								span.name CA
-						.setupSelBox(title="add new peer")#addNewPeer
+								span.name #{lang.ca}
+						.setupSelBox#addNewPeer
 							span.name +
 					
 					br
 				
 					.sideLegend
-						.setupName CA
-						button.bx--btn.sideButton#testPeer Test
-						button.bx--btn.sideButton#removeSetupPanel Remove
-						button.bx--btn.sideButton#copyFromLeft Copy *
+						.setupName #{lang.ca}
+						button.bx--btn.sideButton#testPeer #{lang.test}
+						button.bx--btn.sideButton#removeSetupPanel #{lang.remove}
+						button.bx--btn.sideButton#copyFromLeft #{lang.copy} *
 					
 					#configWrap
 						.inputWrap.setupWrap#setup_-1(style="display: inline-block;")
 							p
-								.setupLegend gRPC Hostname
+								.setupLegend #{lang.grpc_hostname}
 								input(type="text" name="setup_grpc_hostname_-1" placeholder="ex 127.0.0.1").doubleInput
 							p
-								.setupLegend gRPC Port
+								.setupLegend #{lang.grpc_port}
 								input(type="text" name="setup_grpc_port_-1" placeholder="ex 30303").halfInput
 
 					.helpfulHints
 						p.centerTxt
-							span.hintSetupLegend Hints
+							span.hintSetupLegend #{lang.hints}
 						.helphint
-							strong HTTP Hostname 
-							span - The hostname or IP for the HTTP APIs of this peer. Do not include http:// or https://.
+							strong #{lang.http_hostname} 
+							span - #{lang.hostname_description}
 						.helphint
-							strong HTTP Port 
-							span - The port number for the HTTP APIs of this peer.
+							strong #{lang.http_port} 
+							span - #{lang.port_description}
 						.helphint
-							strong HTTP TLS 
-							span - Whether or not TLS/SSL is needed to reach your HTTP APIs.
+							strong #{lang.http_tls} 
+							span - #{lang.tls_description}
 						.helphint
-							strong gRPC Hostname 
-							span - The hostname or IP for the gRPC APIs for this peer or ca.
+							strong #{lang.grpc_hostname} 
+							span - #{lang.grpc_description}
 						.helphint
-							strong gRPC Port 
-							span - The port number for the gRPC APIs for this peer or ca.
+							strong #{lang.grpc_port} 
+							span - #{lang.grpc_port_description}
 						.helphint
-							strong Enroll ID
-							span - A single enroll ID that has <strong>already</strong> been registered to the selected peer.
+							strong #{lang.enroll_id}
+							span - #{enroll_description}
 						hr
 						.helphint
-							strong Test Button
-							span - This button will attempt to contact your peer via the HTTP hostname and port.
+							strong #{lang.test} #{lang.button}
+							span - #{lang.test_description}
 						.helphint
-							strong Remove Button
-							span - This button will remove the selected peer. It may rename the remaing peers to keep the names consistent.
+							strong #{lang.remove} #{lang.button}
+							span - #{lang.remove_description}
 						.helphint
-							strong Copy Button
-							span - This button will copy the input fields from the named peer to the selected peer.
+							strong #{lang.copy} #{lang.button}
+							span - #{lang.copy_description}
 
 					.registerPanel
 						.sideLegend &nbsp;
 						.inputWrap
 							p(style="margin-left:0;")
-								strong Register a ID for this peer
+								strong #{lang.register_title}
 							p
-								.setupLegend Enroll ID
+								.setupLegend #{lang.enroll_id}
 								input(type="text" name="setup_enrollID" placeholder="ex bob")
 
 							p
-								.setupLegend Enroll Secret
+								.setupLegend #{lang.enroll_secret}
 								input(type="text" name="setup_enrollSecret" placeholder="ex asdf")
-							button.bx--btn.toggleButtonOn#registerEnrollID Register
+							button.bx--btn.toggleButtonOn#registerEnrollID #{lang.register}
 
 					br
 
 					.buttonWrap
-						button.bx--btn.nextButton#setupNext Next
+						button.bx--btn.nextButton#setupNext #{lang.next}
 						pre.statusResults#setupStatusResults
 
 					hr.setupBorder
@@ -205,56 +206,55 @@ block content
 				//Session setup panel
 				.stepPanel.walkThrough#sessionPanel
 					.sideLegend 
-						span Basic 
+						span #{lang.basic} 
 						br
-						span Auth
+						span #{lang.auth}
 
 					.inputWrap
 						p
-							strong.setupLegend(style="width: initial;") Basic Authentication for UI
-						p.statusHint(style="margin-left: 8px;") Optional - leave all fields blank for no authentication
+							strong.setupLegend(style="width: initial;") #{lang.basic_auth_title}
+						p.statusHint(style="margin-left: 8px;") #{lang.basic_auth_optional}
 						p
-							.setupLegend Username 
+							.setupLegend #{lang.username} 
 							input(type="text" name="basic_username" placeholder="ex admin")
 						p
-							.setupLegend Password 
+							.setupLegend #{lang.password} 
 							input(type="password" name="basic_password" placeholder="ex password")
 						p
-							.setupLegend Confirm Password 
+							.setupLegend #{lang.confirm_password} 
 							input(type="password" name="basic_confirm" placeholder="ex password")
 				
 					.helpfulHints
 						p.centerTxt
-							span.hintSetupLegend Hints
+							span.hintSetupLegend #{lang.hints}
 						.helphint
-							strong Basic Auth 
-							span - Basic Authentication is a method to secure the UI. Onces its setup a user would have to enter a username/password to view the UI. If username is blank the UI will not require any authentication.
+							strong #{lang.basic} #{lang.auth} 
+							span - #{lang.basic_auth_description}
 
 					.buttonWrap
-						button.bx--btn.nextButton#basicNext Next
+						button.bx--btn.nextButton#basicNext #{lang.next}
 					hr.setupBorder(style="margin-bottom: 0;")
 
 				//JSON DUMP panel
-				form.stepPanel#jsonPanel(action="/api/network" method="POST")
+				form.stepPanel#jsonPanel(action="/#{lang._LANG}/api/network" method="POST")
 					.sideLegend
 						span JSON
 						br
-						span Dump
 					input(type="hidden" value="test")
 					.inputWrap
 						p(style="margin-left:0;")
-							strong Make any final edits:&nbsp;
-							span.hintSetupLegend &nbsp;(Advanced - Only edit below to correct a mistake)
-						p.statusHint This is a description of your network in JSON.  It should describe all aspects of the network.
+							strong #{lang.setup_final_msg1}:&nbsp;
+							span.hintSetupLegend &nbsp;(#{lang.setup_final_msg2})
+						p.statusHint #{lang.setup_final_msg3}
 
 						br
 
-						textarea#jsonDump(name="net_doc" placeholder="paste your json here!") !{JSON.stringify(net_doc, null, 4)}
+						textarea#jsonDump(name="net_doc" placeholder="#{lang.paste_here}") !{JSON.stringify(net_doc, null, 4)}
 
 					br
 					br
 					
 					.buttonWrap
-						button.bx--btn.nextButton#jsonDumpNext(type="submit") Submit
+						button.bx--btn.nextButton#jsonDumpNext(type="submit") #{lang.submit}
 
 				div(style="height: 500px;")

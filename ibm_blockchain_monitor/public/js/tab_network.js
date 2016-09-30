@@ -1,4 +1,4 @@
-/* global $, document, window, alert, appendPeerTable, appendChaincodeTable, convertTimeToSeconds, convertSecondsToTime, navigator, show_status */
+/* global $, document, window, alert, lang, appendPeerTable, appendChaincodeTable, convertTimeToSeconds, convertSecondsToTime, navigator, show_status */
 /* global rest_get_chaincode, rest_get_peers, peer_rest_get_blockheight, build_status, friendly_name, GOOD_STATUS, CANT_GET_STATUS, rest_get_reset_status*/
 /* global rest_reset_network, BAD_STATUS, MEH_STATUS, rest_get_ca, parse_4_peer_shortname, resize_peer_names, reset_status_interval:true*/
 /* global hideGenericPopup, pause_refresh:true, rest_start_peer, peer_rest_get_peers*/
@@ -85,7 +85,7 @@ $(document).on('ready', function() {
 			alert('Please allow popups for this site');
 		}
 	});
-	
+
 	//restart peer button - show warning panel
 	/* removed - 8/31, dsh
 	$(document).on('click', '.restart_peer', function() {
@@ -150,18 +150,18 @@ $(document).on('ready', function() {
 		html +=			'<svg class="notifcationAlt modal-icon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#notifications--info"></use>';
 		html +=			'</svg>';
-		html +=			'Start';
+		html +=			lang.start;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html += 		'<p>Are you sure you want to start <span class="highlightName">' + peer_name + '</span>?</p>';
+		html += 		'<p>' + lang.start_msg +' <span class="highlightName">' + peer_name + '</span>?</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedStart" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary" type="button" data-modal-close=""> ' + lang.cancel +' </button>';
+		html +=		'<button id="confirmedStart" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -198,18 +198,18 @@ $(document).on('ready', function() {
 		html +=			'<svg class="notifcationWarning modal-icon">';
 		html +=				'<use xlink:href="/img/icons/sprite.svg#common--warning"></use>';
 		html +=			'</svg>';
-		html +=			'Stop Warning';
+		html +=			lang.stop_warning;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html += 		'<p>Are you sure you want to stop <span class="highlightName">' + peer_name + '</span>?</p>';
+		html += 		'<p>' + lang.stop_msg + ' <span class="highlightName">' + peer_name + '</span>?</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedStopPeer" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> ' + lang.cancel + ' </button>';
+		html +=		'<button id="confirmedStopPeer" class="bx--btn" type="button" data-modal-close="" peer="' + peer_name + '"> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -226,6 +226,7 @@ $(document).on('ready', function() {
 
 		$.ajax({
 			url: url,
+			timeout: 30000,
 			cache: false
 		}).done(function(data) {
 			console.log('Success - sending stop', data);
@@ -252,13 +253,13 @@ $(document).on('ready', function() {
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody">';
-		html +=			'<p>All your data will be permmanently deleted if you reset the network. </p>';
-		html += 		'<p>Are you sure you want to reset your network? </p>';
+		html +=			'<p> ' + lang.reset_msg1 + '</p>';
+		html += 		'<p> ' + lang.reset_msg2 + '</p>';
 		html +=		'</div>';
 		html +=	'</div>';
 		html +=	'<div class="bx--modal__buttons">';
-		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> Cancel </button>';
-		html +=		'<button id="confirmedResetNetwork" class="bx--btn" type="button" data-modal-close=""> Yes </button>';
+		html +=		'<button id="closePopup" class="bx--btn--secondary2" type="button" data-modal-close=""> ' + lang.cancel +' </button>';
+		html +=		'<button id="confirmedResetNetwork" class="bx--btn" type="button" data-modal-close=""> ' + lang.yes + ' </button>';
 		html +=	'</div>';
 		$('#transactional-modal-innter').html(html);
 		$('#transactional-modal').css('border-color', '#EFC100').fadeIn();
@@ -298,7 +299,7 @@ $(document).on('ready', function() {
 		setTimeout(function() {								//call it with short delay, time for page to render on max/min
 			resize_peer_names();
 			resize_cc_ids();
-		}, 300);
+		}, 500);
 	});
 
 	//show the route for the user's selection
@@ -334,7 +335,7 @@ function updateChaincodeTable() {
 
 		if(!found){
 			var html = '<tr class="actualCC">';
-			html +=			'<td>no chaincode found</td>';
+			html +=			'<td>' + lang.no_chaincode_found +'</td>';
 			html +=			'<td></td>';
 			html +=			'<td></td>';
 			html +=		'</tr>';
@@ -354,12 +355,11 @@ function updatePeerTable() {
 			var html = '<tr>';
 			html += 		'<td colspan=9>';
 			html += 			'<em>';
-			html +=					'An error occurred while looking up the peers that belong to your service instance. ';
-			html +=					' To work around this problem, please delete and recreate your instance of the service in Bluemix.';
+			html +=					lang.no_peers_error_msg;
 			html +=				'</em>';
 			html +=			'</td>';
 			html +=		'</tr>';
-			$('#health_data').append(html);
+			$('#peerBody').html(html);
 		}
 		else{
 			$('#loadingSpinner').hide();
@@ -387,7 +387,7 @@ function process_container(container, network_data){
 		$('#discovery'+ container.id).parent().html('-');				//no disovery for ca's'
 		if(network_data.swarm && network_data.swarm.name !== 'yeti'){
 			// ---- Get CA's Status ---- //
-			rest_get_ca(container.api_host, function(err, data){
+			rest_get_ca(container.api_host, container.id, function(err, data){
 				console.log('ca status data', data);
 				if(!data || data.status !== GOOD_STATUS){
 					process_status(data.id, BAD_STATUS, null);
@@ -412,7 +412,7 @@ function process_container(container, network_data){
 //populate discovery count in peer table
 function updateDiscoveryColumn(err, json){
 	if(err == null){
-		var tooltip = 'This peer has discovered: ';
+		var tooltip = lang.discovery_tooltip2 + ': ';
 		for(var i in json.peers){
 			if(Number(i) === json.peers.length - 1) tooltip += '& ' + json.peers[i].ID.name.toUpperCase();
 			else tooltip += json.peers[i].ID.name.toUpperCase() + ', ';
@@ -426,24 +426,26 @@ function blockheight_repeat(api_host, api_port, tls, id, attempt){
 	peer_rest_get_blockheight(api_host, api_port, tls, id, function(err, resp){
 		if(err != null){
 			if(attempt <= 1){
-				console.log('status - failed on', parse_4_peer_shortname(id), ', will try again!');
+				console.log('status - failed on', parse_4_peer_shortname(id), ', [WILL TRY AGAIN]');
 				return setTimeout(function(){ blockheight_repeat(api_host, api_port, tls, id, ++attempt);}, 1000);	//recursive
 			}
-			else process_status(resp.id, BAD_STATUS, null);														//no hope, build error status
+			else process_status(resp.id, BAD_STATUS, null);													//no hope, build error status
 
 		}
 		else{
-			process_status(resp.id, GOOD_STATUS, resp.height);													//all good, build good status
+			process_status(resp.id, GOOD_STATUS, resp.height, resp.currentBlockHash);						//all good, build good status
 		}
 	});
 }
 
 //disabled stop button, clear block height, set status as stopped
-function process_status(peer_id, status, height){
+function process_status(peer_id, status, height, hash){
 	console.log('status -', parse_4_peer_shortname(peer_id), status, ', height:', height);
+	if(!hash) hash = '-';
+	else hash = hash.substring(0, 6) + '...';
 
 	if(status === GOOD_STATUS){
-		$('tr[peer="' + peer_id + '"]').find('.blckheight').html(height);
+		$('tr[peer="' + peer_id + '"]').find('.blckheight').html(height).attr('data-tooltip', lang.block + ': ' + hash);
 		$('tr[peer="' + peer_id + '"]').find('.peer_status').html(build_status(status));
 		$('tr[peer="' + peer_id + '"]').find('.stop_peer').removeClass('disabledButton');
 		$('tr[peer="' + peer_id + '"]').find('.start_peer').addClass('disabledButton');
@@ -507,17 +509,17 @@ function send_reset(){
 			var html = '';
 			html += '<div class="bx--modal-content">';
 			html +=		'<h2 class="bx--modal-content__heading">';
-			html +=			'Reset';
+			html +=			lang.reset;
 			html +=		'</h2>';
 			html +=		'<svg class="bx--modal__close--icon">';
 			html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 			html +=		'</svg>';
 			html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-			html +=			'<p>There was an error submitting the reset request, please try again later</p>';
+			html +=			'<p>' + lang.reset_error + '</p>';
 			html +=			'<div id="reset_loading_bar_wrap">';
 			html +=				'<div id="reset_loading_bar" style="width: 1%;"></div>';
 			html +=			'</div>';
-			html +=			'<div id="reset_loading_percent">0% complete..</div>';
+			html +=			'<div id="reset_loading_percent">0% ' + lang.complete + '..</div>';
 			html +=		'</div>';
 			html +=	'</div>';
 			$('#passive-modal-innter').html(html);
@@ -536,28 +538,28 @@ function fill_loading_bar(barSelector, textSelector, percent, cb){
 	$(barSelector).animate({width: (percent + '%')}, 2000, function(){
 		
 		if(percent < 100){
-			$(textSelector).html(percent + '% complete..');
+			$(textSelector).html(percent + '% ' + lang.complete + '..');
 		}
 		else{																//all done! 100%
 			var html = '';
 			html += '<div class="bx--modal-content">';
 			html +=		'<h2 class="bx--modal-content__heading">';
-			html +=			'Reset';
+			html +=			lang.reset;
 			html +=		'</h2>';
 			html +=		'<svg class="bx--modal__close--icon">';
 			html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 			html +=		'</svg>';
 			html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-			html +=			'<p>Your network has been successfully reset!</p>';
+			html +=			'<p>' + lang.reset_success +'</p>';
 			html +=			'<div id="reset_loading_bar_wrap">';
 			html +=				'<div id="reset_loading_bar" style="width: 100%;"></div>';
 			html +=			'</div>';
-			html +=			'<div id="reset_loading_percent">100% complete</div>';
+			html +=			'<div id="reset_loading_percent">100% ' + lang.complete + '</div>';
 			html +=		'</div>';
 			html +=	'</div>';
 			$('#passive-modal-innter').html(html);
 			$('#passive-modal').css('border-color', '#7cc7ff').fadeIn();
-			$(textSelector).html(percent + '% complete');					//stop the interval, no need
+			$(textSelector).html(percent + '% ' + lang.complete);			//stop the interval, no need
 			clearInterval(reset_status_interval);
 			updatePeerTable();												//update peer table
 			updateChaincodeTable();											//update chaincode table
@@ -577,17 +579,17 @@ function show_reset(error){
 		var html = '';
 		html += '<div class="bx--modal-content">';
 		html +=		'<h2 class="bx--modal-content__heading">';
-		html +=			'Reset';
+		html +=			lang.reset;
 		html +=		'</h2>';
 		html +=		'<svg class="bx--modal__close--icon">';
 		html +=			'<use xlink:href="/img/icons/sprite.svg#common--close"></use>';
 		html +=		'</svg>';
 		html +=		'<div class="bx--modal-content__text" id="popupBody" style="text-align:center;">';
-		html +=			'<p id="resetTxt">Your network is resetting.. this may take a few minutes.</p>';
+		html +=			'<p id="resetTxt">' + lang.resetting_msg + '</p>';
 		html +=			'<div id="reset_loading_bar_wrap">';
 		html +=				'<div id="reset_loading_bar" style="width: 1%;"></div>';
 		html +=			'</div>';
-		html +=			'<div id="reset_loading_percent">0% complete..</div>';
+		html +=			'<div id="reset_loading_percent">0% ' + lang.complete  + '..</div>';
 		html +=			'<br/><br/>';
 		html +=		'</div>';
 		html +=	'</div>';
@@ -617,8 +619,7 @@ function handle_reset_status(e, data){
 
 		if(data.deleted_timestamp === -1 || data.finished_timestamp === -1){ 			//errors, kill interval, start again
 			var html = 	'<p>';
-			html +=			'There was an issue resetting your network.';
-			html +=			'If this message does not go away in 10 minutes then delete and re-create this network.';
+			html +=			lang.reset_error2;
 			html +=		'</p>';
 			$('#resetTxt').append(html);
 			clearInterval(reset_status_interval);
@@ -667,8 +668,8 @@ function build_peer_notification(status, id){
 		html +=			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--healthy"></use>';
 		html +=		'</svg>';
 		html +=	'<div class="notificationBody">';
-		html +=		'<strong>&nbsp; Success: &nbsp;</strong>';
-		html +=		'<span>Your ' + friendly_name(id) + ' has started.</span>';
+		html +=		'<strong>&nbsp; ' + lang.success + ': &nbsp;</strong>';
+		html +=		'<span>' + friendly_name(id) + ' has started.</span>';
 		html +=	'</div>';
 		html +=	'<svg class="peerNotificationClose peerNotificationFix">';
 		html +=		'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--close"></use>';
@@ -680,8 +681,8 @@ function build_peer_notification(status, id){
 		html +=			'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--warning"></use>';
 		html +=		'</svg>';
 		html +=	'<div class="notificationBody">';
-		html +=		'<strong>&nbsp; Warning: &nbsp;</strong>';
-		html +=		'<span>Your ' + friendly_name(id) + ' has stopped.</span>';
+		html +=		'<strong>&nbsp; ' + lang.warning + ': &nbsp;</strong>';
+		html +=		'<span>' + friendly_name(id) + ' has stopped.</span>';
 		html +=	'</div>';
 		html +=	'<svg class="peerNotificationClose peerNotificationFix">';
 		html +=		'<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/img/icons/sprite.svg#common--close"></use>';

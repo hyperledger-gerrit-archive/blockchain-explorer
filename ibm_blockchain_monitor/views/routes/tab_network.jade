@@ -4,34 +4,35 @@
 		table
 			thead
 				tr
-					th(style="min-width: 90px;")#peerColumn Peer
-					th(style="min-width: 300px;") Routes
-					th#discoveryColumn Discovery
-					th#blockColumn Block Height
-					th(style="width: 120px;").centerTxt Status
+					th(style="min-width: 90px;")#peerColumn #{lang.peer}
+					th(style="min-width: 310px;") #{lang.routes}
+					th#discoveryColumn #{lang.discovery}
+					th#blockColumn #{lang.block_height}
+					th(style="width:120px; min-width: 120px;").centerTxt #{lang.status}
 					
 					//-yeti networks do not get actions
 					if(ui_options.actions === true)
-						th(style="min-width: 110px;").centerTxt Actions
+						th(style="min-width: 110px;").centerTxt #{lang.actions}
 
 			tbody#peerBody
 				tr.sample_peer.sample
-					td(style="text-align:left;").name Please wait... Loading
+					td(style="text-align:left;").name #{lang.loading_msg}
 					td.routes.smallerFont
 					td.discoveryCount.smallerFont -
-					td.blckheight.smallerFont -
+					td.centerTxt
+						.blckheight.smallerFont(data-tooltip="#{lang.block}: -").bx--tooltip__top -
 					td.peer_status.smallerFont.centerTxt
 
 					//-yeti networks do not get actions
 					if(ui_options.actions === true)
 						td.centerTxt
-							svg.stop_peer.actionButton(title="Stop Peer")
+							svg.stop_peer.actionButton
 								use(xlink:href="/img/icons/sprite.svg#common--stop")
 
-							svg.restart_peer.actionButton(title="Restart Peer")
+							svg.restart_peer.actionButton
 								use(xlink:href="/img/icons/sprite.svg#common--restart")
 
-							svg.start_peer.actionButton(title="Start Peer")
+							svg.start_peer.actionButton
 								use(xlink:href="/img/icons/sprite.svg#common--start")
 
 	// ============ Notification Panel ============ //
@@ -43,16 +44,16 @@
 			table#chaincode
 				thead
 					tr
-						th(style="width:40%; min-width:200px;") ChainCode ID
-						th(style="width:5%;") Peers
-						th(style="width:35%;") Logs
+						th(style="width:40%; min-width:200px;") #{lang.chaincode_id}
+						th(style="width:5%;") #{lang.peers}
+						th(style="width:35%;") #{lang.logs}
 				tbody
 					tr.sample_cc.sample()
 						td.ccIdTd 1234
 						td.chaincode_peer_count 1
 						td
 							select.ccPeerSelect
-							.logs.cclogs.link.icon-icon-log(style='cursor:pointer' title="View ChainCode's Log")
+							.logs.cclogs.link.icon-icon-log(style='cursor:pointer')
 							span.upTime 69 seconds
 
 	// ============ Reset ============ -//
@@ -60,10 +61,10 @@
 	br
 	.mainContentWrap
 		if(ui_options.reset === true)
-			button#reset_network.bx--btn Reset Network
+			button#reset_network.bx--btn #{lang.reset_network}
 		
 		a#jsonLink(href="/api/network/#{network_id}" target="_blank") 
 			span {
-			span#jsonLinkText Service Credentials
+			span#jsonLinkText #{lang.service_credentials}
 			span }
 	br
