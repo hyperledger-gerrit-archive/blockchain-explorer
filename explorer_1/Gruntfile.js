@@ -22,7 +22,6 @@ module.exports = function(grunt) {
 	auto_install: {
 		local : { 
 			options: {
-				cwd :'',
 				stdout: true,
 				stderr: true,
 				failOnError: true,
@@ -51,29 +50,37 @@ module.exports = function(grunt) {
 	
 	copy: {
 		scripts: {
-			files: [{
-				expand: true,
-				cwd: 'scripts',
-				src: ['*.js'],
-				dest: 'webcontent/static/scripts'
-			}]
-		},
-		websocket: {
-			files: [{
-				expand: true,
-				cwd: 'node_modules',
-				src: ['socket.io-client/**'],
-				dest: 'webcontent/static/scripts'
-			}]
-		},
-		angular: {
-			files: [{
-				expand: true,
-				cwd: 'scripts/bower_components',
-				src: ['angular*/**'],
-				dest: 'webcontent/static/scripts'
-			}]
-		}
+                        files: [{
+                                expand: true,
+                                cwd: 'scripts',
+                                src: ['*.js'],
+                                dest: 'webcontent/static/scripts'
+                        }]
+                },
+                websocket: {
+                        files: [{
+                                expand: true,
+                                cwd: 'node_modules',
+                                src: ['socket.io-client/**'],
+                                dest: 'webcontent/static/scripts'
+                        }]
+                },
+                angular: {
+                        files: [{
+                                expand: true,
+                                cwd: 'scripts/bower_components',
+                                src: ['angular*/**'],
+                                dest: 'webcontent/static/scripts'
+                        }]
+                },
+		charts: {
+                        files: [{
+                                expand: true,
+                                cwd: 'node_modules/chart.js/dist',
+                                src: ['Chart.min.js'],
+                                dest: 'webcontent/static/scripts'
+                        }]
+                }
 	}
   });
 
