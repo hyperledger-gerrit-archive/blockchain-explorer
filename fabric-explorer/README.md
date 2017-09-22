@@ -118,3 +118,27 @@ Run the database setup scripts located under `db/fabricexplorer.sql`
 
 6. `npm install`
 7. `./start.sh`
+
+## SIMPLE REST-API
+
+I provide a simple rest-api
+
+```
+//get block info
+curl -X POST  http://localhost:8080/api/block/json -H 'cache-control: no-cache' -H 'content-type: application/json' -d '{
+    "number":"${block number}"
+}'
+
+//get transcation JOSN
+curl -X POST  http://localhost:8080/api/tx/json -H 'cache-control: no-cache' -H 'content-type: application/json' -d '{
+    "number":"${ Tx hex }"
+}'
+
+
+//get peer status
+curl -X POST  http://localhost:8080/api/status/get -H 'cache-control: no-cache' -H 'content-type: application/json' -d ''
+
+//get chaincode list
+curl -X POST  http://localhost:8080/chaincodelist -H 'cache-control: no-cache' -H 'content-type: application/json' -d ''
+
+```
