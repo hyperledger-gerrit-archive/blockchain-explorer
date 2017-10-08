@@ -13,10 +13,12 @@
 
  Date: 07/07/2017 10:14:31 AM
 */
-
 DROP DATABASE IF EXISTS `fabricexplorer`;
 
 CREATE DATABASE fabricexplorer;
+GRANT ALL ON fabricexplorer.* to explorer_user@'%' identified by '123456';
+
+flush privileges;
 
 use fabricexplorer;
 SET NAMES utf8;

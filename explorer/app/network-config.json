@@ -2,13 +2,7 @@
 	"network-config": {
 		"orderer": [{
 			"url": "grpc://127.0.0.1:7050",
-			"server-hostname": "orderer0.example.com"
-		},{
-			"url": "grpc://127.0.0.1:8050",
-			"server-hostname": "orderer1.example.com"
-		},{
-			"url": "grpc://127.0.0.1:9050",
-			"server-hostname": "orderer2.example.com"
+			"server-hostname": "orderer.example.com"
 		}],
 		"org1": {
 			"name": "peerOrg1",

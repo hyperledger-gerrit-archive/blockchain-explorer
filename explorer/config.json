@@ -13,10 +13,10 @@
       }
    ],
    "mysql":{
-      "host":"127.0.0.1",
+      "host":"explorer_mysql",
       "port":"3306",
       "database":"fabricexplorer",
-      "username":"root",
+      "username":"explorer_user",
       "passwd":"123456"
    }
 }
