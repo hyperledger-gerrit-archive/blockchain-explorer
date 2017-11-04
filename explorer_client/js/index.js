@@ -180,16 +180,42 @@ window.Tower = {
             ).done(function(data) {
                 var channelsel = [];
                 var channels = data.channelList;
+                try{
+                    channels=JSON.parse(localStorage.getItem('channellist'));
+                }catch(e){}
                 channels.forEach(function(item){
                     channelsel.push( channelListTemplate ( { channlename: item } ) );
-				})
-
-                $('#selectchannel').html( channelsel.join('') );
-
+                })
+                $('#selectchannel').append( channelsel.join('') );
             })
-
+            $('#inputchannel').on('keypress',function(e){
+                let code = e.keyCode ? e.keyCode : e.which;
+                if(code ===13){
+                    $('#selectchannel').append( $(channelListTemplate ( { channlename: e.target.value } ) )
+                        .bind('click',function(event){
+                            //save
+                            let list = []
+                            $("#selectchannel li a").each(function(){
+                                list.push($(this).text())
+                            })
+                            list=JSON.stringify(list)
+                            localStorage.setItem('channellist',list);
+                            //source
+                            var channelName=$(event.target).html()
+                            $.when(
+                                utils.load({ url: 'changeChannel' ,data: { 'channelName':channelName  }})
+                            ).done(function(data) {
+                                $.when(
+                                    utils.load({ url: 'curChannel' })
+                                ).done(function(data) {
+                                    window.location.reload();
+                                });
+                            });
+                        })
+                    );
+                }
+            })
             utils.subscribe('/topic/metrics/status', statusUpdate);
-
 		},
 
 		'channel': function() {
@@ -261,19 +287,30 @@ $(function() {
 			$('body').removeClass('sticky');
 		}
 	});
-
-	$('#selectchannel').bind('click','li.dropdown-item',function(event){
-		var channelName=$(event.target).html()
-        $.when(
-            utils.load({ url: 'changeChannel' ,data: { 'channelName':channelName  }})
-        ).done(function(data) {
+    $('#aselectchannel').on('click',function(e){
+        $(this).find('+ #selectchannel li a').unbind('click')
+        $(this).find('+ #selectchannel li a').bind('click',function(event){
+            //save
+            let list = []
+            $("#selectchannel li a").each(function(){
+                list.push($(this).text())
+            })
+            list=JSON.stringify(list)
+            localStorage.setItem('channellist',list);
+            //source
+            var channelName=$(event.target).html()
             $.when(
-                utils.load({ url: 'curChannel' })
+                utils.load({ url: 'changeChannel' ,data: { 'channelName':channelName  }})
             ).done(function(data) {
-                window.location.reload();
+                $.when(
+                    utils.load({ url: 'curChannel' })
+                ).done(function(data) {
+                    window.location.reload();
+                });
             });
-        });
-	})
+        })
+    })
+	
 
 	// logo handler
 	$("a.tower-logo").click(function(e) {
