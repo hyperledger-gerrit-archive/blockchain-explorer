@@ -1,0 +1,29 @@
+//import React, { Component } from 'react';
+import config from '../config';
+//import web3 from './web3';
+//import nodeSDK from './nodeSDK'
+
+var apiName = config.get('api');
+//import exportedAPI from './${apiName}';
+
+
+
+//const exportedAPI = apiName==="web3" ? web3 : nodeSDK
+
+//export default exportedAPI
+
+
+
+export default {
+    getBlockByNumber(blockNumber) {
+         if (apiName === "nodeSDK") {
+              console.log("nodeSDK");
+         } else if (apiName === "web3") {
+             console.log("web3");
+            // web3.getBlockByNumber(48);
+         } else {
+             console.log("Could not find api");
+         }
+       // exportedAPI.getBlockByNumber(blockNumber);
+    }
+}
