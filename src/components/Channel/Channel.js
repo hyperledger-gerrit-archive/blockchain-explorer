@@ -1,26 +1,21 @@
 import React, { Component } from 'react';
 import CountHeader from '../CountHeader/CountHeader';
-var groundStyle = {
-  height: '250px'
-}
+import MainComponent from '../../MainComponent'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import RaisedButton from 'material-ui/RaisedButton';
+
+
 class Channel extends Component {
   render() {
     return (
       <main>
 	  	<section>
 			<div className="tower-body-wrapper">
-				<div className="container-fluid">
-					<header className="tower-page-title" id="channel-name">
-						<span>Channel</span>
-					</header>
-
-          <CountHeader/>
-
-					<div className="row" id="grounds">
-						<div className="widget-sizer col-lg-1 col-md-1 col-xs-12" style={groundStyle}></div>
-					</div>
-
-				</div>
+			<MuiThemeProvider>
+			<RaisedButton label="Default" />	
+			</MuiThemeProvider>
+          <CountHeader/>		
+					<MainComponent />		
 			</div>
 		</section>
 	</main>
