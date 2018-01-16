@@ -18,7 +18,7 @@ function Header(props) {
   const { classes } = props;
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="default">
+      <AppBar position="static" >
         <Toolbar>
 					<Avatar src={process.env.PUBLIC_URL + '/favicon.ico'} alt='logoimage' className={classes.avatar} />
           <Typography type="title" color="inherit" className={classes.flex}>
