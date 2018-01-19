@@ -9,10 +9,10 @@ import Avatar from 'material-ui/Avatar';
 
 const styles = theme => ({
   root: {
-		width: '100%',		
+    width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
-  
+
 });
 
 
@@ -22,9 +22,9 @@ function Header(props) {
     <div className={classes.root}>
       <AppBar position="static" >
         <Toolbar>
-					<Avatar src={process.env.PUBLIC_URL + '/favicon.ico'} alt='logoimage' className={classes.avatar} />
+          <Avatar src={process.env.PUBLIC_URL + '/favicon.ico'} alt='logoimage' className={classes.avatar} />
           <Typography type="title" color="inherit" className={classes.flex}>
-						HYPERLEDGER EXPLORER
+            BLOCKCHAIN EXPLORER
           </Typography>
         </Toolbar>
       </AppBar>

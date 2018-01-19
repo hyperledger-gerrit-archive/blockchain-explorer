@@ -15,7 +15,7 @@ class BlockCharts extends Component {
   }
 /*
   blockChartData () {
-    [];
+   //TODO get data
 
   }
 */
@@ -23,20 +23,20 @@ class BlockCharts extends Component {
   render() {
    
     const data = [
-      { dtime: '12:16:51 pm ', blks: 3534 },
-      { dtime: '12:16:53 pm ', blks: 23567789 },
-      { dtime: '12:16:54 pm ', blks: 2367789 },
-      { dtime: '12:16:55 pm ', blks: 2356778 },
-      { dtime: '12:16:56 pm ', blks: 567789 },
-      { dtime: '12:16:57 pm ', blks: 235679 },
-      { dtime: '12:17:58 pm ', blks: 235789 },
-      { dtime: '12:17:59 pm ', blks: 235677 },
-      { dtime: '12:18:01 pm ', blks: 567789 },
-      { dtime: '12:18:45 pm ', blks: 3555 },
-      { dtime: '12:19:55 pm ', blks: 47458937 },
-      { dtime: '12:20:51 pm ', blks: 5 },
-      { dtime: '12:21:58 pm ', blks: 7537589 },
-      { dtime: '12:22:35 pm ', blks: 77445 },
+      { dtime: '12:16:51 pm ', blocks: 3534 },
+      { dtime: '12:16:53 pm ', blocks: 23567789 },
+      { dtime: '12:16:54 pm ', blocks: 2367789 },
+      { dtime: '12:16:55 pm ', blocks: 2356778 },
+      { dtime: '12:16:56 pm ', blocks: 567789 },
+      { dtime: '12:16:57 pm ', blocks: 235679 },
+      { dtime: '12:17:58 pm ', blocks: 235789 },
+      { dtime: '12:17:59 pm ', blocks: 235677 },
+      { dtime: '12:18:01 pm ', blocks: 567789 },
+      { dtime: '12:18:45 pm ', blocks: 3555 },
+      { dtime: '12:19:55 pm ', blocks: 47458937 },
+      { dtime: '12:20:51 pm ', blocks: 5 },
+      { dtime: '12:21:58 pm ', blocks: 7537589 },
+      { dtime: '12:22:35 pm ', blocks: 77445 },
     ];
 
     return (
@@ -50,7 +50,7 @@ class BlockCharts extends Component {
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
-              <Line type="natural" dataKey="blks" stroke="#8884d8" activeDot={{ r: 8 }} />
+              <Line type="natural" dataKey="blocks" stroke="#8884d8" activeDot={{ r: 8 }} />
             </LineChart>
           </CardContent>
         </Card>
