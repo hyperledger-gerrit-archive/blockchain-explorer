@@ -20,7 +20,7 @@ var ledgerMgr=require('./utils/ledgerMgr.js')
 
 var statusMertics=require('./service/metricservice.js')
 
-app.use(express.static(path.join(__dirname,'explorer_client')));
+app.use(express.static(path.join(__dirname,'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -128,13 +128,13 @@ app.post("/api/block/get", function(req, res) {
 });
 
 //return latest status
-app.post("/api/status/get", function(req, res) {
+app.get("/api/status/get", function(req, res) {
     statusMertics.getStatus(ledgerMgr.getCurrChannel(),function(status){
         res.send(status)
     })
 });
 
-app.post('/chaincodelist',function(req,res){
+app.get('/chaincodelist',function(req,res){
     statusMertics.getTxPerChaincode(ledgerMgr.getCurrChannel(),function (data) {
         res.send(data)
     })
@@ -162,6 +162,10 @@ app.post("/peerlist", function(req, res) {
     })
 });
 
+app.get('/api/peer/count', (req,res) =>{
+    
+    res.json({count: 5});
+});
 // ============= start server =======================
 
 var server = http.listen(port, function() {

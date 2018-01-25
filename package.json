@@ -1,18 +1,15 @@
 {
-  "name": "fabric-explorer",
-  "version": "0.0.1",
-  "description": "fabric-explorer",
+  "name": "hyperledger-explorer",
+  "version": "3.0.0",
+  "description": "hyperledger-explorer",
+  "private": true,
   "main": "main.js",
-  "keywords": [
-    "fabric-client sample app",
-    "v1.0 fabric nodesdk sample",
-    "alpha based nodesdk sample app"
-  ],
   "engines": {
     "node": ">=6.9.5",
     "npm": ">=3.10.10"
   },
   "dependencies": {
+    "ajv": "^5.5.2",
     "body-parser": "^1.17.2",
     "co": "^4.6.0",
     "ejs": "^2.5.6",
@@ -20,13 +17,38 @@
     "fabric-ca-client": "^1.0.0",
     "fabric-client": "^1.0.0",
     "fast-stats": "0.0.3",
+    "immutable": "^3.8.1",
+    "lodash": "^4.17.4",
     "log4js": "^0.6.38",
+    "material-ui": "^1.0.0-beta.29",
+    "material-ui-icons": "^1.0.0-beta.17",
     "mysql": "^2.13.0",
     "prettyjson": "^1.2.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^4.4.8",
+    "react-refetch": "^1.0.4",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17",
+    "recharts": "^1.0.0-beta.9",
+    "redux": "^3.7.2",
+    "redux-actions": "^0.9.1",
+    "redux-thunk": "^2.2.0",
     "socket.io": "^2.0.3",
     "stomp-broker-js": "^0.1.3",
     "stompjs": "^2.3.3",
+    "superagent": "^3.8.2",
+    "typeface-roboto": "0.0.50",
     "winston": "^2.2.0"
   },
-  "license": "Apache-2.0"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "proxy": "http://localhost:8080/"
 }
