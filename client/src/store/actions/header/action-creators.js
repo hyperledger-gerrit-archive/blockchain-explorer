@@ -1,24 +1,12 @@
-import { createAction } from 'redux-actions'
-import * as actionTypes from '../action-types'
-//import peerList from '../../reducers/peerList'
-import countsHeader from '../../reducers/countsHeader'
+import { createAction } from 'redux-actions';
+import * as actionTypes from '../action-types';
+import { get } from '../../../services/request.js';
 
-/*
-export const getPeerList = () => dispatch => {
-    dispatch(createAction(actionTypes.PEER_LIST)(peerList.getPeerList()));
+export const getHeaderCount = () => dispatch => {
+    get('/api/status/get')
+        .then(resp => {
+            dispatch(createAction(actionTypes.COUNT_HEADER_GET)(resp))
+        }).catch((error) => {
+            console.error(error);
+        })
 }
-*/
-const getCountHeader = () => dispatch => {
-    dispatch(createAction(actionTypes.COUNT_HEADER)(countsHeader.fetchHeadCounts()));
-}
-
-export default getCountHeader 
-
-
-
-
-
-
-
-
-  
