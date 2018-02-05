@@ -29,23 +29,32 @@ const styles = theme => ({
 
 });
 
-
 class CountHeader extends Component {
   constructor(props) {
     super(props);
     this.state = { isChaincodeView: true, isTransactionView: false };
-    this.state.countHeader = { chaincodeCount: 0, txCount: 0, latestBlock: 0, peerCount: 0 };
+ /*   this.state.countHeader = { 
+        chaincodeCount: 0, txCount: 0, latestBlock: 0, peerCount: 0
+     };
+     */
+    this.state = { countHeader: this.props.countHeader };
     this.handleClickChaincodeView = this.handleClickChaincodeView.bind(this);
     this.handleClickTransactionView = this.handleClickTransactionView.bind(this);
   }
 
   componentWillMount() {
-    this.props.getCountHeader();
+    this.props.getCountHeader();    
     console.log('componentWillMount: ', this.state.countHeader);
   }
 
-  componentDidMount() {
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.countHeader !== this.props.countHeader) {
+      this.setState({countHeader: nextProps.countHeader});
+      console.log("countHeader received nextProps value: ", nextProps.countHeader);
+    }
+  }
 
+  componentDidMount() {
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -53,15 +62,14 @@ class CountHeader extends Component {
     // this will run in a loop, need to validate some state
     //Use componentDidUpdate if you want to update state asynchronously when props change!
     // only update  if the data has changed
-    console.log('prevProps ', prevProps.countHeader, ' prevState ', prevState.countHeader);
-    /*
+      console.log('componentDidUpdate() ' + new Date().toLocaleString());
       if (prevState.countHeader !== prevProps.countHeader) {
+        this.props.getCountHeader();
         console.log('componentDidUpdate() ' + new Date().toLocaleString());
-       this.props.getCountHeader();
+        console.log('prevProps ', prevProps.countHeader, ' prevState ', prevState.countHeader);
       }
-      */
+      
   }
-
 
   handleClickChaincodeView() {
     this.setState({ isTransactionView: false });
@@ -77,8 +85,7 @@ class CountHeader extends Component {
   render() {
     const { classes } = this.props;
     const { countHeader } = this.props.countHeader;
-    console.log('countHeader ', countHeader);
-
+    
     let currentView = null;
     if (this.state.isChaincodeView) {
       currentView = <ChaincodeView />;

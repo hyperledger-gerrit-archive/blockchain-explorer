@@ -38,6 +38,7 @@ export const deleteRequest = (uri, payload) =>
 
 export const withPromiseCallback = (resolve, reject) => (error, response) => {
     if (error) {
+        console.error(error);
         reject({ error });
     } else {
         resolve(response.body);
