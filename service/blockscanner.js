@@ -36,7 +36,7 @@ function  syncBlock() {
     var channelName = ledgerMgr.getCurrChannel();
     let maxBlockNum
     let curBlockNum
-    Promise.all([        
+    Promise.all([
         getMaxBlockNum(channelName),
         getCurBlockNum(channelName)
     ]).then(datas=>{
@@ -129,7 +129,7 @@ function* saveChaincodes(channelName){
     if(typeof chaincodes ==='string'){
         logger.debug(chaincodes)
         return
-    }   
+    }
     for(let i=0;i<len;i++){
         let chaincode=chaincodes[i]
         chaincode.channelname=channelName
@@ -151,7 +151,7 @@ function* savePeerlist(channelName){
         else
             peerlists = peerlist;
     });
-    let peerlen=peerlists.length   
+    let peerlen=peerlists.length
     for(let i=0;i<peerlen;i++){
         var peers ={};
         let peerlist=peerlists[i]

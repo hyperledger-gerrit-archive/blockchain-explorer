@@ -21,7 +21,6 @@ class BlockCharts extends Component {
 */
 
   render() {
-   
     const data = [
       { dtime: '12:16:51 pm ', blocks: 3534 },
       { dtime: '12:16:53 pm ', blocks: 23567789 },

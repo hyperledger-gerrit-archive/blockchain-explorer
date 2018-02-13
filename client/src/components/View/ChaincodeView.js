@@ -39,8 +39,8 @@ function ChaincodeView(props) {
         <div>
           <Card className={classes.card} title={'Chaincode List'}>
           <CardContent>
-            <Typography className={classes.title}>Chaincode List </Typography>     
-            </CardContent>       
+            <Typography className={classes.title}>Chaincode List </Typography>
+            </CardContent>
            <CardContent className={classes.content}>
                     Chain code details goes here
            </CardContent>
