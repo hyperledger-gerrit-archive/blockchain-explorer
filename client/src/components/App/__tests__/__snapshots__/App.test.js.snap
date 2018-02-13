@@ -5,8 +5,6 @@ ShallowWrapper {
   "length": 1,
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MuiThemeProvider
-    disableStylesGeneration={false}
-    sheetsManager={null}
     theme={
         Object {
             "breakpoints": Object {
@@ -48,8 +46,8 @@ ShallowWrapper {
                 "active": "rgba(0, 0, 0, 0.54)",
                 "disabled": "rgba(0, 0, 0, 0.26)",
                 "disabledBackground": "rgba(0, 0, 0, 0.12)",
-                "hover": "rgba(0, 0, 0, 0.14)",
-                "selected": "rgba(0, 0, 0, 0.08)",
+                "hover": "rgba(0, 0, 0, 0.08)",
+                "selected": "rgba(0, 0, 0, 0.14)",
               },
               "background": Object {
                 "default": "#fafafa",
