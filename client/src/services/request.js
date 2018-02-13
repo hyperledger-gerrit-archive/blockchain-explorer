@@ -1,7 +1,6 @@
 
 /*****
  * Use these methods for requests, otherwise you do not need Promise
- * 
  */
 import agent from 'superagent';
 

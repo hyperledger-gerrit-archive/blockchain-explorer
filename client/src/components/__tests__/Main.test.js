@@ -1,5 +1,5 @@
 /***
- * The snapshot artifact should be committed alongside code changes, 
+ * The snapshot artifact should be committed alongside code changes,
  * and reviewed as part of your code review process.
  */
 import React from "react";
