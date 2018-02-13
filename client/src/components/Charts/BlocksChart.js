@@ -15,13 +15,12 @@ class BlockCharts extends Component {
   }
 /*
   blockChartData () {
-   //TODO get data
+//TODO get data
 
   }
 */
 
   render() {
-   
     const data = [
       { dtime: '12:16:51 pm ', blocks: 3534 },
       { dtime: '12:16:53 pm ', blocks: 23567789 },
@@ -40,7 +39,7 @@ class BlockCharts extends Component {
     ];
 
     return (
-      <div style={{ position: 'absolute', top: 800, left: 50, width: 1215 }}>
+      <div style={{ position: 'absolute', top: 800, left: 50, width: 1290 }}>
         <Card >
           <CardContent >
             <Typography  >BLOCKS/MIN</Typography>

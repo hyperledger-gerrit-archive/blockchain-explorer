@@ -33,16 +33,16 @@ const styles = theme => ({
     }
 });
 
-function ChaincodeView(props) {
+function ChannelView(props) {
     const { classes } = props;
     return (
         <div>
-            <Card className={classes.card} title={'Chaincode List'}>
+            <Card className={classes.card} title={'Channel List'}>
                 <CardContent>
-                    <Typography className={classes.title}>Chaincode List </Typography>
+                    <Typography className={classes.title}>Channel List </Typography>
                 </CardContent>
                 <CardContent className={classes.content}>
-                    Chain code details goes here
+                    Channel details goes here
                 </CardContent>
             </Card>
         </div>
@@ -50,8 +50,8 @@ function ChaincodeView(props) {
 }
 
 
-ChaincodeView.propTypes = {
+ChannelView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ChaincodeView);
+export default withStyles(styles)(ChannelView);

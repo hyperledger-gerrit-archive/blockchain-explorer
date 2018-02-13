@@ -1,0 +1,7 @@
+{
+    "chaincodeCount": 5,
+    "txCount": 5,
+    "latestBlock": 5,
+    "peerCount": 5,
+    "channelCount":5
+}

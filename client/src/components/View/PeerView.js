@@ -33,16 +33,16 @@ const styles = theme => ({
     }
 });
 
-function ChaincodeView(props) {
+function PeerView(props) {
     const { classes } = props;
     return (
         <div>
-            <Card className={classes.card} title={'Chaincode List'}>
+            <Card className={classes.card} title={'Peer List'}>
                 <CardContent>
-                    <Typography className={classes.title}>Chaincode List </Typography>
+                    <Typography className={classes.title}>Peer List </Typography>
                 </CardContent>
                 <CardContent className={classes.content}>
-                    Chain code details goes here
+                    Peer details goes here
                 </CardContent>
             </Card>
         </div>
@@ -50,8 +50,8 @@ function ChaincodeView(props) {
 }
 
 
-ChaincodeView.propTypes = {
+PeerView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ChaincodeView);
+export default withStyles(styles)(PeerView);
