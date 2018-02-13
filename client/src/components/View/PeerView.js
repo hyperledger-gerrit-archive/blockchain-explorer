@@ -12,7 +12,7 @@ const styles = theme => ({
     },
     card: {
         height: 250,
-        width: 1215,
+        minWidth: 1290,
         margin: 20,
         textAlign: 'left',
         display: 'inline-block',
@@ -33,24 +33,25 @@ const styles = theme => ({
     }
 });
 
-function TransactionsView(props) {
+function PeerView(props) {
     const { classes } = props;
     return (
-        <Card className={classes.card} >
-            <CardContent>
-                <Typography className={classes.title}>Transactions </Typography>
-                <CardContent className={classes.content}>
-                    Transactions details goes here
+        <div>
+            <Card className={classes.card} title={'Peer List'}>
+                <CardContent>
+                    <Typography className={classes.title}>Peer List </Typography>
                 </CardContent>
-            </CardContent>
-        </Card>
-
+                <CardContent className={classes.content}>
+                    Peer details goes here
+                </CardContent>
+            </Card>
+        </div>
     );
 }
 
 
-TransactionsView.propTypes = {
+PeerView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TransactionsView);
+export default withStyles(styles)(PeerView);
