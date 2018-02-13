@@ -26,7 +26,7 @@ class App extends Component {
       <MuiThemeProvider theme={muiTheme} >
       <div>
 			<Header />
-      <Main />      
+      <Main />
 			</div>
       </MuiThemeProvider>
     );

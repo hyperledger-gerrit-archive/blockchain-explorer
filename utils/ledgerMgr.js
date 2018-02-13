@@ -29,7 +29,7 @@ function changeChannel(channelName){
 function getCurrChannel(){
     if(currChannel == undefined)
         currChannel = config.channel;
-    return currChannel   
+    return currChannel
 }
 
 exports.getCurrChannel=getCurrChannel

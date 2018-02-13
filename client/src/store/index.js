@@ -8,6 +8,5 @@ export default (initialState = {}) => {
         initialState,
         applyMiddleware(thunk)
     )
-
     return store;
 }
