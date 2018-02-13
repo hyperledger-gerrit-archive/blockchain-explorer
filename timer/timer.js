@@ -36,7 +36,6 @@ ledgerEvent.on('channgelLedger',function(){
 function start() {
 
     helper.createDefault(ledgerMgr.getCurrChannel());
-    
     setInterval(function () {
         blockPerMinMeter.push(0)
         txnPerSecMeter.push(0)
@@ -72,7 +71,7 @@ function start() {
     blockListener.emit('syncChaincodes')
     blockListener.emit('syncPeerlist')
     blockListener.emit('syncBlock')
-    
+
 
 }
 

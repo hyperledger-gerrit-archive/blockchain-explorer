@@ -33,25 +33,24 @@ const styles = theme => ({
     }
 });
 
-function ChaincodeView(props) {
+function TransactionView(props) {
     const { classes } = props;
     return (
-        <div>
-            <Card className={classes.card} title={'Chaincode List'}>
-                <CardContent>
-                    <Typography className={classes.title}>Chaincode List </Typography>
-                </CardContent>
+        <Card className={classes.card} >
+            <CardContent>
+                <Typography className={classes.title}>Transactions </Typography>
                 <CardContent className={classes.content}>
-                    Chain code details goes here
+                    Transactions details goes here
                 </CardContent>
-            </Card>
-        </div>
+            </CardContent>
+        </Card>
+
     );
 }
 
 
-ChaincodeView.propTypes = {
+TransactionView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ChaincodeView);
+export default withStyles(styles)(TransactionView);
