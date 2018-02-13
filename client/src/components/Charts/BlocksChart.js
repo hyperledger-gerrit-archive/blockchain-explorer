@@ -40,7 +40,7 @@ class BlockCharts extends Component {
     ];
 
     return (
-      <div style={{ position: 'absolute', top: 800, left: 50, width: 1215 }}>
+      <div style={{ position: 'absolute', top: 800, left: 50, width: 1290 }}>
         <Card >
           <CardContent >
             <Typography  >BLOCKS/MIN</Typography>
