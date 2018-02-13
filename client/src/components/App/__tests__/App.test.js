@@ -24,10 +24,7 @@ describe('Testing App', () => {
       { context: { store: mockStore(initialState) } },
     );
     expect(wrapper.dive()).toMatchSnapshot();
-
-    it('wrapper length > 0 ', () => {
-      expect(wrapper.length).toEqual(1);
-    });
-    
   });
+
+
 });

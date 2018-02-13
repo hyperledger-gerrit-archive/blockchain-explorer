@@ -21,9 +21,9 @@ describe('Testing Header component', () => {
             <Header />,
             { context: { store: mockStore(initialState) } },
         );
-        expect(wrapper).toMatchSnapshot();
-    })
 
+    })
+    expect(wrapper).toMatchSnapshot();
     it('wrapper length > 0 ', () => {
         expect(wrapper.length).toEqual(1);
     });
