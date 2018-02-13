@@ -20,7 +20,7 @@ var ledgerMgr=require('./utils/ledgerMgr.js')
 
 var statusMertics=require('./service/metricservice.js')
 
-app.use(express.static(path.join(__dirname,'explorer_client')));
+app.use(express.static(path.join(__dirname,'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
