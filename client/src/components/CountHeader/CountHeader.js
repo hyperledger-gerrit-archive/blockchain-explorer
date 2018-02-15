@@ -12,7 +12,7 @@ import ChaincodeView from "../View/ChaincodeView";
 import BlockView from "../View/BlockView";
 import PeerView from "../View/PeerView";
 import ChannelView from "../View/ChannelView";
-
+import PeerList from '../Lists/PeerList';
 import { getHeaderCount as getCountHeaderCreator } from '../../store/actions/header/action-creators';
 
 const styles = theme => ({
@@ -111,7 +111,7 @@ class CountHeader extends Component {
         currentView = <ChannelView />;
         break;
       case 'PeerView':
-        currentView = <PeerView />;
+        currentView = <PeerList peerList={this.props.peerList}/>;
         break;
       default:
         currentView = <PeerView />;
@@ -212,6 +212,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = state => ({
   countHeader: state.countHeader,
+  peerList : state.peerList.peerList
 });
 
 CountHeader.propTypes = {
