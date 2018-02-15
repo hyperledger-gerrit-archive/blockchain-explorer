@@ -3,7 +3,7 @@ import { withStyles } from 'material-ui/styles';
 import PropTypes from 'prop-types';
 import Card, { CardContent } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
-
+import PeerList from '../Lists/PeerList'
 const styles = theme => ({
     root: {
         flexGrow: 1,
