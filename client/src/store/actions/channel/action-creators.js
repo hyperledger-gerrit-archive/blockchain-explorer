@@ -1,10 +1,10 @@
 import { createAction } from 'redux-actions'
 import * as actionTypes from '../action-types'
 import { post } from '../../../services/request.js';
-export const getPeerList = () => dispatch => {
-    post('/peerlist')
+export const getChannel = () => dispatch => {
+    post('/channellist')
         .then(resp => {
-            dispatch(createAction(actionTypes.PEER_LIST_POST)(resp))
+            dispatch(createAction(actionTypes.CHANNEL)(resp))
         }).catch((error) => {
             console.error(error);
         })

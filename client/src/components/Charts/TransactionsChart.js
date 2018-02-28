@@ -30,7 +30,7 @@ class TransactionsCharts extends Component {
     ];
 
     return (
-      <div style={{ position: 'absolute', top: 530, left: 50, width: 1290 }}>
+      <div>
         <Card >
           <CardContent>
             <Typography >TRANSACTIONS/MIN</Typography>
