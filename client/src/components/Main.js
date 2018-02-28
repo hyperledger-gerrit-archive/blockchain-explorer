@@ -6,7 +6,6 @@ import Layout from './Layout/index';
 
 const Main = () =>
   (
-    <Provider store={createStore()} >
       <Router>
         <div className="App">
           <Switch>
@@ -14,7 +13,6 @@ const Main = () =>
           </Switch>
         </div>
       </Router>
-    </Provider>
   )
 
 export default Main

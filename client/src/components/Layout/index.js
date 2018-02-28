@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import BlocksChart from "../Charts/BlocksChart";
 import TransactionsChart from '../Charts/TransactionsChart';
-import CountHeader from '../CountHeader/CountHeader';
-import Channel from '../Channel/Channel';
-
+import MenuBar from '../CountHeader/MenuBar';
 class Layout extends Component {
     constructor(props) {
         super(props);
@@ -13,18 +11,18 @@ class Layout extends Component {
         return (
             <div>
                 <div>
-                    <CountHeader />
-                    <Channel />
+                    <MenuBar />
                 </div>
-                <div>
+                {/* <div>
                     <BlocksChart />
                 </div>
                 <div>
                     <TransactionsChart />
-                </div>
+                </div> */}
             </div>
         );
     }
 }
 
 export default Layout;
+
