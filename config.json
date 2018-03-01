@@ -41,6 +41,10 @@
 			}
 		}
 	},
+	"channel-discovery": {
+		"org1": "peer1",
+		"org2": "peer1"
+	},
 	"host": "localhost",
 	"port": "8080",
 	"channel": "mychannel",

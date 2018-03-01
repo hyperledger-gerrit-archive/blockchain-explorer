@@ -38,6 +38,7 @@ var orgObj = config["network-config"][org];
 var orgKey = Object.keys(orgObj);
 var index = orgKey.indexOf("peer1");
 var peer = orgKey[index];
+var channelDiscovery = config["channel-discovery"];
 
 // =======================   controller  ===================
 
@@ -171,9 +172,21 @@ app.post('/curChannel', function (req, res) {
     res.send({ 'currentChannel': ledgerMgr.getCurrChannel() })
 })
 
-app.post('/channellist', function (req, res) {
-    query.getChannels(peer, org).then(channel => {
-        res.send(channel);
+app.post('/api/channels',function(req,res){
+    var channels = [], counter = 0;
+
+    Object.keys(channelDiscovery).forEach(function (org) {
+        query.getChannels(channelDiscovery[org], org).then(channel => {
+            channel['channels'].forEach(function (element) {
+                channels.push(element);
+            });
+            if (counter == Object.keys(channelDiscovery).length - 1) {
+                var response = {};
+                response["channels"] = channels.filter((currEle, index, arr) => arr.findIndex((ele) => ele.channel_id === currEle.channel_id) === index);
+                res.send(response);
+            }
+            counter++;
+        });
     })
 })
 
