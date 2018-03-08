@@ -80,7 +80,7 @@ app.post("/api/tx/json", function (req, res) {
 
     } else {
         res.send({})
-}
+    }
 
 });
 
@@ -179,11 +179,11 @@ app.post('/api/channels', function (req, res) {
     orgs_peers.forEach(function (org) {
         query.getChannels(org['value'], org['key']).then(channel => {
             channel['channels'].forEach(function (element) {
-                channels.push(element);
+                channels.push(element['channel_id']);
             });
             if (counter == orgs_peers.length - 1) {
                 var response = {};
-                response["channels"] = channels.filter((currEle, index, arr) => arr.findIndex((ele) => ele.channel_id === currEle.channel_id) === index);
+                response["channels"] = [...(new Set(channels))]
                 res.send(response);
             }
             counter++;

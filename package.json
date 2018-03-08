@@ -25,6 +25,7 @@
     "log4js": "^0.6.38",
     "pg": "^7.4.1",
     "prettyjson": "^1.2.1",
+    "react-select": "^1.2.1",
     "socket.io": "^2.0.3",
     "stomp-broker-js": "^0.1.3",
     "stompjs": "^2.3.3",

@@ -1,36 +1,19 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import 'react-select/dist/react-select.css';
 
-import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import Avatar from 'material-ui/Avatar';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
-} from 'reactstrap';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Select from 'react-select';
+import { Nav, Navbar, NavbarBrand, NavbarToggler } from 'reactstrap';
 
 class HeaderView extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      isOpen: false
-
+      isOpen: false,
+      channels: []
     }
-    this.toggle = this.toggle.bind(this);
-
+    this.toggle = this.toggle.bind(this);  
+  
   }
   toggle() {
     this.setState({
@@ -39,11 +22,28 @@ class HeaderView extends Component {
   }
   componentDidMount() {
     // this.props.actions.loadTrades();
+    var arr = [];
+    this.props.channelList.channels.forEach(element => {
+      arr.push({
+        value: element,
+        label: element
+      })
+    });
+
+    this.setState({channels: arr});
+
+    this.setState({ selectedOption: arr[0] })
+
   }
   componentWillReceiveProps(nextProps) {
     // console.log(nextProps.trades);
     // this.setState({loading:false});
   }
+
+  handleChange = (selectedOption) => {
+    this.setState({ selectedOption: selectedOption });
+  }
+
   render() {
     return (
       <div>
@@ -51,16 +51,15 @@ class HeaderView extends Component {
           <NavbarBrand href="/"> HYPERLEDGER EXPLORER</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Nav className="ml-auto" navbar>
-            <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
-                CHANNEL
-                </DropdownToggle>
-              <DropdownMenu >
-                <DropdownItem>
-                  {this.props.channelList.channels[0].channel_id}
-                  </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
+            <div className='channel-dropdown'>
+              <Select
+                placeholder='Select Channel...'
+                required='true'
+                name="form-field-name"
+                value={this.state.selectedOption}
+                onChange={this.handleChange}
+                options={this.state.channels} />
+            </div>
           </Nav>
         </Navbar>
       </div>
