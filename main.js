@@ -42,8 +42,8 @@ var peer = orgKey[index];
 
 // =======================   controller  ===================
 
-app.post("/api/tx/getinfo", function (req, res) {
-    let txid = req.body.txid
+app.get("/api/transaction/:txid", function (req, res) {
+    let txid = req.params.txid
     if (txid && txid != '0') {
         query.getTransactionByID(peer, ledgerMgr.getCurrChannel(), txid, org).then(response_payloads => {
             var header = response_payloads['transactionEnvelope']['payload']['header']
@@ -51,10 +51,13 @@ app.post("/api/tx/getinfo", function (req, res) {
             var signature = response_payloads['transactionEnvelope']['signature'].toString("hex")
 
             res.send({
+                'validation_code' : response_payloads['validationCode'],
                 'tx_id': header.channel_header.tx_id,
                 'timestamp': header.channel_header.timestamp,
                 'channel_id': header.channel_header.channel_id,
                 'type': header.channel_header.type,
+                'creator_msp' : header.signature_header.creator.Mspid,
+                'chaincode_id' : String.fromCharCode.apply(null, new Uint8Array(header.channel_header.extension)),
             })
         })
 
