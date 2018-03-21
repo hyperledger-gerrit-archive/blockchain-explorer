@@ -1,6 +1,0 @@
-[
-    {
-        "requests": "grpcs://127.0.0.1:7051",
-        "server_hostname": "peer0.org1.example.com"
-    }
-]

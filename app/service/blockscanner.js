@@ -15,13 +15,13 @@
  */
 
 
-var query = require('../app/query.js')
-var helper = require('../app/helper.js')
+var query=require('../query.js')
+var helper = require('../helper.js')
 var co = require('co')
 var stomp = require('../socket/websocketserver.js').stomp()
 var logger = helper.getLogger('blockscanner');
 var ledgerMgr = require('../utils/ledgerMgr.js')
-var config = require('../config.json')
+var config=require('../../config.json')
 var sql = require('../db/pgservice.js');
 
 var blockListener

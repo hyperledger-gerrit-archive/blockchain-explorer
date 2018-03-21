@@ -16,8 +16,8 @@
 
 //var bcservice=require('./bcservice.js')
 var co = require('co')
-var helper = require('../app/helper.js');
-var query = require('../app/query.js');
+var helper = require('../helper.js');
+var query = require('../query.js');
 var logger = helper.getLogger('metricservice');
 var sql = require('../db/pgservice.js');
 

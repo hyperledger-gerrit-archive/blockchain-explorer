@@ -1,23 +1,26 @@
-# Hyperledger Explorer
+Hyperledger Explorer
+=======
 
 Hyperledger Explorer is a simple, powerful, easy-to-use, highly maintainable, open source browser for viewing activity on the underlying blockchain network.
 
 ## Directory Structure
 ```
-├── app            Fabric GRPC interface
-├── db			   Postgres script and help class
-├── client         Web Ui
-├── listener       Websocket listener
-├── metrics        Metrics about tx count per minute and block count per minute
-├── service        The service
-├── socket		   Push real time data to front end
-├── timer          Timer to post information periodically
-└── utils          Various utility scripts
+├── app            Application backend root
+	├── db			   Postgres script and help class
+	├── listener       Websocket listener
+	├── metrics        Metrics
+	├── mock_server	   Mock server used for development
+	├── service        The service
+	├── socket		   Push real time data to front end
+	├── test		   Endpoint tests
+	├── timer          Timer to post information periodically
+	└── utils          Various utility scripts
+├── client          Web Ui
+
 ```
 
 
 ## Requirements
-
 
 Following are the software dependencies required to install and run hyperledger explorer
 * nodejs 6.9.x (Note that v7.x is not yet supported)
@@ -30,22 +33,24 @@ Hyperledger Explorer works with Hyperledger Fabric 1.0.  Install the following s
 ## Clone Repository
 
 Clone this repository to get the latest using the following command.
-1. `git clone https://github.com/hyperledger/blockchain-explorer.git`
-2. `cd blockchain-explorer`
+
+- `git clone https://github.com/hyperledger/blockchain-explorer.git`.
+- `cd blockchain-explorer`.
 
 ## Database setup
-Run the database setup scripts located under `db/explorerpg.sql`
 
-Connect to postgres database by entering below command from `blockchain-explorer` directory
-`$ sudo -u postgres psql -d fabricexplorer`
+Connect to PostgreSQL database.
 
-On successfull login you should see `fabricexplorer=#`
+- `sudo -u postgres psql`
 
-Run sql script
-`\i db/explorerpg.sql`
+Run create database script.
 
-Run `\l` to see created fabricexplorer database
-Run `\d` to see created tables
+- `\i app/db/explorerpg.sql`
+
+Run db status commands.
+
+- `\l` view created fabricexplorer database
+- `\d` view created tables
 
 ## Fabric network setup
 
@@ -53,13 +58,16 @@ Run `\d` to see created tables
 
 ## Running hyperledger-explorer
 
-On another terminal,
-1. `cd blockchain-explorer`
-2. Modify config.json to update network-config
-Change "fabric-path" to your fabric network path, example "/home/user1/workspace/fabric-samples" for the following keys: "tls_cacerts", "key", "cert".
-Final path for key "tls_cacerts" will be "/home/user1/workspace/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
-3. Modify config.json to update one of the channel
-	* pg host, username, password details
+On another terminal.
+
+- `cd blockchain-explorer`
+- Modify config.json to update network-config.
+	- Change "fabric-path" to your fabric network path,
+	example: "/home/user1/workspace/fabric-samples" for the following keys: "tls_cacerts", "key", "cert".
+	- Final path for key "tls_cacerts" will be:  "/home/user1/workspace/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt".
+
+- Modify config.json to update one of the channel
+	- pg host, username, password details.
 ```json
  "channel": "mychannel",
  "pg": {
@@ -70,24 +78,29 @@ Final path for key "tls_cacerts" will be "/home/user1/workspace/fabric-samples/f
 		"passwd": "password"
 	}
 ```
+
 If you are connecting to a non TLS fabric peer, please modify the
 protocol (`grpcs->grpc`) and port (`9051-> 9050`) in the peer url and remove the `tls_cacerts`. Depending on this key, the application decides whether to go TLS or non TLS route.
 
 ## Build Hyperledger Explorer
-From new terminal
-4. cd blockchain-explorer/app/test
-5. `npm install`
-6. `npm run test`
-7. cd blockchain-explorer
-8. `npm install`
-9. cd client/
-10. `npm install`
-11. `npm test -- -u --coverage`
-12. `npm run build`
-13. `npm run start` (to run in development mode port 3000)
+
+On another terminal.
+
+- `cd blockchain-explorer/app/test`
+- `npm install`
+- `npm run test`
+- `cd blockchain-explorer`
+- `npm install`
+- `cd client/`
+- `npm install`
+- `npm test -- -u --coverage`
+- `npm run build`
 
 ## Run Hyperledger Explorer
-From new terminal
-14. cd blockchain-explorer/
-15. `node main.js`  (it will have the backend up)
-16. Launch the URL http://localhost:8080 on a browser.
+
+From new terminal.
+
+- `cd blockchain-explorer/`
+- `./start.sh`  (it will have the backend up).
+- `tail -f log.log` (view log)
+- Launch the URL http://localhost:8080 on a browser.

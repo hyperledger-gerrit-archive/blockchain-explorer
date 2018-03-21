@@ -1,7 +1,7 @@
 {
-  "name": "test-blockchain-explorer",
-  "version": "0.0.1",
-  "description": "blockchain explorer testing",
+  "name": "hyperledger-explorer-test",
+  "version": "0.3.0",
+  "description": "hyperledger-explorer-test",
   "main": "test.js",
   "scripts": {
     "test": "mocha *.js  --exit",

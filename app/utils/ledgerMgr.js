@@ -16,8 +16,8 @@
 
 var EventEmitter = require('events').EventEmitter;
 var ledgerEvent = new EventEmitter();
-var config=require('../config.json')
-var query=require('./../app/query.js')
+var config=require('../../config.json')
+var query=require('../query.js')
 
 var currChannel;
 

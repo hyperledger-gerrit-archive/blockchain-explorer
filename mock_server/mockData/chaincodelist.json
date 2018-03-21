@@ -1,9 +1,0 @@
-[
-    {
-        "channelName": "mychannel",
-        "chaincodename": "mycc",
-        "path": "github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02",
-        "version": "1.0",
-        "txCount": 0
-    }
-]

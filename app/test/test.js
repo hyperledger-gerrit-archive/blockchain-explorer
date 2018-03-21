@@ -1,3 +1,7 @@
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
+
 var expect = require('chai').expect;
 var assert = require('assert');
 var helper = require('../helper');

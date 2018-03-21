@@ -14,7 +14,7 @@
  limitations under the License.
  */
 var ledgerMgr=require('../utils/ledgerMgr.js')
-var helper=require('../app/helper.js')
+var helper=require('../helper.js')
 var Metrics=require('../metrics/metrics.js')
 var blockListener=require('../listener/blocklistener.js').blockListener()
 
