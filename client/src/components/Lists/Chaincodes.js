@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
 import { Table, Container, Row, Col } from 'reactstrap';
 import Pagination from "react-js-pagination";
-import { getChaincodes as getChaincodesCreator } from '../../store/actions/chaincodes/action-creators';
 
 class Chaincodes extends Component {
     constructor(props) {
@@ -13,7 +10,7 @@ class Chaincodes extends Component {
             toolTipOpen2: false,
             loading: false,
             limitrows: 10,
-            totalBlocks: this.props.countHeader.latestBlock,
+            chaincodeCount: this.props.countHeader.chaincodeCount,
             activePage: 1,
             currentOffset: 0
         }
@@ -89,15 +86,5 @@ class Chaincodes extends Component {
         );
     }
 };
-const mapDispatchToProps = (dispatch) => ({
-    getChaincodes: (channel,offset) => dispatch(getChaincodesCreator(channel,offset)),
-});
-const mapStateToProps = state => ({
-    chaincodes: state.chaincodes.chaincodes,
-    countHeader: state.countHeader.countHeader,
-    channel : state.channel.channel
-});
-// export default Blocks;
-export default compose(
-    connect(mapStateToProps, mapDispatchToProps),
-)(Chaincodes);
+
+export default Chaincodes
