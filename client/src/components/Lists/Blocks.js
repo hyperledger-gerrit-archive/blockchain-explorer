@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
 import { Table, Container, Row, Col, Tooltip } from 'reactstrap';
 import Pagination from "react-js-pagination";
-import { getBlockList as getBlockListCreator } from '../../store/actions/block/action-creators';
 
 class Blocks extends Component {
     constructor(props) {
@@ -118,15 +115,5 @@ class Blocks extends Component {
         );
     }
 };
-const mapDispatchToProps = (dispatch) => ({
-    getBlockList: (channel,offset) => dispatch(getBlockListCreator(channel,offset)),
-});
-const mapStateToProps = state => ({
-    blockList: state.blockList.blockList,
-    countHeader: state.countHeader.countHeader,
-    channel : state.channel.channel
-});
-// export default Blocks;
-export default compose(
-    connect(mapStateToProps, mapDispatchToProps),
-)(Blocks);
+
+export default Blocks;
