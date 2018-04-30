@@ -22,15 +22,15 @@ blockScanner.setBlockListener(blockListener)
 var blockMetrics=require('../metrics/metrics').blockMetrics
 var txMetrics=require('../metrics/metrics').txMetrics
 
-var stomp=require('../socket/websocketserver.js').stomp()
+// var stomp=require('../socket/websocketserver.js').stomp()
 
 blockListener.on('createBlock',function (block) {
     blockMetrics.push(1)
     txMetrics.push(block.data.data.length)
 
-    stomp.send('/topic/block',{},JSON.stringify({'number':block.header.number.toString(),'txCount':block.data.data.length}))
+    // stomp.send('/topic/block',{},JSON.stringify({'number':block.header.number.toString(),'txCount':block.data.data.length}))
 
-    stomp.send('/topic/metrics/txnPerSec',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:block.data.data.length/10}))
+    // stomp.send('/topic/metrics/txnPerSec',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:block.data.data.length/10}))
 })
 
 blockListener.on('syncChaincodes',function () {

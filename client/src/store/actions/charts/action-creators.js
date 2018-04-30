@@ -69,3 +69,12 @@ export const getTxPerHour = (curChannel) => dispatch => {
             console.error(error);
         })
 }
+
+export const getTxByOrg = (curChannel) => dispatch => {
+    get('/api/txByOrg/' + curChannel)
+        .then(resp => {
+            dispatch(createAction(actionTypes.TX_CHART_ORG)(resp))
+        }).catch((error) => {
+            console.error(error);
+        })
+}

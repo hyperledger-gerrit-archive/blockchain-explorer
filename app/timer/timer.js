@@ -22,7 +22,7 @@ var blockPerMinMeter=Metrics.blockMetrics
 var txnPerSecMeter=Metrics.txnPerSecMeter
 var txnPerMinMeter=Metrics.txMetrics
 
-var stomp=require('../socket/websocketserver.js').stomp()
+// var stomp=require('../socket/websocketserver.js').stomp()
 
 var statusMertics=require('../service/metricservice.js')
 
@@ -49,14 +49,14 @@ function start() {
     */
     //pushTxnPerMin pushBlockPerMin /topic/metrics/
     setInterval(function () {
-        stomp.send('/topic/metrics/blockPerMinMeter',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:blockPerMinMeter.sum()}))
-        stomp.send('/topic/metrics/txnPerMinMeter',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:txnPerMinMeter.sum()}))
+        // stomp.send('/topic/metrics/blockPerMinMeter',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:blockPerMinMeter.sum()}))
+        // stomp.send('/topic/metrics/txnPerMinMeter',{},JSON.stringify({timestamp:new Date().getTime()/1000,value:txnPerMinMeter.sum()}))
     },1000)
 
     //push status
     setInterval(function () {
         statusMertics.getStatus(ledgerMgr.getCurrChannel(),function (status) {
-            stomp.send('/topic/metrics/status',{},JSON.stringify(status))
+            // stomp.send('/topic/metrics/status',{},JSON.stringify(status))
         })
     },1000)
 
