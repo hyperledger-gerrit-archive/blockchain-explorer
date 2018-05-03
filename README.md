@@ -26,7 +26,7 @@ Following are the software dependencies required to install and run hyperledger 
 * nodejs 6.9.x (Note that v7.x is not yet supported)
 * PostgreSQL 9.5 or greater
 
-Hyperledger Explorer works with Hyperledger Fabric 1.0.  Install the following software dependencies to manage fabric network.
+Hyperledger Explorer works with Hyperledger Fabric 1.1.  Install the following software dependencies to manage fabric network.
 * docker 17.06.2-ce [https://www.docker.com/community-edition]
 * docker-compose 1.14.0 [https://docs.docker.com/compose/]
 
