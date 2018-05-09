@@ -50,6 +50,8 @@ function start() {
     blockListener.emit('syncChaincodes')
     blockListener.emit('syncPeerlist')
     blockListener.emit('syncBlock')
+    blockListener.emit('syncChannelEventHubBlock')   
+
 
 
 }
