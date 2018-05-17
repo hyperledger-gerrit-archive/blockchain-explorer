@@ -95,10 +95,17 @@ function* saveBlockRange(block) {
             })
         //push last block
         var notify = {
-            'title': 'Block Added',
+            'title': 'Block '+start+ ' Added',
             'type': 'block',
+<<<<<<< HEAD   (967ce2 BE-219 Implemented ledger event listener in Explorer)
             'message': 'Block ' + block.header.number + ' established with ' + block.data.data.length + ' tx',
             'time': new Date(firstTxTimestamp)
+=======
+            'message': 'Block ' + start + ' established with ' + block.data.data.length + ' tx',
+            'time': new Date(firstTxTimestamp),
+            'txcount': block.data.data.length,
+            'datahash':block.header.data_hash,
+>>>>>>> BRANCH (be0f40 BE-258)
         };
         wss.broadcast(notify);
 
