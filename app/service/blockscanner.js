@@ -231,7 +231,7 @@ function* saveChannel(peer, org) {
         }
     }
 }
- 
+
 function syncChannels() {
     var channelName = fabricConfiguration.getCurrChannel();
     co(saveChannel, peer, org).then(() => {
