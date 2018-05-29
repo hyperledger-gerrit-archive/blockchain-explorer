@@ -40,13 +40,9 @@ class  BlockListener extends EventEmitter{
 
             this.on('syncBlock', function () {
                 setTimeout(function () {
-                    blockScanner.syncBlock()
-                }, 2000)
-            });
-
-            this.on('syncChannelEventHubBlock', function () {
-                setTimeout(function () {
+                    blockScanner.syncBlock();
                     blockScanner.syncChannelEventHubBlock();
+
                 }, 2000)
             });
         }
