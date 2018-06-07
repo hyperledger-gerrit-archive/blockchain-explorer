@@ -1,1 +1,97 @@
- Please check this for app logging
+[2018-06-06 15:12:45.425] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 15:52:46.931] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 16:08:56.731] [ERROR] metricservice - TypeError: Cannot read property 'length' of null
+    at getPeerData (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/metricservice.js:44:28)
+    at getPeerData.next (<anonymous>)
+    at onFulfilled (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/co/index.js:65:19)
+    at <anonymous>
+    at process._tickCallback (internal/process/next_tick.js:188:7)
+[2018-06-06 16:15:21.980] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 16:18:10.454] [INFO] channel -  /home/nfrunza/workspace/fabric-1.1/fabric-samples/bin/configtxgen -profile TwoOrgsChannel -outputCreateChannelTx /tmp/1528316290454/newchannel10.tx -channelID newchannel10 
+[2018-06-06 16:18:10.456] [INFO] channel -  /home/nfrunza/workspace/fabric-1.1/fabric-samples/bin/configtxgen -profile TwoOrgsOrdererGenesis -outputBlock /tmp/1528316290454/newchannel10.block 
+[2018-06-06 16:18:11.351] [INFO] channelservice - ############### C R E A T E  C H A N N E L ###############
+[2018-06-06 16:18:11.351] [INFO] channelservice - Creating channel: Org1 /tmp/org1.yaml /tmp/network-config-tls.yaml
+[2018-06-06 16:18:11.548] [INFO] channelservice - Successfully created the channel, channel hash aeba3f9daf5491e174a47777075fa57917f0df487bb4fcb4b6b239d168ac10f8
+[2018-06-06 16:18:11.762] [INFO] channelservice - Create Channel: added a record to sql table
+[2018-06-06 16:18:34.734] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 16:18:34.736] [ERROR] joinChannel - Error: ENOENT: no such file or directory, open '/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/config/network-config-tls.yaml'
+    at Object.fs.openSync (fs.js:646:18)
+    at Object.fs.readFileSync (fs.js:551:33)
+    at _getNetworkConfig (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:1903:24)
+    at Function.loadFromConfig (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:118:28)
+    at Object.getClientForOrg (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/networkservice.js:17:22)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:28:43)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/models/channel.js:95:18)
+    at /home/nfrunza/workspace/readonly/blockchain-explorer/main.js:471:13
+    at Layer.handle [as handle_request] (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/express/lib/router/route.js:137:13)
+[2018-06-06 16:18:34.736] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: ENOENT: no such file or directory, open '/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/config/network-config-tls.yaml'
+[2018-06-06 17:27:22.406] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 17:27:41.099] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 17:27:42.031] [INFO] joinChannel - Successfully joined peer to the channel newchannel10
+[2018-06-06 17:27:42.031] [INFO] joinChannel - Successfully joined peers in organization Org1 to the channel:newchannel10
+[2018-06-06 17:47:22.853] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 17:50:31.316] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 17:52:05.502] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 17:52:13.883] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 17:52:14.040] [ERROR] joinChannel - Failed to joined peer to the channel newchannel10
+[2018-06-06 17:52:14.041] [ERROR] joinChannel - Failed to join all peers to channel. cause:Failed to joined peer to the channel newchannel10
+[2018-06-06 17:53:34.839] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 17:53:34.908] [ERROR] joinChannel - Failed to joined peer to the channel newchannel10
+[2018-06-06 17:53:34.910] [ERROR] joinChannel - Failed to join all peers to channel. cause:Failed to joined peer to the channel newchannel10
+[2018-06-06 17:54:58.133] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 17:55:06.973] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 17:55:07.042] [ERROR] joinChannel - Failed to joined peer to the channel newchannel10
+[2018-06-06 17:55:07.042] [ERROR] joinChannel - Failed to join all peers to channel. cause:Failed to joined peer to the channel newchannel10
+[2018-06-06 17:59:00.825] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 17:59:00.855] [ERROR] joinChannel - Error: Channel not found for name newchannel09.
+    at Client.getChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:254:11)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:35:30)
+    at <anonymous>
+[2018-06-06 17:59:00.859] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: Channel not found for name newchannel09.
+[2018-06-06 18:02:47.891] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 18:03:12.191] [ERROR] joinChannel - Configuration for channel newchannel091 was not found
+[2018-06-06 18:04:56.577] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 18:06:16.710] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 18:06:20.351] [ERROR] joinChannel - Configuration for channel newchannel091 was not found
+[2018-06-06 19:12:12.510] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 19:12:12.661] [ERROR] joinChannel - Error: Channel not found for name newchannel07.
+    at Client.getChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:254:11)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:44:30)
+    at <anonymous>
+[2018-06-06 19:12:12.663] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: Channel not found for name newchannel07.
+[2018-06-06 19:14:52.688] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:14:59.400] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 19:14:59.577] [ERROR] joinChannel - Error: Channel not found for name newchannel07.
+    at Client.getChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:254:11)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:49:30)
+    at <anonymous>
+[2018-06-06 19:14:59.577] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: Channel not found for name newchannel07.
+[2018-06-06 19:20:15.292] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:21:21.303] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 19:21:21.451] [ERROR] joinChannel - Error: Channel not found for name newchannel06.
+    at Client.getChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:254:11)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:49:30)
+    at <anonymous>
+[2018-06-06 19:21:21.451] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: Channel not found for name newchannel06.
+[2018-06-06 19:21:43.276] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:22:23.076] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 19:22:23.161] [ERROR] joinChannel - Error: Channel not found for name newchannel06.
+    at Client.getChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/node_modules/fabric-client/lib/Client.js:254:11)
+    at Object.joinChannel (/home/nfrunza/workspace/readonly/blockchain-explorer/app/platform/fabric/service/joinChannel.js:49:30)
+    at <anonymous>
+[2018-06-06 19:22:23.161] [ERROR] joinChannel - Failed to join all peers to channel. cause:Error: Channel not found for name newchannel06.
+[2018-06-06 19:22:30.745] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:26:24.493] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:26:39.193] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 19:59:56.795] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 20:09:40.962] [INFO] main - Please set logger.setLevel to DEBUG in ./app/helper.js to log the debugging.
+[2018-06-06 20:11:26.900] [INFO] channel -  /home/nfrunza/workspace/fabric-1.1/fabric-samples/bin/configtxgen -profile TwoOrgsChannel -outputCreateChannelTx /tmp/1528330286900/newchannel11.tx -channelID newchannel11 
+[2018-06-06 20:11:26.902] [INFO] channel -  /home/nfrunza/workspace/fabric-1.1/fabric-samples/bin/configtxgen -profile TwoOrgsOrdererGenesis -outputBlock /tmp/1528330286900/newchannel11.block 
+[2018-06-06 20:11:28.121] [INFO] channelservice - ############### C R E A T E  C H A N N E L ###############
+[2018-06-06 20:11:28.121] [INFO] channelservice - Creating channel: Org1 /tmp/org1.yaml /tmp/network-config-tls.yaml
+[2018-06-06 20:11:28.337] [INFO] channelservice - Successfully created the channel, channel hash 58ea99843e74dfd361044890f800c56bfb1d3efb32a7b9644c5c0e41755aa966
+[2018-06-06 20:11:28.398] [INFO] channelservice - Create Channel: added a record to sql table
+[2018-06-06 20:11:45.743] [INFO] joinChannel - Calling peers in organization "Org1" to join the channel
+[2018-06-06 20:11:46.308] [INFO] joinChannel - Successfully joined peer to the channel newchannel11
+[2018-06-06 20:11:46.308] [INFO] joinChannel - Successfully joined peers in organization Org1 to the channel:newchannel11
