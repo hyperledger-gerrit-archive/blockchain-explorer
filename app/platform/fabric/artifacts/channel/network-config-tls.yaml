@@ -49,8 +49,8 @@ channels:
   ## Prerequisites
   ## Setup your own network using [Build your network] http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html
   ## You can use blockchain-explorer/app/config/network-config-tls.yaml file as a template to create a new channel, all the paths needs to be
-  # updated to you fabric network path, search for "fabric-path"
-  newchannel:
+  # updated to you fabric network path, search for "/home/nfrunza/workspace/fabric-1.1"
+  newchannel11:
     # Every new channel creation requires single configuration
     # Required. list of orderers designated by the application to use for transactions on this
     # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
@@ -136,9 +136,9 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/4acc9f28b1ab268047d374d6e35b60e3df277e8a574fe343458aa17b55784310_sk
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/4acc9f28b1ab268047d374d6e35b60e3df277e8a574fe343458aa17b55784310_sk
     signedCert:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
 
   # the profile will contain public information about organizations other than the one it belongs to.
   # These are necessary information to make transaction lifecycles work, including MSP IDs and
@@ -153,9 +153,9 @@ organizations:
     certificateAuthorities:
       - ca-org2
     adminPrivateKey:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/1abb3325b96352d554a167b93af23e9d4bddbba222214eac79dea283711d6f57_sk
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/1abb3325b96352d554a167b93af23e9d4bddbba222214eac79dea283711d6f57_sk
     signedCert:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
 
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
@@ -173,7 +173,7 @@ orderers:
       grpc-max-send-message-length: 15
 
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
 
 #
 # List of peers to send various requests to, including endorsement, query
@@ -190,7 +190,7 @@ peers:
     grpcOptions:
       ssl-target-name-override: peer0.org1.example.com
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 
   peer1.org1.example.com:
     url: grpcs://localhost:7056
@@ -198,7 +198,7 @@ peers:
     grpcOptions:
       ssl-target-name-override: peer1.org1.example.com
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
 
   peer0.org2.example.com:
     url: grpcs://localhost:8051
@@ -206,7 +206,7 @@ peers:
     grpcOptions:
       ssl-target-name-override: peer0.org2.example.com
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
 
   peer1.org2.example.com:
     url: grpcs://localhost:8056
@@ -214,7 +214,7 @@ peers:
     grpcOptions:
       ssl-target-name-override: peer1.org2.example.com
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt
 
 #
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
@@ -229,7 +229,7 @@ certificateAuthorities:
     httpOptions:
       verify: false
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
 
     # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
     # needed to enroll and invoke new users.
@@ -244,7 +244,7 @@ certificateAuthorities:
     httpOptions:
       verify: false
     tlsCACerts:
-      path: fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
+      path: /home/nfrunza/workspace/fabric-1.1/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
     registrar:
       - enrollId: admin
         enrollSecret: adminpw
