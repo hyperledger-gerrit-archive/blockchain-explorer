@@ -1,0 +1,28 @@
+postgres://hppoc:password@127.0.0.1:5432/fabricexplorer
+module.js:544
+    throw err;
+    ^
+
+Error: Cannot find module 'js-sha256'
+    at Function.Module._resolveFilename (module.js:542:15)
+    at Function.Module._load (module.js:472:25)
+    at Module.require (module.js:585:17)
+    at require (internal/module.js:11:18)
+    at Object.<anonymous> (/home/aanugu/blockchain-explorer/app/explorer/backend/BlockScanner.js:7:11)
+    at Module._compile (module.js:641:30)
+    at Object.Module._extensions..js (module.js:652:10)
+    at Module.load (module.js:560:32)
+    at tryModuleLoad (module.js:503:12)
+    at Function.Module._load (module.js:495:3)
+postgres://hppoc:password@127.0.0.1:5432/fabricexplorer
+(node:1952) UnhandledPromiseRejectionWarning: Unhandled promise rejection (rejection id: 3): Error: ENOENT: no such file or directory, scandir 'fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore'
+(node:1952) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated. In the future, promise rejections that are not handled will terminate the Node.js process with a non-zero exit code.
+postgres://hppoc:password@127.0.0.1:5432/fabricexplorer
+Please open web browser to access ：http://localhost:8080/
+Insert sql is INSERT INTO chaincodes  ( "name","version","path","channelname" ) VALUES( $1,$2,$3,$4  ) RETURNING *;
+Successfully received the block event[object Object]
+INSERT ID: 12
+Insert sql is INSERT INTO blocks  ( "blocknum","channelname","prehash","datahash","blockhash","txcount","createdt" ) VALUES( $1,$2,$3,$4,$5,$6,$7  ) RETURNING *;
+INSERT ID: 19
+Insert sql is INSERT INTO transaction  ( "channelname","blockid","txhash","createdt","chaincodename","chaincode_id","status","creator_msp_id","endorser_msp_id","type","read_set","write_set" ) VALUES( $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12  ) RETURNING *;
+INSERT ID: 24
