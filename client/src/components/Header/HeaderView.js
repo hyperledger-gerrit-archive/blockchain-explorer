@@ -81,7 +81,7 @@ export class HeaderView extends Component {
 
   handleChange = (selectedOption) => {
     this.setState({ selectedOption: selectedOption.value });
-    this.props.changeChannel(selectedOption.value);
+    this.props.getChangeChannel(selectedOption.value);
   }
 
   handleOpen = () => {
@@ -112,7 +112,7 @@ export class HeaderView extends Component {
   handleDrawClose = (drawer) => {
     switch (drawer) {
       case 'notifyDrawer': {
-      this.setState({ notifyDrawer: false });
+        this.setState({ notifyDrawer: false });
         break;
       }
       case 'adminDrawer': {
@@ -178,6 +178,6 @@ export default compose(withStyles(styles), connect((state) => ({
   channelList: getChannelList(state),
   notification: getNotification(state)
 }), {
-  getNotifcation: notification,
-  getChangeChannel: changeChannel
-}))(HeaderView)
+    getNotification: notification,
+    getChangeChannel: changeChannel
+  }))(HeaderView)
