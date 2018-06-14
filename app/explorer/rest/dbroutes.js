@@ -139,7 +139,27 @@ const dbroutes = (app, persist) => {
     }
   });
 
+//BE -303
+  /***Orderer Info
+  GET /ordererlist -> /api/orderers
+  curl -i 'http://<host>:<port>/api/orderers/'
+  Response:
+  [
+    {
+      "requests": "grpcs://127.0.0.1:7050",
+      "server_hostname": "orderer.example.com"
+    }
+  ]
+  */
 
+  app.get("/api/orderers", function (req, res) {
+      statusMetrics.getOrdererList(function (data) {
+        res.send({ status: 200, peers: data });
+      });
+
+  });
+
+ //BE -303
   /***
    List of blocks and transaction list per block
   GET /api/blockAndTxList
