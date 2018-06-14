@@ -10,6 +10,7 @@ var fs = require("fs-extra");
 var FabricChannel = require("./FabricChannel.js");
 var Proxy = require("./Proxy.js");
 var hfc = require("fabric-client");
+var Admin = require("./Admin.js");
 hfc.addConfigFile(path.join(__dirname, "./config.json"));
 
 class Platform {
@@ -18,6 +19,7 @@ class Platform {
     this.channels = {};
     this.caClients = {};
     this.peers = {};
+    this.peersStatus = {};
   }
 
   getDefaultProxy() {
@@ -33,6 +35,10 @@ class Platform {
       this.getClientForOrg(org),
       this.channels
     );
+  }
+
+  addStatusPeer(org, key, url, opts){
+        this.peersStatus[[org, key]] = new Admin(url, opts);
   }
 
   getDefaultPeer() {
@@ -86,8 +92,26 @@ class Platform {
       console.log("error-admin--" + err.stack);
       throw err;
     }
-
     return admin;
+  }
+
+  async getPeersStatus(channelName,cb){
+      try {
+        var promises = [];
+        Object.keys(this.peersStatus).forEach(peer => {
+          var client = this.peersStatus[[peer]];
+          var psPromise = client.GetStatus(client._options["grpc.ssl_target_name_override"]);
+          promises.push(psPromise);
+        });
+        Promise.all(promises).then(function(successMessage){
+          logger.debug("GetStatus All! " , successMessage);
+          cb(successMessage);
+        });
+      } catch(err) {
+        console.log(err);
+        logger.error(err)
+        cb([])
+    }
   }
 
   // set up the client and channel objects for each org
@@ -132,8 +156,15 @@ class Platform {
             "server-hostname"
           ]
         });
+        this.addStatusPeer(org, key,configuration.getOrg(org)[key].requests, {
+          pem: Buffer.from(data).toString(),
+          "ssl-target-name-override": configuration.getOrg(org)[key][
+            "server-hostname"
+          ]
+        });
       } else {
         peer = client.newPeer(configuration.getOrg(org)[key].requests);
+        this.addStatusPeer(org, key,configuration.getOrg(org)[key].requests);
       }
 
       this.peers[[org, key]] = peer;
