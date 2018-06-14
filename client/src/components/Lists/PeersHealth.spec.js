@@ -2,7 +2,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import Peers from "./PeersHealth";
+import PeersHealth from "./PeersHealth";
 import ReactTable from 'react-table';
 
 const setup = () => {

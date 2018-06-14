@@ -20,6 +20,9 @@ class Platform {
     this.caClients = {};
     this.peers = {};
     this.peersStatus = {};
+    //	Orderer Info BE-303
+    this.orderers = {};
+    //Orderer Info BE-303
   }
 
   getDefaultProxy() {
@@ -56,6 +59,11 @@ class Platform {
     return this.peers[[org, peer]];
   }
 
+// ====================Orderer BE-303=====================================
+  getOrdererObject(org, orderer) {
+    return this.orderers[[org, orderer]];
+  }
+// ====================Orderer BE-303=====================================
   getDefaultClient() {
     return this.getClientForOrg(configuration.getDefaultOrg());
   }
@@ -181,6 +189,7 @@ class Platform {
       var channelName = chan.channel_id;
       let channel = client.newChannel(channelName);
       channel.addPeer(this.getDefaultPeer());
+      this.setupOrderers(client,channel);
       var channel_event_hub = channel.newChannelEventHub(this.getDefaultPeer());
       this.channels[channelName] = new FabricChannel(
         channelName,
@@ -189,7 +198,23 @@ class Platform {
       );
     });
   }
-
+  //BE303
+  async setupOrderers(client,channel) {
+    configuration.getOrderersByOrg().forEach(val => {
+    //console.log("Line179-setupOrderers"+JSON.stringify(val));
+      let orderer;
+      if (val.tls_cacerts != undefined) {
+        let data = fs.readFileSync(val.tls_cacerts);
+        orderer = client.newOrderer(val.requests, {
+          pem: Buffer.from(data).toString(),"ssl-target-name-override": val["server-hostname"]
+          });
+      } else {
+        orderer = client.newOrderer(val.requests);
+      }
+    channel.addOrderer(orderer);
+    });
+  }
+//BE303
 
   async getClientFromPath(userorg, orgPath, networkCfgPath) {
     try {
