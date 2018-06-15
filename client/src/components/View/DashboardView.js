@@ -14,8 +14,8 @@ import { countHeader as getCountHeaderCreator } from '../../store/actions/header
 import { getTxByOrg as getTxByOrgCreator } from '../../store/actions/charts/action-creators';
 import FontAwesome from 'react-fontawesome';
 import {
-  getBlockList,
-} from '../../store/selectors/selectors';
+  blockList as getBlockList
+} from '../../store/actions/block/action-creators';
 class DashboardView extends Component {
   constructor(props) {
     super(props);
@@ -24,26 +24,11 @@ class DashboardView extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (Object.keys(nextProps.notification).length !== 0 && this.props.notification !== nextProps.notification) {
-      var arr = this.state.notifications;
-      arr.unshift(nextProps.notification);
-      this.setState({ notifications: arr });
-    }
-    if (nextProps.channel.currentChannel !== this.props.channel.currentChannel) {
-      this.props.getTxByOrg(nextProps.channel.currentChannel);
-    }
-  }
-
-  componentDidMount() {
-    setInterval(() => {
-      this.props.getTxByOrg(this.props.channel.currentChannel);
-      this.props.getCountHeader(this.props.channel.currentChannel);
-    }, 3000);
-
-    let arr = [];
-    for (let i = 0; i < 3 && this.props.blockList && this.props.blockList[i]; i++) {
-      const block = this.props.blockList[i];
+  refreshBlockList(blockList) {
+    if (!blockList) return;
+    const arr = [];
+    for (let i = 0; i < 3 && blockList[i]; i++) {
+      const block = blockList[i];
       const notify = {
         'title': 'Block ' + block.blocknum + ' Added',
         'type': 'block',
@@ -54,6 +39,26 @@ class DashboardView extends Component {
       arr.push(notify);
     }
     this.setState({ notifications: arr });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.blockList !== this.props.blockList) {
+      this.refreshBlockList(nextProps.blockList);
+    }
+
+    if (nextProps.channel.currentChannel !== this.props.channel.currentChannel) {
+      this.props.getTxByOrg(nextProps.channel.currentChannel);
+    }
+  }
+
+  componentDidMount() {
+    setInterval(() => {
+      this.props.getTxByOrg(this.props.channel.currentChannel);
+      this.props.getCountHeader(this.props.channel.currentChannel);
+      this.props.getBlockList(this.props.channel.currentChannel);
+    }, 3000);
+
+    this.refreshBlockList(this.props.blockList);
   }
 
   render() {
@@ -112,7 +117,8 @@ class DashboardView extends Component {
 
 const mapDispatchToProps = (dispatch) => ({
   getCountHeader: (curChannel) => dispatch(getCountHeaderCreator(curChannel)),
-  getTxByOrg: (curChannel) => dispatch(getTxByOrgCreator(curChannel))
+  getTxByOrg: (curChannel) => dispatch(getTxByOrgCreator(curChannel)),
+  getBlockList: (curChannel) => dispatch(getBlockList(curChannel))
 });
 
 const mapStateToProps = state => ({
