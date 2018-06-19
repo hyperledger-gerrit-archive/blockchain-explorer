@@ -38,22 +38,13 @@ export const Main = (props) => {
   const blocksViewProps = {
     blockList: props.blockList,
     channel: props.channel,
-    countHeader: props.countHeader,
     transaction: props.transaction,
-    transactionList: props.transactionList,
-    getBlockList: props.getBlockList,
-    getCountHeader: props.getCountHeader,
-    getLatestBlock: props.getLatestBlock,
-    getTransactionInfo: props.getTransactionInfo,
-    getTransactionList: props.getTransactionList
+    getTransactionInfo: props.getTransactionInfo
   }
 
   const chaincodeViewProps = {
     channel: props.channel,
-    countHeader: props.countHeader,
-    chaincodes: props.chaincodes,
-    getChaincodes: props.getChaincodes,
-    getCountHeader: props.getCountHeader
+    chaincodes: props.chaincodes
   }
 
   const channelsViewProps = {
@@ -62,14 +53,10 @@ export const Main = (props) => {
   }
 
   const dashboardViewProps = {
-    blockList: props.blockList,
-    channel: props.channel,
     countHeader: props.countHeader,
-    notification: props.notification,
-    peerList: props.peerList,
+    channel: props.channel,
     txByOrg: props.txByOrg,
-    getTxByOrg: props.getTxByOrg,
-    getCountHeader: props.getCountHeader
+    blockList: props.blockList
   }
 
   const networkViewProps = {
@@ -78,11 +65,8 @@ export const Main = (props) => {
 
   const transactionsViewProps = {
     channel: props.channel,
-    countHeader: props.countHeader,
     transaction: props.transaction,
     transactionList: props.transactionList,
-    getCountHeader: props.getCountHeader,
-    getLatestBlock: props.getLatestBlock,
     getTransactionInfo: props.getTransactionInfo,
     getTransactionList: props.getTransactionList
   }
