@@ -272,7 +272,7 @@
                         }
                     }
                 }
-            }  
+            }
         },
         "/joinChannel": {
             "post": {
@@ -339,7 +339,7 @@
                         }
                     }
                 }
-            }  
+            }
         },
         "/block/{channelName}/{number}": {
             "get": {
