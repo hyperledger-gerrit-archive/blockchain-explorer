@@ -25,12 +25,10 @@ class TimelineStream extends Component {
   }
 
   handleDialogOpenBlockHash = rowValue => {
-    const data = find(this.props.blockList, item => {
+    const data = find(this.props.blockList, function(item) {
       return item.blockhash === rowValue;
     });
-    this.setState({
-      dialogOpenBlockHash: true,
-      blockHash: data });
+    this.setState({ dialogOpenBlockHash: true, blockHash: data });
   };
 
   handleDialogCloseBlockHash = () => {
