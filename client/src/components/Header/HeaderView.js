@@ -2,64 +2,60 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import 'react-select/dist/react-select.css';
-import React, { Component } from 'react';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
-import Select from 'react-select';
-import {
-  Nav,
-  Navbar,
-  NavbarBrand,
-  NavbarToggler
-} from 'reactstrap';
-import Switch from 'material-ui/Switch';
-import AdminPanel from '../Panels/AdminPanel';
-import Logo from '../../static/images/Explorer_Logo.svg';
-import FontAwesome from 'react-fontawesome';
-import Drawer from 'material-ui/Drawer';
-import Button from 'material-ui/Button';
-import NotificationsPanel from '../Panels/NotificationsPanel';
-import Websocket from 'react-websocket';
-import Badge from 'material-ui/Badge';
-import { notification } from '../../store/actions/notification/action-creators';
-import { changeChannel } from '../../store/actions/channel/action-creators';
+import "react-select/dist/react-select.css";
+import React, { Component, PropTypes } from "react";
+import compose from "recompose/compose";
+import { connect } from "react-redux";
+import { withStyles } from "material-ui/styles";
+import Select from "react-select";
+import { Nav, Navbar, NavbarBrand, NavbarToggler } from "reactstrap";
+import Switch from "material-ui/Switch";
+import AdminPanel from "../Panels/AdminPanel";
+import Logo from "../../static/images/Explorer_Logo.svg";
+import FontAwesome from "react-fontawesome";
+import Drawer from "material-ui/Drawer";
+import Button from "material-ui/Button";
+import NotificationsPanel from "../Panels/NotificationsPanel";
+import Websocket from "react-websocket";
+import Badge from "material-ui/Badge";
+import { notification } from "../../store/actions/notification/action-creators";
+import { changeChannel } from "../../store/actions/channel/action-creators";
 import {
   getChannelList,
   getChannel,
-  getNotification,
-} from '../../store/selectors/selectors'
-import { countHeader } from '../../store/actions/header/action-creators';
-import { peerList, peerStatus } from '../../store/actions/peer/action-creators';
-import { blockList } from '../../store/actions/block/action-creators';
-import { transactionList } from '../../store/actions/transactions/action-creators';
-import { chaincodes } from '../../store/actions/chaincodes/action-creators';
+  getNotification
+} from "../../store/selectors/selectors";
+import { countHeader } from "../../store/actions/header/action-creators";
+import { peerList, peerStatus } from "../../store/actions/peer/action-creators";
+import { blockList } from "../../store/actions/block/action-creators";
+import { transactionList } from "../../store/actions/transactions/action-creators";
+import { chaincodes } from "../../store/actions/chaincodes/action-creators";
 import {
   txByOrg,
   blocksPerHour,
   blocksPerMin,
   txPerHour,
   txPerMin
-} from '../../store/actions/charts/action-creators';
+} from "../../store/actions/charts/action-creators";
 
 const styles = theme => ({
   margin: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit
   },
   padding: {
-    padding: `0 ${theme.spacing.unit * 2}px`,
+    padding: `0 ${theme.spacing.unit * 2}px`
   },
-  menuButtons:{
+  menuButtons: {
     margin: theme.spacing.unit,
-    fontSize:'1.05rem !important',
-    fontWeight:'800'
+    fontSize: "1.05rem !important",
+    fontWeight: "800"
   }
 });
 
 export class HeaderView extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       isOpen: false,
       notifyDrawer: false,
@@ -69,14 +65,14 @@ export class HeaderView extends Component {
       notifications: [],
       modalOpen: false,
       isLight: true
-    }
+    };
   }
 
   toggle = () => {
     this.setState({
       isOpen: !this.state.isOpen
     });
-  }
+  };
 
   handleData(notification) {
     this.props.getNotification(notification);
@@ -92,16 +88,13 @@ export class HeaderView extends Component {
       arr.push({
         value: element,
         label: element
-      })
+      });
     });
 
     this.setState({ channels: arr });
-    this.setState({ selectedOption: this.props.channel.currentChannel })
+    this.setState({ selectedOption: this.props.channel.currentChannel });
 
-    setInterval(
-      () => this.syncData(this.props.channel.currentChannel),
-      30000
-    );
+    setInterval(() => this.syncData(this.props.channel.currentChannel), 30000);
   }
 
   syncData(currentChannel) {
@@ -119,32 +112,34 @@ export class HeaderView extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.channel.currentChannel !== this.props.channel.currentChannel) {
-      this.syncData(nextProps.channel.currentChannel)
+    if (
+      nextProps.channel.currentChannel !== this.props.channel.currentChannel
+    ) {
+      this.syncData(nextProps.channel.currentChannel);
     }
   }
 
-  handleChange = (selectedOption) => {
+  handleChange = selectedOption => {
     this.setState({ selectedOption: selectedOption.value });
     this.props.getChangeChannel(selectedOption.value);
-  }
+  };
 
   handleOpen = () => {
     this.setState({ modalOpen: true });
-  }
+  };
 
   handleClose = () => {
     this.setState({ modalOpen: false });
-  }
+  };
 
-  handleDrawOpen = (drawer) => {
+  handleDrawOpen = drawer => {
     switch (drawer) {
-      case 'notifyDrawer': {
+      case "notifyDrawer": {
         this.setState({ notifyDrawer: true });
         this.setState({ notifyCount: 0 });
         break;
       }
-      case 'adminDrawer': {
+      case "adminDrawer": {
         this.setState({ adminDrawer: true });
         break;
       }
@@ -152,15 +147,15 @@ export class HeaderView extends Component {
         break;
       }
     }
-  }
+  };
 
-  handleDrawClose = (drawer) => {
+  handleDrawClose = drawer => {
     switch (drawer) {
-      case 'notifyDrawer': {
+      case "notifyDrawer": {
         this.setState({ notifyDrawer: false });
         break;
       }
-      case 'adminDrawer': {
+      case "adminDrawer": {
         this.setState({ adminDrawer: false });
         break;
       }
@@ -168,33 +163,55 @@ export class HeaderView extends Component {
         break;
       }
     }
-  }
+  };
   handleThemeChange = () => {
-    const theme = !this.state.isLight;
+    const theme =
+      sessionStorage.getItem("toggleTheme") === "true" ? false : true;
+    sessionStorage.setItem("toggleTheme", theme);
     this.setState({ isLight: theme });
-  }
+    this.props.refresh(theme);
+  };
 
   render() {
     const { classes } = this.props;
     const { hostname, port } = window.location;
     var webSocketUrl = `ws://${hostname}:${port}/`;
+    const themeIcon = sessionStorage.getItem("toggleTheme") === "true";
 
     return (
       <div>
         {/* production */}
         {/* development */}
-        <Websocket url={webSocketUrl}
-          onMessage={this.handleData.bind(this)} reconnect={true} />
+        <Websocket
+          url={webSocketUrl}
+          onMessage={this.handleData.bind(this)}
+          reconnect={true}
+        />
         <Navbar className="navbar-header" expand="md" fixed="top">
-          <NavbarBrand href="/"> <img src={Logo} className="logo" alt="Hyperledger Logo" /></NavbarBrand>
+          <NavbarBrand href="/">
+            {" "}
+            <img src={Logo} className="logo" alt="Hyperledger Logo" />
+          </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
-          <Nav className="ml-auto" navbar>
-            <Button href="/#" className={classes.menuButtons} >DASHBOARD</Button>
-            <Button href="#/network" className={classes.menuButtons} >NETWORK</Button>
-            <Button href="#/blocks" className={classes.menuButtons} >BLOCKS</Button>
-            <Button href="#/transactions" className={classes.menuButtons} >TRANSACTIONS</Button>
-            <Button href="#/chaincodes" className={classes.menuButtons} >CHAINCODES</Button>
-            <Button href="#/channels" className={classes.menuButtons} >CHANNELS</Button>
+          <Nav className="ml-auto " navbar>
+            <Button href="/#" className="dashButtons">
+              DASHBOARD
+            </Button>
+            <Button href="#/network" className="dashButtons">
+              NETWORK
+            </Button>
+            <Button href="#/blocks" className="dashButtons">
+              BLOCKS
+            </Button>
+            <Button href="#/transactions" className="dashButtons">
+              TRANSACTIONS
+            </Button>
+            <Button href="#/chaincodes" className="dashButtons">
+              CHAINCODES
+            </Button>
+            <Button href="#/channels" className="dashButtons">
+              CHANNELS
+            </Button>
             <div className="channel-dropdown">
               <Select
                 placeholder="Select Channel..."
@@ -202,33 +219,53 @@ export class HeaderView extends Component {
                 name="form-field-name"
                 value={this.state.selectedOption}
                 onChange={this.handleChange}
-                options={this.state.channels} />
+                options={this.state.channels}
+              />
             </div>
             <div className="admin-buttons">
-              <FontAwesome name="bell" className="bell" onClick={() => this.handleDrawOpen("notifyDrawer")} />
-              <Badge className={classes.margin} badgeContent={this.state.notifyCount} color="primary"></Badge>
+              <FontAwesome
+                name="bell"
+                className="bell"
+                onClick={() => this.handleDrawOpen("notifyDrawer")}
+              />
+              <Badge
+                className="navIcons"
+                badgeContent={this.state.notifyCount}
+                color="primary"
+              />
             </div>
             <div className="admin-buttons">
-              <FontAwesome name="cog" className="cog" onClick={() => this.handleDrawOpen("adminDrawer")} />
+              <FontAwesome
+                name="cog"
+                className="cog"
+                onClick={() => this.handleDrawOpen("adminDrawer")}
+              />
             </div>
             <div className="admin-buttons theme-switch">
+              <FontAwesome name="sun-o" className="sunIcon" />
               <Switch
                 onChange={() => this.handleThemeChange()}
-                value={this.state.isLight} />
+                checked={themeIcon}
+              />
+              <FontAwesome name="moon-o" className="moonIcon" />
             </div>
           </Nav>
         </Navbar>
-        <Drawer anchor="right" open={this.state.notifyDrawer} onClose={() => this.handleDrawClose("notifyDrawer")}>
-          <div
-            tabIndex={0}
-            role="button" >
+        <Drawer
+          anchor="right"
+          open={this.state.notifyDrawer}
+          onClose={() => this.handleDrawClose("notifyDrawer")}
+        >
+          <div tabIndex={0} role="button">
             <NotificationsPanel notifications={this.state.notifications} />
           </div>
         </Drawer>
-        <Drawer anchor="right" open={this.state.adminDrawer} onClose={() => this.handleDrawClose("adminDrawer")}>
-          <div
-            tabIndex={0}
-            role="button">
+        <Drawer
+          anchor="right"
+          open={this.state.adminDrawer}
+          onClose={() => this.handleDrawClose("adminDrawer")}
+        >
+          <div tabIndex={0} role="button">
             <AdminPanel />
           </div>
         </Drawer>
@@ -237,22 +274,28 @@ export class HeaderView extends Component {
   }
 }
 
-export default compose(withStyles(styles), connect((state) => ({
-  channel: getChannel(state),
-  channelList: getChannelList(state),
-  notification: getNotification(state)
-}), {
-    getNotification: notification,
-    getChangeChannel: changeChannel,
-    getCountHeader: countHeader,
-    getTxPerHour: txPerHour,
-    getTxPerMin: txPerMin,
-    getBlocksPerHour: blocksPerHour,
-    getBlocksPerMin: blocksPerMin,
-    getTransactionList: transactionList,
-    getBlockList: blockList,
-    getPeerList: peerList,
-    getPeerStatus: peerStatus,
-    getChaincodes: chaincodes,
-    getTxByOrg: txByOrg
-  }))(HeaderView)
+export default compose(
+  withStyles(styles),
+  connect(
+    state => ({
+      channel: getChannel(state),
+      channelList: getChannelList(state),
+      notification: getNotification(state)
+    }),
+    {
+      getNotification: notification,
+      getChangeChannel: changeChannel,
+      getCountHeader: countHeader,
+      getTxPerHour: txPerHour,
+      getTxPerMin: txPerMin,
+      getBlocksPerHour: blocksPerHour,
+      getBlocksPerMin: blocksPerMin,
+      getTransactionList: transactionList,
+      getBlockList: blockList,
+      getPeerList: peerList,
+      getPeerStatus: peerStatus,
+      getChaincodes: chaincodes,
+      getTxByOrg: txByOrg
+    }
+  )
+)(HeaderView);
