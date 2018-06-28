@@ -100,12 +100,58 @@ export class TransactionView extends Component {
                     </td>
                   </tr>
                   <tr>
+                    <th>Validation Code:</th>
+                    <td>
+                      {this.props.transaction.validation_code}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Envelope Signature:</th>
+                    <td>
+                      {this.props.transaction.envelope_signature}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Payload Extension:</th>
+                    <td>
+                      {this.props.transaction.payload_extension}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Payload Input:</th>
+                    <td>
+                      {this.props.transaction.chaincode_proposal_input}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Payload Proposal Hash:</th>
+                    <td>
+                      {this.props.transaction.payload_proposal_hash}
+                    </td>
+                  </tr>
+                  <tr>
                     <th>Creator MSP:</th>
                     <td>{this.props.transaction.creator_msp_id}</td>
                   </tr>
                   <tr>
+                    <th>Creator Id Byte:</th>
+                    <td>{this.props.transaction.creator_id_bytes}</td>
+                  </tr>
+                  <tr>
+                    <th>Creator Nonce:</th>
+                    <td>{this.props.transaction.creator_nonce}</td>
+                  </tr>
+                  <tr>
                     <th>Endoser:</th>
                     <td>{this.props.transaction.endorser_msp_id}</td>
+                  </tr>
+                  <tr>
+                    <th>Endoser Id Byte:</th>
+                    <td>{this.props.transaction.endorser_id_bytes}</td>
+                  </tr>
+                  <tr>
+                    <th>Endoser Signature:</th>
+                    <td>{this.props.transaction.endorser_signature}</td>
                   </tr>
                   <tr>
                     <th>Chaincode Name:</th>
@@ -127,40 +173,40 @@ export class TransactionView extends Component {
                     <th style={reads}>Reads:</th>
                     <td>
                       {" "}
-                      {this.props.transaction.read_set.map(function(
+                      {this.props.transaction.read_set.map(function (
                         item,
                         index
                       ) {
                         return item === null ? (
                           ""
                         ) : (
-                          <li key={index}>
-                            <Typography variant="subheading">
-                              {" "}
-                              {item.chaincode}
-                            </Typography>
-                            <ul>
-                              {item.set.map(function(x, index) {
-                                var block_num = "";
-                                var tx_num = "";
-                                if (x.version !== null) {
-                                  block_num = x.version.block_num;
-                                  tx_num = x.version.tx_num;
-                                }
-                                return x === null ? (
-                                  ""
-                                ) : (
-                                  <li key={index}>
-                                    key:{x.key} ,version:( block:{block_num},tx:{
-                                      tx_num
-                                    }){" "}
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                            <br />
-                          </li>
-                        );
+                            <li key={index}>
+                              <Typography variant="subheading">
+                                {" "}
+                                {item.chaincode}
+                              </Typography>
+                              <ul>
+                                {item.set.map(function (x, index) {
+                                  var block_num = "";
+                                  var tx_num = "";
+                                  if (x.version !== null) {
+                                    block_num = x.version.block_num;
+                                    tx_num = x.version.tx_num;
+                                  }
+                                  return x === null ? (
+                                    ""
+                                  ) : (
+                                      <li key={index}>
+                                        key:{x.key} ,version:( block:{block_num},tx:{
+                                          tx_num
+                                        }){" "}
+                                      </li>
+                                    );
+                                })}
+                              </ul>
+                              <br />
+                            </li>
+                          );
                       })}
                     </td>
                   </tr>
@@ -168,34 +214,34 @@ export class TransactionView extends Component {
                     <th style={writes}>Writes:</th>
                     <td>
                       {" "}
-                      {this.props.transaction.write_set.map(function(
+                      {this.props.transaction.write_set.map(function (
                         item,
                         index
                       ) {
                         return item === null ? (
                           ""
                         ) : (
-                          <li key={index}>
-                            <Typography variant="subheading">
-                              {" "}
-                              {item.chaincode}
-                            </Typography>
-                            <ul>
-                              {item.set.map(function(x, index) {
-                                return x === null ? (
-                                  ""
-                                ) : (
-                                  <li key={index}>
-                                    key:{x.key} ,is_delete:{x.is_delete.toString()},value:{
-                                      x.value
-                                    }{" "}
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                            <br />
-                          </li>
-                        );
+                            <li key={index}>
+                              <Typography variant="subheading">
+                                {" "}
+                                {item.chaincode}
+                              </Typography>
+                              <ul>
+                                {item.set.map(function (x, index) {
+                                  return x === null ? (
+                                    ""
+                                  ) : (
+                                      <li key={index}>
+                                        key:{x.key} ,is_delete:{x.is_delete.toString()},value:{
+                                          x.value
+                                        }{" "}
+                                      </li>
+                                    );
+                                })}
+                              </ul>
+                              <br />
+                            </li>
+                          );
                       })}
                     </td>
                   </tr>
