@@ -7,13 +7,7 @@ import PropTypes from "prop-types";
 import FontAwesome from "react-fontawesome";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import moment from "moment-timezone";
-import {
-  Table,
-  Card,
-  CardBody,
-  CardTitle,
-  Button
-} from "reactstrap";
+import { Table, Card, CardBody, CardTitle, Button } from "reactstrap";
 
 const blockIcon = {
   color: "#79c879",

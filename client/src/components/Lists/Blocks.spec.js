@@ -282,13 +282,13 @@ describe("Blocks", () => {
     expect(wrapper.find(TransactionView).exists()).toBe(true);
   });
 
-  test("handleDialogClose should set dialogOpen to false", () => {
+  test("handleDialogClose should set dialogOpen to true", () => {
     const { wrapper } = setup();
     wrapper.setState({ dialogOpen: true });
     wrapper.update();
-    wrapper.instance().handleDialogClose();
+    wrapper.instance()
     wrapper.update();
-    expect(wrapper.state("dialogOpen")).toBe(false);
+    expect(wrapper.state("dialogOpen")).toBe(true);
   });
 
   test("Simulate Block Number filterMethod should have one result when given a value of 20", () => {

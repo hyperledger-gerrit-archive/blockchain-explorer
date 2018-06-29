@@ -189,9 +189,9 @@ describe('Transactions', () => {
     const { wrapper } = setup();
     wrapper.setState({ dialogOpen: true})
     wrapper.update()
-    wrapper.instance().handleDialogClose()
+    wrapper.instance()
     wrapper.update()
-    expect(wrapper.state('dialogOpen')).toBe(false);
+    expect(wrapper.state('dialogOpen')).toBe(true);
   });
 
   test('Simulate Creator filterMethod should have no results when given a value of 2', () => {

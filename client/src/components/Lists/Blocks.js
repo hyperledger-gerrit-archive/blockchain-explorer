@@ -29,11 +29,12 @@ class Blocks extends Component {
   };
 
   handleDialogClose = () => {
+    this.props.removeTransactionInfo();
     this.setState({ dialogOpen: false });
   };
 
   handleDialogOpenBlockHash = blockHash => {
-    const data = find(this.props.blockList, (item) => {
+    const data = find(this.props.blockList, item => {
       return item.blockhash === blockHash;
     });
 
@@ -76,13 +77,13 @@ class Blocks extends Component {
         width: 150
       },
       {
-        Header: 'Channel Name',
-        accessor: 'channelname',
+        Header: "Channel Name",
+        accessor: "channelname",
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            { keys: ['channelname'] },
+            { keys: ["channelname"] },
             { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true
@@ -127,9 +128,13 @@ class Blocks extends Component {
                 ? row.value
                 : row.value.slice(0, 6)}{" "}
             </a>
-              <FontAwesome name="eye" className="eyeBtn" onClick={() =>
+            <FontAwesome
+              name="eye"
+              className="eyeBtn"
+              onClick={() =>
                 this.handleEye(row, this.state.selection[row.index])
-              } />{" "}
+              }
+            />{" "}
           </span>
         ),
         filterMethod: (filter, rows) =>
@@ -201,7 +206,7 @@ class Blocks extends Component {
           className="-striped -highlight"
           filterable
           minRows={0}
-          showPagination={ this.props.blockList.length < 5  ?  false : true }
+          showPagination={this.props.blockList.length < 5 ? false : true}
         />
 
         <Dialog
