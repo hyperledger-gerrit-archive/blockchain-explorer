@@ -88,7 +88,14 @@ class BlockScanner {
             let tx = block.data.data[i]
             let chaincode
             try {
-                chaincode = tx.payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].namespace
+ 		let rwsets = tx.payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset;
+                chaincode = "";
+                for(let i = 0; i < rwsets.length; i++){
+                   if(rwsets[i].namespace !== "lscc"){
+                      chaincode = rwsets[i].namespace;
+		      break;
+                   }
+                }
             } catch (err) {
                 chaincode = ""
             }
