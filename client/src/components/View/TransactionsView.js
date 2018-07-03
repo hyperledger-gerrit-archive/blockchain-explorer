@@ -54,7 +54,13 @@ export class TransactionsView extends Component {
               transactionList={this.props.transactionList.rows}
               getTransactionList={this.props.getTransactionList}
               transaction={this.props.transaction}
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
               getTransaction={this.props.getTransaction} />
+=======
+              getTransactionInfo={this.props.getTransactionInfo}
+              removeTransactionInfo={this.props.removeTransactionInfo}
+            />
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
           </Card>
         </div>
       </div>

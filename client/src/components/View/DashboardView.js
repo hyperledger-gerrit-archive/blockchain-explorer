@@ -134,9 +134,15 @@ export class DashboardView extends Component {
                 <ChartStats />
               </Card>
               <Card className="dash-section center-column">
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
                 <h5 className="org-header">Transactions by Organziation</h5>
                 <hr />
                 <OrgPieChart transactionByOrg={this.props.transactionByOrg} />
+=======
+                <h5 className="org-header">Transactions by Organization</h5>
+                <hr />
+                <OrgPieChart txByOrg={this.props.txByOrg} />
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
               </Card>
             </Col>
           </Row>
