@@ -22,6 +22,7 @@ const setup = () => {
         id: 21,
         prehash:
           "5880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f",
+
         prev_blockhash: null,
         txcount: 2,
         txhash: [
@@ -127,7 +128,12 @@ const setup = () => {
       ]
     },
     getBlockList: jest.fn(),
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
     getTransaction: jest.fn().mockImplementationOnce(() => Promise.resolve())
+=======
+    removeTransactionInfo: jest.fn(),
+    getTransactionInfo: jest.fn()
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
   };
 
   const wrapper = mount(<Blocks {...props} />);
@@ -308,7 +314,7 @@ describe("Blocks", () => {
     const { wrapper } = setup();
     wrapper
       .find("ThComponent")
-      .findWhere(n => n.key() === "1-txcount")
+      .findWhere(n => n.key() === "2-txcount")
       .find("input")
       .simulate("change", { target: { value: "3" } });
     expect(wrapper.find(ReactTable).find("TrGroupComponent").length).toBe(1);
@@ -318,7 +324,7 @@ describe("Blocks", () => {
     const { wrapper } = setup();
     wrapper
       .find("ThComponent")
-      .findWhere(n => n.key() === "2-datahash")
+      .findWhere(n => n.key() === "3-datahash")
       .find("input")
       .simulate("change", {
         target: {
@@ -328,12 +334,11 @@ describe("Blocks", () => {
       });
     expect(wrapper.find(ReactTable).find("TrGroupComponent").length).toBe(1);
   });
-
   test("Simulate Block Hash filterMethod should have one result when given a block hash", () => {
     const { wrapper } = setup();
     wrapper
       .find("ThComponent")
-      .findWhere(n => n.key() === "3-blockhash")
+      .findWhere(n => n.key() === "4-blockhash")
       .find("input")
       .simulate("change", {
         target: {
@@ -348,7 +353,7 @@ describe("Blocks", () => {
     const { wrapper } = setup();
     wrapper
       .find("ThComponent")
-      .findWhere(n => n.key() === "4-prehash")
+      .findWhere(n => n.key() === "5-prehash")
       .find("input")
       .simulate("change", {
         target: {
@@ -363,7 +368,7 @@ describe("Blocks", () => {
     const { wrapper } = setup();
     wrapper
       .find("ThComponent")
-      .findWhere(n => n.key() === "5-txhash")
+      .findWhere(n => n.key() === "6-txhash")
       .find("input")
       .simulate("change", {
         target: {
@@ -374,6 +379,7 @@ describe("Blocks", () => {
     expect(wrapper.find(ReactTable).find("TrGroupComponent").length).toBe(1);
   });
 
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
     // Test Involves Resolving Promise
   // test("Simulate onClick when a tansaction is clicked the TransactionView modal should exist", () => {
   // const { wrapper } = setup();
@@ -385,8 +391,20 @@ describe("Blocks", () => {
   //     .simulate("click");
   //   expect(wrapper.find(TransactionView).exists()).toBe(true);
   // });
+=======
+  test("Simulate onClick when a tansaction is clicked the TransactionView modal should exist", () => {
+    const { wrapper } = setup();
+    expect(wrapper.find(TransactionView).exists()).toBe(false);
+    wrapper
+      .find("TdComponent")
+      .find("a")
+      .at(1)
+      .simulate("click");
+    expect(wrapper.find(TransactionView).exists()).toBe(true);
+  });
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
 
-  test('handleEye toggles the state correctly',() => {
+  test('handleEye toggles the state correctly', () => {
     const { wrapper } = setup();
     const instance = wrapper.instance();
     const row = { index: 19 }
@@ -410,7 +428,7 @@ describe("Blocks", () => {
   test('handleDialogCloseBlockHash sets dialogOpenBlockHash to fasle', () => {
     const { wrapper } = setup();
     const instance = wrapper.instance()
-    wrapper.setState({ dialogOpenBlockHash: true})
+    wrapper.setState({ dialogOpenBlockHash: true })
     instance.handleDialogCloseBlockHash()
     expect(wrapper.state('dialogOpenBlockHash')).toBe(false)
   })
