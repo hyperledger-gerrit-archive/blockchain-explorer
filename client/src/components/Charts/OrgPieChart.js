@@ -2,10 +2,17 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
 import React, { Component } from 'react';
 import { PieChart, Pie, Tooltip, Legend } from 'recharts';
+=======
+import React, { Component } from "react";
+import { Card, CardHeader, CardBody } from "reactstrap";
+import { PieChart, Pie, Tooltip, Legend } from "recharts";
+import txByOrg from "../../store/reducers/txByOrg";
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
 
-const colors = ['#0B091A', '#6283D0', '#0D3799', '#7C7C7C'];
+const colors = ["#0B091A", "#6283D0", "#0D3799", "#7C7C7C"];
 
 class OrgPieChart extends Component {
   constructor(props) {

@@ -47,6 +47,7 @@ export class BlocksView extends Component {
     return (
       <div className="view-fullwidth" >
         <div className="view-display">
+<<<<<<< HEAD   (4c27ce BE-359 Merge and Connect)
         <Card className="table-card">
           <Blocks
             blockList={this.props.blockList}
@@ -54,6 +55,17 @@ export class BlocksView extends Component {
             transaction={this.props.transaction}
             getTransaction={this.props.getTransaction} />
        </Card>
+=======
+          <Card className="table-card">
+            <Blocks
+              blockList={this.props.blockList}
+              channel={this.props.channel}
+              transaction={this.props.transaction}
+              getTransactionInfo={this.props.getTransactionInfo}
+              removeTransactionInfo={this.props.removeTransactionInfo}
+            />
+          </Card>
+>>>>>>> BRANCH (807842 BE-355 Added Dark theme for modals)
         </div>
       </div>
     );
