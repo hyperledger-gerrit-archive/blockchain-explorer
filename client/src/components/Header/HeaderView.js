@@ -113,7 +113,7 @@ export class HeaderView extends Component {
     this.setState({isLoading: false});
     setInterval(
       () => this.syncData(this.props.currentChannel),
-      30000
+      60000
     );
   }
 
@@ -183,6 +183,7 @@ export class HeaderView extends Component {
   handleChange = selectedChannel => {
     this.setState({ selectedChannel });
     this.props.getChangeChannel(selectedChannel.value);
+    this.syncData(selectedChannel.value);
   };
 
   enableTab = val => {
