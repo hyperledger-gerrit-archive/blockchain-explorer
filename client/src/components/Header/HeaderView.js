@@ -14,7 +14,7 @@ import {
   NavbarBrand,
   NavbarToggler
 } from 'reactstrap';
-import { Link } from "react-router-dom";
+import { HashRouter as Router, NavLink,Link} from "react-router-dom";
 import Switch from 'material-ui/Switch';
 import AdminPanel from '../Panels/AdminPanel';
 import Logo from '../../static/images/Explorer_Logo.svg';
@@ -75,14 +75,8 @@ export class HeaderView extends Component {
       notifications: [],
       isLoading: true,
       modalOpen: false,
-      selectedChannel: "",
-      isLight: true,
-      dashboard: "dashButtons activeTab",
-      network: "dashButtons",
-      transaction: "dashButtons",
-      channel: "dashButtons",
-      chaincode: "dashButtons",
-      block: "dashButtons"
+      selectedOption: "",
+      isLight: true
     };
   }
 
@@ -183,30 +177,7 @@ export class HeaderView extends Component {
     this.syncData(selectedChannel.value);
   };
 
-  enableTab = val => {
-    const active = "dashButtons activeTab";
-    const inactive = "dashButtons";
-    switch (val) {
-      case 'dashboard':
-        this.setState({ dashboard: active, network: inactive, transaction: inactive, chaincode: inactive, block: inactive, channel: inactive })
-        break;
-      case 'network':
-        this.setState({ dashboard: inactive, network: active, transaction: inactive, chaincode: inactive, block: inactive, channel: inactive })
-        break;
-      case 'transaction':
-        this.setState({ dashboard: inactive, network: inactive, transaction: active, chaincode: inactive, block: inactive, channel: inactive })
-        break;
-      case 'chaincode':
-        this.setState({ dashboard: inactive, network: inactive, transaction: inactive, chaincode: active, block: inactive, channel: inactive })
-        break;
-      case 'block':
-        this.setState({ dashboard: inactive, network: inactive, transaction: inactive, chaincode: inactive, block: active, channel: inactive })
-        break;
-      case 'channel':
-        this.setState({ dashboard: inactive, network: inactive, transaction: inactive, chaincode: inactive, block: inactive, channel: active })
-        break;
-    }
-  }
+
 
   handleOpen = () => {
     this.setState({ modalOpen: true });
@@ -278,56 +249,98 @@ export class HeaderView extends Component {
           onMessage={this.handleData.bind(this)}
           reconnect={true}
         />
-        <Navbar className="navbar-header" expand="md" fixed="top">
-          <NavbarBrand href="/">
-            {" "}
-            <img src={Logo} className="logo" alt="Hyperledger Logo" />
-          </NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Nav className="ml-auto " navbar>
-            <Button href="#/" onClick={() => this.enableTab('dashboard')} className={this.state.dashboard}>
-              DASHBOARD
-              </Button>
-            <Button href="#/network" onClick={() => this.enableTab('network')} className={this.state.network}>
-              NETWORK
-              </Button>
-            <Button href="#/blocks" onClick={() => this.enableTab('block')} className={this.state.block}>
-              BLOCKS
-              </Button>
-            <Button href="#/transactions" onClick={() => this.enableTab('transaction')} className={this.state.transaction}>
-              TRANSACTIONS
-              </Button>
-            <Button href="#/chaincodes" onClick={() => this.enableTab('chaincode')} className={this.state.chaincode}>
-              CHAINCODES
-              </Button>
-            <Button href="#/channels" onClick={() => this.enableTab('channel')} className={this.state.channel}>
-              CHANNELS
-              </Button>
-            <div className="channel-dropdown">
-              <Select
-                placeholder="Select Channel..."
-                required={true}
-                name="form-field-name"
-                isLoading={this.state.isLoading}
-                value={this.state.selectedChannel}
-                onChange={this.handleChange}
-                options={this.state.channels}
-              />
-            </div>
-            {
-              <div className="admin-buttons">
-                <FontAwesome
-                  name="bell"
-                  className="bell"
-                  onClick={() => this.handleDrawOpen("notifyDrawer")}
-                />
-                <Badge
-                  className="navIcons"
-                  badgeContent={this.state.notifyCount}
-                  color="primary"
-                />
-              </div>}
-            {/*
+        <Router>
+          <div>
+            <Navbar className="navbar-header" expand="md" fixed="top">
+              <NavbarBrand href="/">
+                {" "}
+                <img src={Logo} className="logo" alt="Hyperledger Logo" />
+              </NavbarBrand>
+              <NavbarToggler onClick={this.toggle} />
+              <Nav className="ml-auto " navbar>
+                <li>
+                  <NavLink
+                    to="/"
+                    exact
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    DASHBOARD
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/network"
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    NETWORK
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/blocks"
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    BLOCKS
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/transactions"
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    TRANSACTIONS
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/chaincodes"
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    CHAINCODES
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/channels"
+                    className="dashButtons"
+                    activeClassName="activeTab"
+                  >
+                    CHANNELS
+                  </NavLink>
+                </li>
+
+                <div>
+                  <Select
+                    className="channel-dropdown"
+                    placeholder="Select Channel..."
+                    required={true}
+                    name="form-field-name"
+                    isLoading={this.state.isLoading}
+                    value={this.state.selectedOption}
+                    onChange={this.handleChange}
+                    options={this.state.channels}
+                  />
+                </div>
+                {
+                  <div className="admin-buttons">
+                    <FontAwesome
+                      name="bell"
+                      className="bell"
+                      onClick={() => this.handleDrawOpen("notifyDrawer")}
+                    />
+                    <Badge
+                      className="navIcons"
+                      badgeContent={this.state.notifyCount}
+                      color="primary"
+                    />
+                  </div>
+                }
+                {/*
               //Use when Admin functionality is required
               <div className="admin-buttons">
                 <FontAwesome
@@ -336,34 +349,36 @@ export class HeaderView extends Component {
                   onClick={() => this.handleDrawOpen("adminDrawer")}
                 />
               </div> */}
-            <div className="admin-buttons theme-switch">
-              <FontAwesome name="sun-o" className="sunIcon" />
-              <Switch
-                onChange={() => this.handleThemeChange()}
-                checked={themeIcon}
-              />
-              <FontAwesome name="moon-o" className="moonIcon" />
-            </div>
-          </Nav>
-        </Navbar>
-        <Drawer
-          anchor="right"
-          open={this.state.notifyDrawer}
-          onClose={() => this.handleDrawClose("notifyDrawer")}
-        >
-          <div tabIndex={0} role="button">
-            <NotificationsPanel notifications={this.state.notifications} />
+                <div className="admin-buttons theme-switch">
+                  <FontAwesome name="sun-o" className="sunIcon" />
+                  <Switch
+                    onChange={() => this.handleThemeChange()}
+                    checked={themeIcon}
+                  />
+                  <FontAwesome name="moon-o" className="moonIcon" />
+                </div>
+              </Nav>
+            </Navbar>
+            <Drawer
+              anchor="right"
+              open={this.state.notifyDrawer}
+              onClose={() => this.handleDrawClose("notifyDrawer")}
+            >
+              <div tabIndex={0} role="button">
+                <NotificationsPanel notifications={this.state.notifications} />
+              </div>
+            </Drawer>
+            <Drawer
+              anchor="right"
+              open={this.state.adminDrawer}
+              onClose={() => this.handleDrawClose("adminDrawer")}
+            >
+              <div tabIndex={0} role="button">
+                <AdminPanel />
+              </div>
+            </Drawer>
           </div>
-        </Drawer>
-        <Drawer
-          anchor="right"
-          open={this.state.adminDrawer}
-          onClose={() => this.handleDrawClose("adminDrawer")}
-        >
-          <div tabIndex={0} role="button">
-            <AdminPanel />
-          </div>
-        </Drawer>
+        </Router>
       </div>
     );
   }
