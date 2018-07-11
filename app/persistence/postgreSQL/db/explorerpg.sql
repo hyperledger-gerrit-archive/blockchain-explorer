@@ -42,6 +42,20 @@ CREATE TABLE chaincodes (
 
 ALTER table chaincodes owner to hppoc;
 Alter sequence chaincodes_id_seq restart with 10;
+
+-- ---------------------------
+--  Table structure for `peer_ref_chaincode`
+-- ----------------------------
+DROP TABLE IF EXISTS peer_ref_chaincode;
+
+CREATE TABLE peer_ref_chaincode (
+  id SERIAL PRIMARY KEY,
+  peerid varchar(64) DEFAULT NULL,
+  chaincodeid varchar(64) DEFAULT NULL,
+  createdt Timestamp DEFAULT NULL
+);
+ALTER table peer_ref_chaincode owner to hppoc;
+
 -- ----------------------------
 --  Table structure for `channel`
 -- ----------------------------
@@ -96,29 +110,29 @@ ALTER table peer_ref_channel owner to hppoc;
 -- ----------------------------
 DROP TABLE IF EXISTS orderer;
 
---   state character(1) NOT NULL DEFAULT 'A' CHECK (state in ('A', 'D', 'S'))
+--state character(1) NOT NULL DEFAULT 'A' CHECK(state in ('A', 'D', 'S'))
 
-CREATE TABLE orderer (
-  id SERIAL PRIMARY KEY,
-  requests varchar(64) DEFAULT NULL,
-  server_hostname varchar(64) DEFAULT NULL,
-  createdt timestamp DEFAULT NULL
+CREATE TABLE orderer(
+    id SERIAL PRIMARY KEY,
+    requests varchar(64) DEFAULT NULL,
+    server_hostname varchar(64) DEFAULT NULL,
+    createdt timestamp DEFAULT NULL
 );
 ALTER table orderer owner to hppoc;
 
 --// ====================Orderer BE-303=====================================
--- ----------------------------
---  Table structure for `transaction`
--- ----------------------------
-DROP TABLE IF EXISTS transaction;
-CREATE TABLE transaction (
-  id SERIAL PRIMARY KEY,
-  channelname varchar(64) DEFAULT NULL,
-  blockid integer DEFAULT NULL,
-  txhash character varying(256) DEFAULT NULL,
-  createdt timestamp DEFAULT NULL,
-  chaincodename character varying(255) DEFAULT NULL
-  );
+    -- ----------------------------
+    --Table structure for `transaction`
+    -- ----------------------------
+    DROP TABLE IF EXISTS transaction;
+CREATE TABLE transaction(
+    id SERIAL PRIMARY KEY,
+    channelname varchar(64) DEFAULT NULL,
+    blockid integer DEFAULT NULL,
+    txhash character varying(256) DEFAULT NULL,
+    createdt timestamp DEFAULT NULL,
+    chaincodename character varying(255) DEFAULT NULL
+);
 
 ALTER table transaction owner to hppoc;
 Alter sequence transaction_id_seq restart with 6;
@@ -132,4 +146,5 @@ ALTER table write_lock owner to hppoc;
 Alter sequence write_lock_write_lock_seq restart with 2;
 
 GRANT SELECT, INSERT, UPDATE,DELETE ON ALL TABLES IN SCHEMA PUBLIC to hppoc;
+
 
