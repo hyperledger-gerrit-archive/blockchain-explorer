@@ -12,10 +12,6 @@ import {
   CardBody,
   CardTitle } from "reactstrap";
 
-const blockIcon = {
-  color: "#79c879",
-  margin: "20px"
-};
 
 class BlockView extends Component {
   constructor(props, context) {

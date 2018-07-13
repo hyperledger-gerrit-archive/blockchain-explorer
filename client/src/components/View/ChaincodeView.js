@@ -39,10 +39,6 @@ const styles = theme => ({
 });
 
 export class ChaincodeView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { chaincodeList } = this.props;
     return (

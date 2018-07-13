@@ -8,10 +8,6 @@ import 'react-table/react-table.css';
 import matchSorter from 'match-sorter';
 
 class Channels extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   reactTableSetup = () => {
     return [
       {

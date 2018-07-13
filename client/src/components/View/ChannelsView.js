@@ -38,10 +38,6 @@ const styles = theme => ({
 });
 
 export class ChannelsView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div className="view-fullwidth" >

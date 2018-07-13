@@ -3,7 +3,6 @@
  */
 
 import React from 'react';
-import { Container, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import matchSorter from 'match-sorter';

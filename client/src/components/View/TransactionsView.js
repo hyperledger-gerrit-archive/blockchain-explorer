@@ -38,10 +38,6 @@ const styles = theme => ({
 });
 
 export class TransactionsView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div className="view-fullwidth">

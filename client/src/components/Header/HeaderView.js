@@ -15,7 +15,6 @@ import AdminPanel from "../Panels/AdminPanel";
 import Logo from "../../static/images/Explorer_Logo.svg";
 import FontAwesome from "react-fontawesome";
 import Drawer from "material-ui/Drawer";
-import Button from "material-ui/Button";
 import NotificationsPanel from "../Panels/NotificationsPanel";
 import Websocket from "react-websocket";
 import Badge from "material-ui/Badge";
@@ -189,7 +188,6 @@ export class HeaderView extends Component {
 
   handleChange = async ( selectedChannel) => {
    await this.handleOpen();
-    console.log(this.state.modalOpen);
     this.setState({selectedChannel});
     this.props.getChangeChannel(selectedChannel.value);
    await this.syncData(selectedChannel.value);
@@ -197,7 +195,6 @@ export class HeaderView extends Component {
   };
 
   handleOpen = () => {
-    console.log("opened model");
     this.setState({modalOpen: true});
   };
 

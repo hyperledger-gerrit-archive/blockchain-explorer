@@ -20,9 +20,6 @@ const styles = theme => ({
 });
 
 export class ChaincodeModal extends Component {
-  constructor(props, context) {
-    super(props, context);
-  }
   componentWillMount() {
     const theme = sessionStorage.getItem("toggleTheme") === "true";
     this.setState({toggleClass: theme});
@@ -34,7 +31,6 @@ export class ChaincodeModal extends Component {
     });
     const srcHeader =
       this.props.chaincode.chaincodename + " " + this.props.chaincode.version;
-    const {classes} = this.props;
 
     return (
       <div className={this.state.toggleClass ? "dark-theme" : ""}>

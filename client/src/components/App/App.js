@@ -14,30 +14,7 @@ import FooterView from "../Header/footerView";
 import LandingPage from "../View/LandingPage";
 import "../../static/css/main.css";
 import "../../static/css/main-dark.css";
-import chartsOperations from '../../state/redux/charts/operations'
-import tablesOperations from '../../state/redux/tables/operations'
-const {
-  blockPerHour,
-  blockPerMin,
-  transactionPerHour,
-  transactionPerMin,
-  transactionByOrg,
-  notification,
-  dashStats,
-  channel,
-  channelList,
-  changeChannel,
-  peerStatus
-} = chartsOperations
 
-const {
-  blockList,
-  chaincodeList,
-  channels,
-  peerList,
-  transactionInfo,
-  transactionList
-} = tablesOperations
 const muiTheme = createMuiTheme({
   palette: {
     contrastThreshold: 3,

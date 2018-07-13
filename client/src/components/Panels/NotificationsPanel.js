@@ -23,10 +23,6 @@ const styles = theme => ({
 });
 
 export class NotificationsPanel extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   avatarIcon = (type, classes) => {
     switch (type) {
       case "block":
@@ -35,14 +31,12 @@ export class NotificationsPanel extends Component {
             <FontAwesome name="cube" />{" "}
           </Avatar>
         );
-        break;
       default:
         return (
           <Avatar>
             <FontAwesome name="exclamation" />{" "}
           </Avatar>
         );
-        break;
     }
   };
 

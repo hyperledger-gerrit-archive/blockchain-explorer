@@ -17,10 +17,6 @@ import { FormControl, FormHelperText } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 
 class AdminPanel extends Component {
-    constructor(props, context) {
-        super(props, context);
-    }
-
     handleChange = () => {}
 
   render() {
@@ -46,7 +42,7 @@ class AdminPanel extends Component {
                             Select Channel
                             </Typography> */}
             <form className="admin-panel">
-              <FormControl className="select-channel" className="admin-panel">
+              <FormControl className="select-channel admin-panel">
                 <Select
                   value={20}
                   onChange={this.handleChange}

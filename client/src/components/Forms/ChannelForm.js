@@ -31,9 +31,7 @@ const styles = theme => ({
 });
 
 class ChannelForm extends Component {
-    constructor(props, context) {
-        super(props, context)
-    }
+
     render() {
         const { classes } = this.props;
 

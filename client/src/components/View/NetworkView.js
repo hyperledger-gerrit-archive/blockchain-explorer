@@ -39,12 +39,7 @@ const styles = theme => ({
 });
 
 export class NetworkView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
-    const { classes } = this.props;
     return (
       <div className="view-fullwidth">
         <div className="view-display">

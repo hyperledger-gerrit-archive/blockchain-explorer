@@ -9,7 +9,6 @@ import BlockView from "../View/BlockView";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import matchSorter from "match-sorter";
-import FontAwesome from "react-fontawesome";
 import find from "lodash/find";
 
 class Blocks extends Component {
