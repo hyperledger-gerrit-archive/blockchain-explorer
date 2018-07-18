@@ -2,20 +2,20 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import React, {Component} from "react";
-import {withStyles} from "material-ui/styles";
-import PropTypes from "prop-types";
-import beautify from "js-beautify";
-import FontAwesome from "react-fontawesome";
-import {Card, CardBody, CardTitle} from "reactstrap";
+import React, { Component } from 'react';
+import { withStyles } from 'material-ui/styles';
+import PropTypes from 'prop-types';
+import beautify from 'js-beautify';
+import FontAwesome from 'react-fontawesome';
+import { Card, CardBody, CardTitle } from 'reactstrap';
 
 const styles = theme => ({
   container: {
-    border: "3px solid #afeeee"
+    border: '3px solid #afeeee'
   },
   container1: {
-    display: "flex",
-    flexWrap: "wrap"
+    display: 'flex',
+    flexWrap: 'wrap'
   }
 });
 
@@ -24,8 +24,8 @@ export class ChaincodeModal extends Component {
     super(props, context);
   }
   componentWillMount() {
-    const theme = sessionStorage.getItem("toggleTheme") === "true";
-    this.setState({toggleClass: theme});
+    const theme = sessionStorage.getItem('toggleTheme') === 'true';
+    this.setState({ toggleClass: theme });
   }
 
   render() {
@@ -33,11 +33,11 @@ export class ChaincodeModal extends Component {
       indent_size: 4
     });
     const srcHeader =
-      this.props.chaincode.chaincodename + " " + this.props.chaincode.version;
-    const {classes} = this.props;
+      this.props.chaincode.chaincodename + ' ' + this.props.chaincode.version;
+    const { classes } = this.props;
 
     return (
-      <div className={this.state.toggleClass ? "dark-theme" : ""}>
+      <div className={this.state.toggleClass ? 'dark-theme' : ''}>
         <div className="dialog">
           <Card>
             <CardTitle className="dialogTitle">

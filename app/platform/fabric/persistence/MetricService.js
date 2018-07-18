@@ -1,132 +1,162 @@
 /**
-*    SPDX-License-Identifier: Apache-2.0
-*/
+ *    SPDX-License-Identifier: Apache-2.0
+ */
 
 var helper = require('../../../helper.js');
 var logger = helper.getLogger('metricservice');
 var sql = require('../../../persistence/postgreSQL/db/pgservice.js');
 
 class MetricService {
+  constructor() {}
 
-    constructor() {
+  //==========================query counts ==========================
+  getChaincodeCount(channelName) {
+    return sql.getRowsBySQlCase(
+      `select count(1) c from chaincodes where genesis_block_hash='${channelName}' `
+    );
+  }
 
-    }
+  getPeerlistCount(channelName) {
+    return sql.getRowsBySQlCase(
+      `select count(1) c from peer where genesis_block_hash='${channelName}' `
+    );
+  }
 
-
-        //==========================query counts ==========================
-    getChaincodeCount(channelName) {
-      return sql.getRowsBySQlCase(`select count(1) c from chaincodes where genesis_block_hash='${channelName}' `)
-    }
-
-    getPeerlistCount(channelName) {
-      return sql.getRowsBySQlCase(`select count(1) c from peer where genesis_block_hash='${channelName}' `)
-    }
-
-    getTxCount(channelName) {
-      return sql.getRowsBySQlCase(`select count(1) c from transactions where genesis_block_hash='${channelName}'`)
-    }
+  getTxCount(channelName) {
+    return sql.getRowsBySQlCase(
+      `select count(1) c from transactions where genesis_block_hash='${channelName}'`
+    );
+  }
 
   getBlockCount(channelName) {
-    return sql.getRowsBySQlCase(`select max(blocknum) c from blocks where genesis_block_hash='${channelName}'`)
+    return sql.getRowsBySQlCase(
+      `select max(blocknum) c from blocks where genesis_block_hash='${channelName}'`
+    );
   }
 
   async getPeerData(channelName) {
-    let peerArray = []
-    var c1 = await sql.getRowsBySQlNoCondtion(`select channel.name as channelname,c.requests as requests,c.genesis_block_hash as genesis_block_hash ,c.server_hostname as server_hostname, c.mspid as mspid, c.peer_type as peer_type  from peer as c inner join  channel on c.genesis_block_hash=channel.genesis_block_hash where c.genesis_block_hash='${channelName}'`);
+    let peerArray = [];
+    var c1 = await sql.getRowsBySQlNoCondtion(
+      `select channel.name as channelname,c.requests as requests,c.genesis_block_hash as genesis_block_hash ,c.server_hostname as server_hostname, c.mspid as mspid, c.peer_type as peer_type  from peer as c inner join  channel on c.genesis_block_hash=channel.genesis_block_hash where c.genesis_block_hash='${channelName}'`
+    );
     for (var i = 0, len = c1.length; i < len; i++) {
       var item = c1[i];
-      peerArray.push({ 'name': item.channelname, 'requests': item.requests, 'server_hostname': item.server_hostname, "genesis_block_hash": item.genesis_block_hash, "mspid": item.mspid, "peer_type": item.peer_type })
+      peerArray.push({
+        name: item.channelname,
+        requests: item.requests,
+        server_hostname: item.server_hostname,
+        genesis_block_hash: item.genesis_block_hash,
+        mspid: item.mspid,
+        peer_type: item.peer_type
+      });
     }
-    return peerArray
+    return peerArray;
   }
-//BE -303
-	async getOrdererData() {
-      let ordererArray = []
-      var c1 = await sql.getRowsBySQlNoCondtion(`select c.requests as requests,c.server_hostname as server_hostname,c.genesis_block_hash as genesis_block_hash from orderer c`);
-      for (var i = 0, len = c1.length; i < len; i++) {
-        var item = c1[i];
-        ordererArray.push({  'requests': item.requests, 'server_hostname': item.server_hostname,'genesis_block_hash':item.genesis_block_hash })
-      }
-      return ordererArray
+  //BE -303
+  async getOrdererData() {
+    let ordererArray = [];
+    var c1 = await sql.getRowsBySQlNoCondtion(
+      `select c.requests as requests,c.server_hostname as server_hostname,c.genesis_block_hash as genesis_block_hash from orderer c`
+    );
+    for (var i = 0, len = c1.length; i < len; i++) {
+      var item = c1[i];
+      ordererArray.push({
+        requests: item.requests,
+        server_hostname: item.server_hostname,
+        genesis_block_hash: item.genesis_block_hash
+      });
     }
-//BE -303
-    async getTxPerChaincodeGenerate(channelName) {
-      let txArray = []
-      var c = await sql.getRowsBySQlNoCondtion(`select  c.name as chaincodename,channel.name as channelname ,c.version as version,c.genesis_block_hash as genesis_block_hash,c.path as path ,txcount  as c from chaincodes as c inner join channel on c.genesis_block_hash=channel.genesis_block_hash where  c.genesis_block_hash='${channelName}' `);
-      //console.log("chaincode---" + c)
-      if (c) {
-        c.forEach((item, index) => {
-          txArray.push({ 'channelName': item.channelname, 'chaincodename': item.chaincodename, 'path': item.path, 'version': item.version, 'txCount': item.c,'genesis_block_hash':item.genesis_block_hash })
-        })
-      }
-      return txArray
-
+    return ordererArray;
+  }
+  //BE -303
+  async getTxPerChaincodeGenerate(channelName) {
+    let txArray = [];
+    var c = await sql.getRowsBySQlNoCondtion(
+      `select  c.name as chaincodename,channel.name as channelname ,c.version as version,c.genesis_block_hash as genesis_block_hash,c.path as path ,txcount  as c from chaincodes as c inner join channel on c.genesis_block_hash=channel.genesis_block_hash where  c.genesis_block_hash='${channelName}' `
+    );
+    //console.log("chaincode---" + c)
+    if (c) {
+      c.forEach((item, index) => {
+        txArray.push({
+          channelName: item.channelname,
+          chaincodename: item.chaincodename,
+          path: item.path,
+          version: item.version,
+          txCount: item.c,
+          genesis_block_hash: item.genesis_block_hash
+        });
+      });
     }
+    return txArray;
+  }
 
-    async getTxPerChaincode(channelName, cb) {
-      try {
-        var txArray = await this.getTxPerChaincodeGenerate(channelName);
-        cb(txArray);
-      } catch(err) {
-        logger.error(err)
-        cb([])
-      }
+  async getTxPerChaincode(channelName, cb) {
+    try {
+      var txArray = await this.getTxPerChaincodeGenerate(channelName);
+      cb(txArray);
+    } catch (err) {
+      logger.error(err);
+      cb([]);
     }
+  }
 
-    async getStatusGenerate(channelName) {
-      var chaincodeCount = await this.getChaincodeCount(channelName)
-      if (!chaincodeCount) chaincodeCount = 0
-      var txCount = await this.getTxCount(channelName)
-      if (!txCount) txCount = 0
-      txCount.c = txCount.c ? txCount.c : 0
-      var blockCount = await this.getBlockCount(channelName)
-      if (!blockCount) blockCount = 0
-      blockCount.c = blockCount.c ? blockCount.c : 0
-      var peerCount = await this.getPeerlistCount(channelName)
-      if (!peerCount) peerCount = 0
-      peerCount.c = peerCount.c ? peerCount.c : 0
-      return { 'chaincodeCount': chaincodeCount.c, 'txCount': txCount.c, 'latestBlock': blockCount.c, 'peerCount': peerCount.c }
+  async getStatusGenerate(channelName) {
+    var chaincodeCount = await this.getChaincodeCount(channelName);
+    if (!chaincodeCount) chaincodeCount = 0;
+    var txCount = await this.getTxCount(channelName);
+    if (!txCount) txCount = 0;
+    txCount.c = txCount.c ? txCount.c : 0;
+    var blockCount = await this.getBlockCount(channelName);
+    if (!blockCount) blockCount = 0;
+    blockCount.c = blockCount.c ? blockCount.c : 0;
+    var peerCount = await this.getPeerlistCount(channelName);
+    if (!peerCount) peerCount = 0;
+    peerCount.c = peerCount.c ? peerCount.c : 0;
+    return {
+      chaincodeCount: chaincodeCount.c,
+      txCount: txCount.c,
+      latestBlock: blockCount.c,
+      peerCount: peerCount.c
+    };
+  }
+
+  async getStatus(channelName, cb) {
+    try {
+      var data = await this.getStatusGenerate(channelName);
+      cb(data);
+    } catch (err) {
+      logger.error(err);
     }
-
-    async getStatus(channelName, cb) {
-
-      try {
-          var data = await this.getStatusGenerate(channelName);
-          cb(data);
-      } catch(err) {
-        logger.error(err)
-      }
-
-    }
+  }
 
   async getPeerList(channelName, cb) {
     try {
       var peerArray = await this.getPeerData(channelName);
       if (cb) {
-        cb(peerArray)
+        cb(peerArray);
       } else {
         return peerArray;
       }
     } catch (err) {
-      logger.error(err)
-      cb([])
+      logger.error(err);
+      cb([]);
     }
   }
   //BE -303
   async getOrdererList(cb) {
     try {
       var ordererArray = await this.getOrdererData();
-      cb(ordererArray)
+      cb(ordererArray);
     } catch (err) {
-      logger.error(err)
-      cb([])
+      logger.error(err);
+      cb([]);
     }
   }
   //BE -303
   //transaction metrics
 
-    getTxByMinute(channelName, hours) {
-      let sqlPerMinute = ` with minutes as (
+  getTxByMinute(channelName, hours) {
+    let sqlPerMinute = ` with minutes as (
             select generate_series(
               date_trunc('min', now()) - '${hours}hour'::interval,
               date_trunc('min', now()),
@@ -141,11 +171,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerMinute);
-    }
+    return sql.getRowsBySQlQuery(sqlPerMinute);
+  }
 
-    getTxByHour(channelName, day) {
-      let sqlPerHour = ` with hours as (
+  getTxByHour(channelName, day) {
+    let sqlPerHour = ` with hours as (
             select generate_series(
               date_trunc('hour', now()) - '${day}day'::interval,
               date_trunc('hour', now()),
@@ -160,11 +190,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerHour);
-    }
+    return sql.getRowsBySQlQuery(sqlPerHour);
+  }
 
-    getTxByDay(channelName, days) {
-      let sqlPerDay = ` with days as (
+  getTxByDay(channelName, days) {
+    let sqlPerDay = ` with days as (
             select generate_series(
               date_trunc('day', now()) - '${days}day'::interval,
               date_trunc('day', now()),
@@ -179,11 +209,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerDay);
-    }
+    return sql.getRowsBySQlQuery(sqlPerDay);
+  }
 
-    getTxByWeek(channelName, weeks) {
-      let sqlPerWeek = ` with weeks as (
+  getTxByWeek(channelName, weeks) {
+    let sqlPerWeek = ` with weeks as (
             select generate_series(
               date_trunc('week', now()) - '${weeks}week'::interval,
               date_trunc('week', now()),
@@ -198,11 +228,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerWeek);
-    }
+    return sql.getRowsBySQlQuery(sqlPerWeek);
+  }
 
-    getTxByMonth(channelName, months) {
-      let sqlPerMonth = ` with months as (
+  getTxByMonth(channelName, months) {
+    let sqlPerMonth = ` with months as (
             select generate_series(
               date_trunc('month', now()) - '${months}month'::interval,
               date_trunc('month', now()),
@@ -218,11 +248,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerMonth);
-    }
+    return sql.getRowsBySQlQuery(sqlPerMonth);
+  }
 
-    getTxByYear(channelName, years) {
-      let sqlPerYear = ` with years as (
+  getTxByYear(channelName, years) {
+    let sqlPerYear = ` with years as (
             select generate_series(
               date_trunc('year', now()) - '${years}year'::interval,
               date_trunc('year', now()),
@@ -237,13 +267,13 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerYear);
-    }
+    return sql.getRowsBySQlQuery(sqlPerYear);
+  }
 
-    // block metrics API
+  // block metrics API
 
-    getBlocksByMinute(channelName, hours) {
-      let sqlPerMinute = ` with minutes as (
+  getBlocksByMinute(channelName, hours) {
+    let sqlPerMinute = ` with minutes as (
             select generate_series(
               date_trunc('min', now()) - '${hours} hour'::interval,
               date_trunc('min', now()),
@@ -258,11 +288,11 @@ class MetricService {
           group by 1
           order by 1  `;
 
-      return sql.getRowsBySQlQuery(sqlPerMinute);
-    }
+    return sql.getRowsBySQlQuery(sqlPerMinute);
+  }
 
-    getBlocksByHour(channelName, days) {
-      let sqlPerHour = ` with hours as (
+  getBlocksByHour(channelName, days) {
+    let sqlPerHour = ` with hours as (
             select generate_series(
               date_trunc('hour', now()) - '${days}day'::interval,
               date_trunc('hour', now()),
@@ -277,11 +307,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerHour);
-    }
+    return sql.getRowsBySQlQuery(sqlPerHour);
+  }
 
-    getBlocksByDay(channelName, days) {
-      let sqlPerDay = `  with days as (
+  getBlocksByDay(channelName, days) {
+    let sqlPerDay = `  with days as (
             select generate_series(
               date_trunc('day', now()) - '${days}day'::interval,
               date_trunc('day', now()),
@@ -296,11 +326,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerDay);
-    }
+    return sql.getRowsBySQlQuery(sqlPerDay);
+  }
 
-    getBlocksByWeek(channelName, weeks) {
-      let sqlPerWeek = ` with weeks as (
+  getBlocksByWeek(channelName, weeks) {
+    let sqlPerWeek = ` with weeks as (
             select generate_series(
               date_trunc('week', now()) - '${weeks}week'::interval,
               date_trunc('week', now()),
@@ -315,11 +345,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerWeek);
-    }
+    return sql.getRowsBySQlQuery(sqlPerWeek);
+  }
 
-    getBlocksByMonth(channelName, months) {
-      let sqlPerMonth = `  with months as (
+  getBlocksByMonth(channelName, months) {
+    let sqlPerMonth = `  with months as (
             select generate_series(
               date_trunc('month', now()) - '${months}month'::interval,
               date_trunc('month', now()),
@@ -334,11 +364,11 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerMonth);
-    }
+    return sql.getRowsBySQlQuery(sqlPerMonth);
+  }
 
-    getBlocksByYear(channelName, years) {
-      let sqlPerYear = ` with years as (
+  getBlocksByYear(channelName, years) {
+    let sqlPerYear = ` with years as (
             select generate_series(
               date_trunc('year', now()) - '${years}year'::interval,
               date_trunc('year', now()),
@@ -353,24 +383,23 @@ class MetricService {
           group by 1
           order by 1 `;
 
-      return sql.getRowsBySQlQuery(sqlPerYear);
-    }
+    return sql.getRowsBySQlQuery(sqlPerYear);
+  }
 
-    getTxByOrgs(channelName) {
-      let sqlPerOrg = ` select count(creator_msp_id), creator_msp_id
+  getTxByOrgs(channelName) {
+    let sqlPerOrg = ` select count(creator_msp_id), creator_msp_id
       from transactions
       where genesis_block_hash ='${channelName}'
       group by  creator_msp_id`;
 
-      return sql.getRowsBySQlQuery(sqlPerOrg);
-    }
+    return sql.getRowsBySQlQuery(sqlPerOrg);
+  }
 
   async findMissingBlockNumber(channelName, maxHeight) {
     let sqlQuery = `SELECT s.id AS missing_id
     FROM generate_series(0, ${maxHeight}) s(id) WHERE NOT EXISTS (SELECT 1 FROM blocks WHERE blocknum = s.id and genesis_block_hash ='${channelName}' )`;
 
     return sql.getRowsBySQlQuery(sqlQuery);
-
   }
 }
 

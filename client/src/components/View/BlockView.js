@@ -2,19 +2,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Component } from "react";
-import FontAwesome from "react-fontawesome";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import {
-  Table,
-  Card,
-  CardBody,
-  CardTitle } from "reactstrap";
+import { Table, Card, CardBody, CardTitle } from 'reactstrap';
 
 const blockIcon = {
-  color: "#79c879",
-  margin: "20px"
+  color: '#79c879',
+  margin: '20px'
 };
 
 class BlockView extends Component {
@@ -29,7 +25,7 @@ class BlockView extends Component {
     this.setState({ loading: false });
   }
   componentWillMount() {
-    const theme = sessionStorage.getItem("toggleTheme") === "true";
+    const theme = sessionStorage.getItem('toggleTheme') === 'true';
     this.setState({ toggleClass: theme });
   }
   handleClose = () => {
@@ -40,14 +36,14 @@ class BlockView extends Component {
     const { blockHash } = this.props;
     if (!blockHash) {
       return (
-        <div className={this.state.toggleClass ? "dark-theme" : ""}>
+        <div className={this.state.toggleClass ? 'dark-theme' : ''}>
           <Card>
             <CardTitle className="dialogTitle">
               <FontAwesome name="cube" />Block Details
             </CardTitle>
             <CardBody>
               <span className="loading-wheel">
-                {" "}
+                {' '}
                 <FontAwesome name="circle-o-notch" size="3x" spin />
               </span>
             </CardBody>
@@ -56,7 +52,7 @@ class BlockView extends Component {
       );
     } else {
       return (
-        <div className={this.state.toggleClass ? "dark-theme" : ""}>
+        <div className={this.state.toggleClass ? 'dark-theme' : ''}>
           <div className="dialog">
             <Card>
               <CardTitle className="dialogTitle">
@@ -94,7 +90,7 @@ class BlockView extends Component {
                       <td>
                         {blockHash.blockhash}
                         <button className="copyBtn">
-                        <div className="copyMessage">Copy</div>
+                          <div className="copyMessage">Copy</div>
                           <CopyToClipboard text={blockHash.blockhash}>
                             <FontAwesome name="copy" />
                           </CopyToClipboard>
@@ -106,7 +102,7 @@ class BlockView extends Component {
                       <td>
                         {blockHash.datahash}
                         <button className="copyBtn">
-                        <div className="copyMessage">Copy</div>
+                          <div className="copyMessage">Copy</div>
                           <CopyToClipboard text={blockHash.datahash}>
                             <FontAwesome name="copy" />
                           </CopyToClipboard>
@@ -118,7 +114,7 @@ class BlockView extends Component {
                       <td>
                         {blockHash.prehash}
                         <button className="copyBtn">
-                        <div className="copyMessage">Copy</div>
+                          <div className="copyMessage">Copy</div>
                           <CopyToClipboard text={blockHash.prehash}>
                             <FontAwesome name="copy" />
                           </CopyToClipboard>

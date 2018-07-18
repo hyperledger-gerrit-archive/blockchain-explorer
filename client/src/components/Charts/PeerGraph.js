@@ -32,25 +32,25 @@ class PeerGraph extends Component {
         minZoom: 1.5,
         node: {
           fontSize: 10,
-          fontWeight: "bold",
-          labelProperty: "id",
+          fontWeight: 'bold',
+          labelProperty: 'id',
           color: '#5bc5c2',
           size: 200
         },
         links: {
-          "color": "#d3d3d3",
-          "strokeWidth": 1.5,
+          color: '#d3d3d3',
+          strokeWidth: 1.5
         }
       }
-    }
+    };
   }
 
-  peerDataSetup = (peerData) => {
+  peerDataSetup = peerData => {
     let nodes = [];
     let links = [];
     for (var i = 0; i < peerData.length; i++) {
       nodes[i] = { id: peerData[i].server_hostname };
-      if (i < (peerData.length - 1)) {
+      if (i < peerData.length - 1) {
         links[i] = {
           source: peerData[i].server_hostname,
           target: peerData[i + 1].server_hostname
@@ -69,10 +69,10 @@ class PeerGraph extends Component {
         links: links
       }
     });
-  }
+  };
 
   componentDidMount() {
-    this.peerDataSetup(this.props.peerList)
+    this.peerDataSetup(this.props.peerList);
   }
 
   render() {
@@ -83,9 +83,11 @@ class PeerGraph extends Component {
             <h5>PeerGraph</h5>
           </CardHeader>
           <CardBody className="peerGraphBody">
-            <Graph id="graph-id"
+            <Graph
+              id="graph-id"
               data={this.state.data}
-              config={this.state.myConfig} />
+              config={this.state.myConfig}
+            />
           </CardBody>
         </Card>
       </div>

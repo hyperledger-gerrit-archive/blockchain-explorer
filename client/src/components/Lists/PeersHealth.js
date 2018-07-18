@@ -13,15 +13,13 @@ class PeersHealth extends Component {
     this.state = { peerStatus: props.peerStatus };
   }
 
-
-
   render() {
     const columnHeaders = [
       {
         Header: 'Peer Name',
         accessor: 'server_hostname',
         filterAll: false,
-        className: 'center-column',
+        className: 'center-column'
       },
       {
         Header: 'Status',
@@ -46,4 +44,4 @@ class PeersHealth extends Component {
   }
 }
 
-export default PeersHealth
+export default PeersHealth;

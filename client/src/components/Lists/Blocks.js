@@ -2,15 +2,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import React, {Component} from "react";
-import Dialog from "material-ui/Dialog";
-import TransactionView from "../View/TransactionView";
-import BlockView from "../View/BlockView";
-import ReactTable from "react-table";
-import "react-table/react-table.css";
-import matchSorter from "match-sorter";
-import FontAwesome from "react-fontawesome";
-import find from "lodash/find";
+import React, { Component } from 'react';
+import Dialog from 'material-ui/Dialog';
+import TransactionView from '../View/TransactionView';
+import BlockView from '../View/BlockView';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
+import matchSorter from 'match-sorter';
+import FontAwesome from 'react-fontawesome';
+import find from 'lodash/find';
 
 class Blocks extends Component {
   constructor(props) {
@@ -25,12 +25,12 @@ class Blocks extends Component {
 
   handleDialogOpen = async tid => {
     await this.props.getTransaction(this.props.currentChannel, tid);
-    this.setState({dialogOpen: true});
+    this.setState({ dialogOpen: true });
   };
 
   handleDialogClose = () => {
     //this.props.removeTransactionInfo();
-    this.setState({dialogOpen: false});
+    this.setState({ dialogOpen: false });
   };
 
   handleDialogOpenBlockHash = blockHash => {
@@ -45,12 +45,12 @@ class Blocks extends Component {
   };
 
   handleDialogCloseBlockHash = () => {
-    this.setState({dialogOpenBlockHash: false});
+    this.setState({ dialogOpenBlockHash: false });
   };
 
   handleEye = (row, val) => {
-    const data = Object.assign({}, this.state.selection, {[row.index]: !val});
-    this.setState({selection: data});
+    const data = Object.assign({}, this.state.selection, { [row.index]: !val });
+    this.setState({ selection: data });
   };
 
   componentDidMount() {
@@ -58,64 +58,64 @@ class Blocks extends Component {
     this.props.blockList.forEach(element => {
       selection[element.blocknum] = false;
     });
-    this.setState({selection: selection});
+    this.setState({ selection: selection });
   }
 
   reactTableSetup = () => {
     return [
       {
-        Header: "Block Number",
-        accessor: "blocknum",
+        Header: 'Block Number',
+        accessor: 'blocknum',
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["blocknum"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['blocknum'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true,
         width: 150
       },
       {
-        Header: "Channel Name",
-        accessor: "channelname",
+        Header: 'Channel Name',
+        accessor: 'channelname',
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["channelname"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['channelname'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true
       },
       {
-        Header: "Number of Tx",
-        accessor: "txcount",
+        Header: 'Number of Tx',
+        accessor: 'txcount',
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["txcount"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['txcount'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true,
         width: 150
       },
       {
-        Header: "Data Hash",
-        accessor: "datahash",
+        Header: 'Data Hash',
+        accessor: 'datahash',
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["datahash"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['datahash'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true
       },
       {
-        Header: "Block Hash",
-        accessor: "blockhash",
+        Header: 'Block Hash',
+        accessor: 'blockhash',
         Cell: row => (
           <span>
             <a
@@ -125,45 +125,45 @@ class Blocks extends Component {
             >
               <div className="fullHash" id="showTransactionId">
                 {row.value}
-              </div>{" "}
-              {row.value.slice(0, 6)} {!row.value ? "" : "... "}
-            </a>{" "}
+              </div>{' '}
+              {row.value.slice(0, 6)} {!row.value ? '' : '... '}
+            </a>{' '}
           </span>
         ),
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["blockhash"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['blockhash'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true
       },
       {
-        Header: "Previous Hash",
-        accessor: "prehash",
+        Header: 'Previous Hash',
+        accessor: 'prehash',
         filterMethod: (filter, rows) =>
           matchSorter(
             rows,
             filter.value,
-            {keys: ["prehash"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['prehash'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true,
         width: 150
       },
       {
-        Header: "Transactions",
-        accessor: "txhash",
+        Header: 'Transactions',
+        accessor: 'txhash',
         Cell: row => (
           <ul>
             {row.value.map(tid => (
               <li
                 key={tid}
                 style={{
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis"
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
                 }}
               >
                 <a
@@ -173,8 +173,8 @@ class Blocks extends Component {
                 >
                   <div className="fullHash" id="showTransactionId">
                     {tid}
-                  </div>{" "}
-                  {tid.slice(0, 6)} {!tid ? "" : "... "}
+                  </div>{' '}
+                  {tid.slice(0, 6)} {!tid ? '' : '... '}
                 </a>
               </li>
             ))}
@@ -184,8 +184,8 @@ class Blocks extends Component {
           matchSorter(
             rows,
             filter.value,
-            {keys: ["txhash"]},
-            {threshold: matchSorter.rankings.SIMPLEMATCH}
+            { keys: ['txhash'] },
+            { threshold: matchSorter.rankings.SIMPLEMATCH }
           ),
         filterAll: true
       }
@@ -209,7 +209,7 @@ class Blocks extends Component {
           open={this.state.dialogOpen}
           onClose={this.handleDialogClose}
           fullWidth={true}
-          maxWidth={"md"}
+          maxWidth={'md'}
         >
           <TransactionView
             transaction={this.props.transaction}
@@ -221,7 +221,7 @@ class Blocks extends Component {
           open={this.state.dialogOpenBlockHash}
           onClose={this.handleDialogCloseBlockHash}
           fullWidth={true}
-          maxWidth={"md"}
+          maxWidth={'md'}
         >
           <BlockView
             blockHash={this.state.blockHash}

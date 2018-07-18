@@ -8,7 +8,8 @@ const setup = () => {
   const props = {
     blockList: [
       {
-        blockhash: '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
+        blockhash:
+          '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
         blocknum: 20,
         channelname: 'mychannel',
         createdt: '2018-04-26T20:32:13.000Z',
@@ -25,7 +26,8 @@ const setup = () => {
         ]
       },
       {
-        blockhash: '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
+        blockhash:
+          '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
         blocknum: 20,
         channelname: 'mychannel',
         createdt: '2018-04-26T20:32:13.000Z',
@@ -42,7 +44,8 @@ const setup = () => {
         ]
       },
       {
-        blockhash: '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
+        blockhash:
+          '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
         blocknum: 20,
         channelname: 'mychannel',
         createdt: '2018-04-26T20:32:13.000Z',
@@ -67,14 +70,14 @@ const setup = () => {
       txCount: '33'
     },
     getTxByOrg: jest.fn()
-  }
+  };
 
   const wrapper = shallow(<DashboardView {...props} />);
 
   return {
     props,
     wrapper
-  }
+  };
 };
 
 describe('DashboardView', () => {
@@ -85,18 +88,28 @@ describe('DashboardView', () => {
 
   test('setNotifications', () => {
     const { wrapper, props } = setup();
-    wrapper.instance().setNotifications(props.blockList)
-    expect(wrapper.state('notifications').length).toBe(3)
-  })
+    wrapper.instance().setNotifications(props.blockList);
+    expect(wrapper.state('notifications').length).toBe(3);
+  });
 
   test('componentWillReceiveProps gets a notification', () => {
     const { wrapper } = setup();
     const previousState = wrapper.state('notifications').slice(0);
-    wrapper.setProps({ notification: {'title':'Block 12 Added','type':'block','message':'Block 12 established with 3 tx','time':'2018-05-30T21:15:09.000Z','txcount':3,'datahash':'07ff8fa88e8c8412daa15ae0ecec80b47293a452165d00213ec08811c9fd88e7'}})
-    expect(wrapper.state('notifications')).not.toBe(previousState)
-  })
+    wrapper.setProps({
+      notification: {
+        title: 'Block 12 Added',
+        type: 'block',
+        message: 'Block 12 established with 3 tx',
+        time: '2018-05-30T21:15:09.000Z',
+        txcount: 3,
+        datahash:
+          '07ff8fa88e8c8412daa15ae0ecec80b47293a452165d00213ec08811c9fd88e7'
+      }
+    });
+    expect(wrapper.state('notifications')).not.toBe(previousState);
+  });
 
-/*  test('componentWillReceiveProps gets a channel', () => {
+  /*  test('componentWillReceiveProps gets a channel', () => {
     const { wrapper, props } = setup();
     const newChannel = { currentChannel: 'newChannel' };
     wrapper.setProps({ channel: newChannel, notification: {} })

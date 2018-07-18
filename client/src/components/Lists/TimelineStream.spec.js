@@ -74,12 +74,15 @@ describe('TimelineStream', () => {
   test('handleDialogOpenBlockHash sets the correct state', () => {
     const { wrapper } = setup();
     const instance = wrapper.instance();
-    const blockHash = '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f';
+    const blockHash =
+      '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f';
     expect(wrapper.state('dialogOpenBlockHash')).toBe(false);
-    expect(wrapper.state('blockHash')).not.toMatchObject({ blockhash: blockHash });
+    expect(wrapper.state('blockHash')).not.toMatchObject({
+      blockhash: blockHash
+    });
     instance.handleDialogOpenBlockHash(blockHash);
     expect(wrapper.state('dialogOpenBlockHash')).toBe(true);
-    expect(wrapper.state('blockHash')).toMatchObject({ blockhash: blockHash});
+    expect(wrapper.state('blockHash')).toMatchObject({ blockhash: blockHash });
   });
 
   test('handleDialogCloseBlockHash sets dialogOpenBlockHash to fasle', () => {
@@ -92,8 +95,11 @@ describe('TimelineStream', () => {
 
   test('onClick for blockLink', () => {
     const { wrapper } = setup();
-    const instance = wrapper.instance()
-    wrapper.find('.blockLink').at(0).simulate('click')
-    expect(wrapper.state('dialogOpenBlockHash')).toBe(true)
-  })
+    const instance = wrapper.instance();
+    wrapper
+      .find('.blockLink')
+      .at(0)
+      .simulate('click');
+    expect(wrapper.state('dialogOpenBlockHash')).toBe(true);
+  });
 });

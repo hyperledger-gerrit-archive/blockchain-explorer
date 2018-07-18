@@ -13,14 +13,14 @@ const setup = () => {
       title: 'NetworkView-title-58'
     },
     peerList: []
-  }
+  };
 
   const wrapper = shallow(<NetworkView {...props} />);
 
   return {
     props,
     wrapper
-  }
+  };
 };
 
 describe('NetworkView', () => {

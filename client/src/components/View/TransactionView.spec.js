@@ -13,18 +13,19 @@ const setup = () => {
       title: 'TransactionView-title-115'
     },
     transaction: {
-      'id': 39,
-      'channelname': 'mychannel',
-      'blockid': 19,
-      'txhash': '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
-      'createdt': '2018-04-26T20:32:12.000Z',
-      'chaincodename': 'mycc',
-      'status': 200,
-      'creator_msp_id': 'Org1MSP',
-      "endorser_msp_id": '{\"Org1MSP\"}',
-      'chaincode_id': '',
-      'type': 'ENDORSER_TRANSACTION',
-      'read_set': [
+      id: 39,
+      channelname: 'mychannel',
+      blockid: 19,
+      txhash:
+        '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
+      createdt: '2018-04-26T20:32:12.000Z',
+      chaincodename: 'mycc',
+      status: 200,
+      creator_msp_id: 'Org1MSP',
+      endorser_msp_id: '{"Org1MSP"}',
+      chaincode_id: '',
+      type: 'ENDORSER_TRANSACTION',
+      read_set: [
         {
           chaincode: 'lscc',
           set: [
@@ -55,8 +56,9 @@ const setup = () => {
               }
             }
           ]
-        }],
-      'write_set': [
+        }
+      ],
+      write_set: [
         {
           chaincode: 'lscc',
           set: []
@@ -78,13 +80,13 @@ const setup = () => {
         }
       ]
     }
-  }
+  };
 
   const wrapper = shallow(<TransactionView {...props} />);
 
   return {
     wrapper
-  }
+  };
 };
 
 describe('TransactionView', () => {
@@ -95,55 +97,58 @@ describe('TransactionView', () => {
 
   test('componentWillReceiveProps sets loading to false', () => {
     const { wrapper } = setup();
-    wrapper.setState({ loading: true })
-    wrapper.setProps({ new: 'prop' })
-    expect(wrapper.state('loading')).toBe(false)
-  })
+    wrapper.setState({ loading: true });
+    wrapper.setProps({ new: 'prop' });
+    expect(wrapper.state('loading')).toBe(false);
+  });
 
   test('undefined read_set', () => {
     const { wrapper } = setup();
-    wrapper.setProps({ transaction: { read_set: undefined}})
-    expect(wrapper.find('FontAwesome').exists()).toBe(true)
-  })
+    wrapper.setProps({ transaction: { read_set: undefined } });
+    expect(wrapper.find('FontAwesome').exists()).toBe(true);
+  });
 
   test('null read and write set', () => {
     const { wrapper } = setup();
     const newTransaction = {
       transaction: {
-      'id': 39,
-      'channelname': 'mychannel',
-      'blockid': 19,
-      'txhash': '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
-      'createdt': '2018-04-26T20:32:12.000Z',
-      'chaincodename': 'mycc',
-      'status': 200,
-      'creator_msp_id': 'Org1MSP',
-      'endorser_msp_id': '{\"Org1MSP\"}',
-      'chaincode_id': '',
-      'type': 'ENDORSER_TRANSACTION',
-    'read_set': [null],
-    'write_set': [null]
-    }}
-    wrapper.setProps(newTransaction)
-    expect(wrapper.find('li').exists()).toBe(false)
-  })
+        id: 39,
+        channelname: 'mychannel',
+        blockid: 19,
+        txhash:
+          '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
+        createdt: '2018-04-26T20:32:12.000Z',
+        chaincodename: 'mycc',
+        status: 200,
+        creator_msp_id: 'Org1MSP',
+        endorser_msp_id: '{"Org1MSP"}',
+        chaincode_id: '',
+        type: 'ENDORSER_TRANSACTION',
+        read_set: [null],
+        write_set: [null]
+      }
+    };
+    wrapper.setProps(newTransaction);
+    expect(wrapper.find('li').exists()).toBe(false);
+  });
 
   test('null read_set version', () => {
     const { wrapper } = setup();
     const newTransaction = {
       transaction: {
-        'id': 39,
-        'channelname': 'mychannel',
-        'blockid': 19,
-        'txhash': '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
-        'createdt': '2018-04-26T20:32:12.000Z',
-        'chaincodename': 'mycc',
-        'status': 200,
-        'creator_msp_id': 'Org1MSP',
-        'endorser_msp_id': '{\"Org1MSP\"}',
-        'chaincode_id': '',
-        'type': 'ENDORSER_TRANSACTION',
-        'read_set': [
+        id: 39,
+        channelname: 'mychannel',
+        blockid: 19,
+        txhash:
+          '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
+        createdt: '2018-04-26T20:32:12.000Z',
+        chaincodename: 'mycc',
+        status: 200,
+        creator_msp_id: 'Org1MSP',
+        endorser_msp_id: '{"Org1MSP"}',
+        chaincode_id: '',
+        type: 'ENDORSER_TRANSACTION',
+        read_set: [
           null,
           {
             chaincode: 'mycc',
@@ -157,8 +162,9 @@ describe('TransactionView', () => {
                 version: null
               }
             ]
-          }],
-        'write_set': [
+          }
+        ],
+        write_set: [
           null,
           {
             chaincode: 'lscc',
@@ -177,8 +183,8 @@ describe('TransactionView', () => {
           }
         ]
       }
-    }
-    wrapper.setProps(newTransaction)
-    expect(wrapper.find('li').exists()).toBe(true)
-  })
+    };
+    wrapper.setProps(newTransaction);
+    expect(wrapper.find('li').exists()).toBe(true);
+  });
 });

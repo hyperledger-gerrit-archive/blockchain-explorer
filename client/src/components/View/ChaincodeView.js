@@ -49,9 +49,7 @@ export class ChaincodeView extends Component {
       <div className="view-fullwidth">
         <div className="view-display">
           <Card className="table-card">
-            <Chaincodes
-              chaincodeList={chaincodeList}
-            />
+            <Chaincodes chaincodeList={chaincodeList} />
           </Card>
         </div>
       </div>
@@ -63,6 +61,4 @@ ChaincodeView.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default compose(
-  withStyles(styles)
-)(ChaincodeView);
+export default compose(withStyles(styles))(ChaincodeView);

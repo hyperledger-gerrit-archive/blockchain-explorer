@@ -2,8 +2,8 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import actions from "./actions";
-import { get } from "../../../services/request.js";
+import actions from './actions';
+import { get } from '../../../services/request.js';
 
 const blockPerHour = channel => dispatch => {
   return get(`/api/blocksByHour/${channel}/1`)
@@ -36,7 +36,7 @@ const changeChannel = channel => dispatch => {
 };
 
 const channel = () => dispatch => {
-  return get("/api/curChannel")
+  return get('/api/curChannel')
     .then(resp => {
       dispatch(actions.getChannel(resp));
     })
@@ -46,7 +46,7 @@ const channel = () => dispatch => {
 };
 
 const channelList = () => dispatch => {
-  return get("/api/channels")
+  return get('/api/channels')
     .then(resp => {
       dispatch(actions.getChannelList(resp));
     })

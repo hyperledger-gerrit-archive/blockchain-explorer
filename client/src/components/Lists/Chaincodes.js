@@ -44,7 +44,13 @@ class Chaincodes extends Component {
         Header: 'Chaincode Name',
         accessor: 'chaincodename',
         Cell: row => (
-          <a className="hash-hide" onClick={() => this.sourceDialogOpen(row.original)} href="#/chaincodes" >{row.value}</a>
+          <a
+            className="hash-hide"
+            onClick={() => this.sourceDialogOpen(row.original)}
+            href="#/chaincodes"
+          >
+            {row.value}
+          </a>
         ),
         filterMethod: (filter, rows) =>
           matchSorter(
@@ -108,7 +114,7 @@ class Chaincodes extends Component {
 
   render() {
     return (
-      <div >
+      <div>
         {/* <Button className="button" onClick={() => this.handleDialogOpen()}>
           Add Chaincode
           </Button> */}
@@ -119,13 +125,13 @@ class Chaincodes extends Component {
           className="-striped -highlight"
           filterable
           minRows={0}
-          showPagination={ this.props.chaincodeList.length < 5  ?  false : true }
+          showPagination={this.props.chaincodeList.length < 5 ? false : true}
         />
         <Dialog
           open={this.state.dialogOpen}
           onClose={this.handleDialogClose}
           fullWidth={true}
-          maxWidth={"md"}
+          maxWidth={'md'}
         >
           <ChaincodeForm />
         </Dialog>
@@ -133,11 +139,11 @@ class Chaincodes extends Component {
           open={this.state.sourceDialog}
           onClose={this.sourceDialogClose}
           fullWidth={true}
-          maxWidth={"md"}
+          maxWidth={'md'}
         >
           <ChaincodeModal chaincode={this.state.chaincode} />
         </Dialog>
-      </div >
+      </div>
     );
   }
 }

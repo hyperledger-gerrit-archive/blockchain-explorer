@@ -2,32 +2,32 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import nock from "nock";
-import configureMockStore from "redux-mock-store";
-import thunk from "redux-thunk";
-import actions from "./actions";
-import operations from "./operations";
-import reducers from "./reducers";
-import * as selectors from "./selectors";
-import types from "./types";
+import nock from 'nock';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import actions from './actions';
+import operations from './operations';
+import reducers from './reducers';
+import * as selectors from './selectors';
+import types from './types';
 
 const middleware = [thunk];
 const mockStore = configureMockStore(middleware);
 const initialState = {};
 
-describe("Tables", () => {
-  describe("Operations", () => {
+describe('Tables', () => {
+  describe('Operations', () => {
     afterEach(() => {
       nock.cleanAll();
     });
 
-    const channel = "mychannel";
+    const channel = 'mychannel';
 
-    test("blockList", async done => {
+    test('blockList', async done => {
       nock(/\w*(\W)/g)
         .get(`/api/blockAndTxList/${channel}/0`)
         .reply(200, {
-          rows: [{ test: "rows" }]
+          rows: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.BLOCK_LIST }];
@@ -40,11 +40,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("blockList catch error", async done => {
-      spyOn(console, "error");
+    test('blockList catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
         .get(`/api/blockAndTxList/${channel}/0`)
-        .replyWithError({ code: "ECONNREFUSED" });
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.BLOCK_LIST }];
       const store = mockStore(initialState, expectedActions);
@@ -56,11 +56,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("chaincodeList", async done => {
+    test('chaincodeList', async done => {
       nock(/\w*(\W)/g)
         .get(`/api/chaincode/${channel}`)
         .reply(200, {
-          rows: [{ test: "rows" }]
+          rows: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.CHAINCODE_LIST }];
@@ -73,11 +73,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("chaincodeList catch error", async done => {
-      spyOn(console, "error");
+    test('chaincodeList catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
         .get(`/api/chaincode/${channel}`)
-        .replyWithError({ code: "ECONNREFUSED" });
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.CHAINCODE_LIST }];
       const store = mockStore(initialState, expectedActions);
@@ -89,11 +89,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("channels", async done => {
+    test('channels', async done => {
       nock(/\w*(\W)/g)
-        .get("/api/channels/info")
+        .get('/api/channels/info')
         .reply(200, {
-          channels: [{ test: "rows" }]
+          channels: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.CHANNELS }];
@@ -106,11 +106,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("channels catch error", async done => {
-      spyOn(console, "error");
+    test('channels catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
-        .get("/api/channels/info")
-        .replyWithError({ code: "ECONNREFUSED" });
+        .get('/api/channels/info')
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.CHANNELS }];
       const store = mockStore(initialState, expectedActions);
@@ -122,11 +122,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("peerList", async done => {
+    test('peerList', async done => {
       nock(/\w*(\W)/g)
         .get(`/api/peers/${channel}`)
         .reply(200, {
-          rows: [{ test: "rows" }]
+          rows: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.PEER_LIST }];
@@ -139,11 +139,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("peerList catch error", async done => {
-      spyOn(console, "error");
+    test('peerList catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
         .get(`/api/peers/${channel}`)
-        .replyWithError({ code: "ECONNREFUSED" });
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.PEER_LIST }];
       const store = mockStore(initialState, expectedActions);
@@ -155,11 +155,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("transaction", async done => {
+    test('transaction', async done => {
       nock(/\w*(\W)/g)
         .get(`/api/transaction/${channel}/1`)
         .reply(200, {
-          rows: [{ test: "rows" }]
+          rows: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.TRANSACTION }];
@@ -172,11 +172,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("transaction catch error", async done => {
-      spyOn(console, "error");
+    test('transaction catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
         .get(`/api/transaction/${channel}/1`)
-        .replyWithError({ code: "ECONNREFUSED" });
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.TRANSACTION }];
       const store = mockStore(initialState, expectedActions);
@@ -188,11 +188,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("transactionList", async done => {
+    test('transactionList', async done => {
       nock(/\w*(\W)/g)
         .get(`/api/txList/${channel}/0/0/`)
         .reply(200, {
-          rows: [{ test: "rows" }]
+          rows: [{ test: 'rows' }]
         });
 
       const expectedActions = [{ type: types.TRANSACTION_LIST }];
@@ -205,11 +205,11 @@ describe("Tables", () => {
       done();
     });
 
-    test("transactionList catch error", async done => {
-      spyOn(console, "error");
+    test('transactionList catch error', async done => {
+      spyOn(console, 'error');
       nock(/\w*(\W)/g)
         .get(`/api/txList/${channel}/0/0/`)
-        .replyWithError({ code: "ECONNREFUSED" });
+        .replyWithError({ code: 'ECONNREFUSED' });
 
       const expectedActions = [{ type: types.TRANSACTION_LIST }];
       const store = mockStore(initialState, expectedActions);
@@ -222,91 +222,91 @@ describe("Tables", () => {
     });
   });
 
-  describe("Reducers", () => {
-    test("blockListReducer", () => {
-      const payload = { rows: "test" };
+  describe('Reducers', () => {
+    test('blockListReducer', () => {
+      const payload = { rows: 'test' };
       const action = actions.getBlockList(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.blockList.rows).toBe("test");
+      expect(newState.blockList.rows).toBe('test');
     });
 
-    test("chaincodeListReducer", () => {
-      const payload = { chaincode: "test" };
+    test('chaincodeListReducer', () => {
+      const payload = { chaincode: 'test' };
       const action = actions.getChaincodeList(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.chaincodeList.rows).toBe("test");
+      expect(newState.chaincodeList.rows).toBe('test');
     });
 
-    test("channelsReducer", () => {
-      const payload = { channels: "test" };
+    test('channelsReducer', () => {
+      const payload = { channels: 'test' };
       const action = actions.getChannels(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.channels.rows).toBe("test");
+      expect(newState.channels.rows).toBe('test');
     });
 
-    test("peerListReducer", () => {
-      const payload = { peers: "test" };
+    test('peerListReducer', () => {
+      const payload = { peers: 'test' };
       const action = actions.getPeerList(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.peerList.rows).toBe("test");
+      expect(newState.peerList.rows).toBe('test');
     });
 
-    test("transactionReducer", () => {
-      const payload = { row: "test" };
+    test('transactionReducer', () => {
+      const payload = { row: 'test' };
       const action = actions.getTransaction(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.transaction.transaction).toBe("test");
+      expect(newState.transaction.transaction).toBe('test');
     });
 
-    test("transactionListReducer", () => {
-      const payload = "test";
+    test('transactionListReducer', () => {
+      const payload = 'test';
       const action = actions.getTransactionList(payload);
 
       const newState = reducers(initialState, action);
-      expect(newState.transactionList.rows).toBe("test");
+      expect(newState.transactionList.rows).toBe('test');
     });
   });
 
-  describe("selectors", () => {
-    test("blockListSelector", () => {
-      const state = { tables: { blockList: { rows: "test" } } };
+  describe('selectors', () => {
+    test('blockListSelector', () => {
+      const state = { tables: { blockList: { rows: 'test' } } };
       const blockList = selectors.blockListSelector(state);
-      expect(blockList).toBe("test");
+      expect(blockList).toBe('test');
     });
 
-    test("chaincodeListSelector", () => {
-      const state = { tables: { chaincodeList: { rows: "test" } } };
+    test('chaincodeListSelector', () => {
+      const state = { tables: { chaincodeList: { rows: 'test' } } };
       const chaincodeList = selectors.chaincodeListSelector(state);
-      expect(chaincodeList).toBe("test");
+      expect(chaincodeList).toBe('test');
     });
 
-    test("channelsSelector", () => {
-      const state = { tables: { channels: { rows: "test" } } };
+    test('channelsSelector', () => {
+      const state = { tables: { channels: { rows: 'test' } } };
       const channels = selectors.channelsSelector(state);
-      expect(channels).toBe("test");
+      expect(channels).toBe('test');
     });
 
-    test("peerListSelector", () => {
-      const state = { tables: { peerList: { rows: "test" } } };
+    test('peerListSelector', () => {
+      const state = { tables: { peerList: { rows: 'test' } } };
       const peerList = selectors.peerListSelector(state);
-      expect(peerList).toBe("test");
+      expect(peerList).toBe('test');
     });
 
-    test("transactionSelector", () => {
-      const state = { tables: { transaction: { transaction: "test" } } };
+    test('transactionSelector', () => {
+      const state = { tables: { transaction: { transaction: 'test' } } };
       const transaction = selectors.transactionSelector(state);
-      expect(transaction).toBe("test");
+      expect(transaction).toBe('test');
     });
 
-    test("transactionListSelector", () => {
-      const state = { tables: { transactionList: { rows: "test" } } };
+    test('transactionListSelector', () => {
+      const state = { tables: { transactionList: { rows: 'test' } } };
       const transactionList = selectors.transactionListSelector(state);
-      expect(transactionList).toBe("test");
+      expect(transactionList).toBe('test');
     });
   });
 });

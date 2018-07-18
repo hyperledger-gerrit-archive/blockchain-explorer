@@ -14,7 +14,8 @@ const setup = () => {
     },
     blockList: [
       {
-        blockhash: '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
+        blockhash:
+          '6880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
         blocknum: 20,
         channelname: 'mychannel',
         createdt: '2018-04-26T20:32:13.000Z',
@@ -31,7 +32,8 @@ const setup = () => {
         ]
       },
       {
-        blockhash: '7880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
+        blockhash:
+          '7880fc2e3fcebbe7964335ee4f617c94ba9afb176fade022aa6573d85539129f',
         blocknum: 19,
         channelname: 'mychannel',
         createdt: '2018-04-26T20:32:11.000Z',
@@ -59,18 +61,19 @@ const setup = () => {
       currentChannel: 'mychannel'
     },
     transaction: {
-      'id': 39,
-      'channelname': 'mychannel',
-      'blockid': 19,
-      'txhash': '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
-      'createdt': '2018-04-26T20:32:12.000Z',
-      'chaincodename': 'mycc',
-      'status': 200,
-      'creator_msp_id': 'Org1MSP',
-      'endorser_msp_id': '{\'Org1MSP\'}',
-      'chaincode_id': '',
-      'type': 'ENDORSER_TRANSACTION',
-      'read_set': [
+      id: 39,
+      channelname: 'mychannel',
+      blockid: 19,
+      txhash:
+        '912cd6e7624313675cb1806e2ce0243bbeff247792f2c7aae857a8c5436074f6',
+      createdt: '2018-04-26T20:32:12.000Z',
+      chaincodename: 'mycc',
+      status: 200,
+      creator_msp_id: 'Org1MSP',
+      endorser_msp_id: "{'Org1MSP'}",
+      chaincode_id: '',
+      type: 'ENDORSER_TRANSACTION',
+      read_set: [
         {
           chaincode: 'lscc',
           set: [
@@ -101,8 +104,9 @@ const setup = () => {
               }
             }
           ]
-        }],
-      'write_set': [
+        }
+      ],
+      write_set: [
         {
           chaincode: 'lscc',
           set: []
@@ -127,7 +131,7 @@ const setup = () => {
     getBlockList: jest.fn(),
     getTransactionInfo: jest.fn(),
     getCountHeader: jest.fn(),
-    getLatestBlock: jest.fn(),
+    getLatestBlock: jest.fn()
   };
 
   const wrapper = shallow(<BlocksView {...props} />);
@@ -135,7 +139,7 @@ const setup = () => {
   return {
     props,
     wrapper
-  }
+  };
 };
 
 describe('BlocksView', () => {

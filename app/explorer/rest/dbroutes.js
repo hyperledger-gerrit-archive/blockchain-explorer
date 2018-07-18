@@ -1,22 +1,17 @@
 /**
-*    SPDX-License-Identifier: Apache-2.0
-*/
+ *    SPDX-License-Identifier: Apache-2.0
+ */
 
-var requtil = require("./requestutils.js");
+var requtil = require('./requestutils.js');
 const dbroutes = (app, persist) => {
-
   var statusMetrics = persist.getMetricService();
   var crudService = persist.getCrudService();
 
-  app.get("/api/status/:channel", function (req, res) {
+  app.get('/api/status/:channel', function(req, res) {
     let channelName = req.params.channel;
     if (channelName) {
-      statusMetrics.getStatus(channelName, function (data) {
-        if (
-          data &&
-          (data.chaincodeCount &&
-            data.txCount &&  data.peerCount)
-        ) {
+      statusMetrics.getStatus(channelName, function(data) {
+        if (data && (data.chaincodeCount && data.txCount && data.peerCount)) {
           return res.send(data);
         } else {
           return requtil.notFound(req, res);
@@ -26,7 +21,6 @@ const dbroutes = (app, persist) => {
       return requtil.invalidRequest(req, res);
     }
   });
-
 
   /***
   Transaction count
@@ -38,24 +32,23 @@ const dbroutes = (app, persist) => {
     "txCount": 1
   }
   */
-  app.get("/api/block/transactions/:channel/:number", async function (req, res) {
+  app.get('/api/block/transactions/:channel/:number', async function(req, res) {
     let number = parseInt(req.params.number);
     let channelName = req.params.channel;
     if (!isNaN(number) && channelName) {
-        var row = await crudService.getTxCountByBlockNum(channelName,number);
-        if (row) {
-            return res.send({
-              status: 200,
-              number: row.blocknum,
-              txCount: row.txcount
-            });
-        }
-        return requtil.notFound(req, res);
+      var row = await crudService.getTxCountByBlockNum(channelName, number);
+      if (row) {
+        return res.send({
+          status: 200,
+          number: row.blocknum,
+          txCount: row.txcount
+        });
+      }
+      return requtil.notFound(req, res);
     } else {
       return requtil.invalidRequest(req, res);
     }
   });
-
 
   //
   /***
@@ -71,11 +64,11 @@ const dbroutes = (app, persist) => {
   }
   */
 
-  app.get("/api/transaction/:channel/:txid", function (req, res) {
+  app.get('/api/transaction/:channel/:txid', function(req, res) {
     let txid = req.params.txid;
     let channelName = req.params.channel;
-    if (txid && txid != "0" && channelName) {
-        crudService.getTransactionByID(channelName, txid).then(row => {
+    if (txid && txid != '0' && channelName) {
+      crudService.getTransactionByID(channelName, txid).then(row => {
         if (row) {
           return res.send({ status: 200, row });
         }
@@ -84,7 +77,6 @@ const dbroutes = (app, persist) => {
       return requtil.invalidRequest(req, res);
     }
   });
-
 
   /***
   Transaction list
@@ -95,7 +87,7 @@ const dbroutes = (app, persist) => {
   "txhash":"c42c4346f44259628e70d52c672d6717d36971a383f18f83b118aaff7f4349b8",
   "createdt":"2018-03-09T19:40:59.000Z","chaincodename":"mycc"}]}
   */
-  app.get("/api/txList/:channel/:blocknum/:txid", function (req, res) {
+  app.get('/api/txList/:channel/:blocknum/:txid', function(req, res) {
     let channelName = req.params.channel;
     let blockNum = parseInt(req.params.blocknum);
     let txid = parseInt(req.params.txid);
@@ -114,7 +106,6 @@ const dbroutes = (app, persist) => {
     }
   });
 
-
   /***Peer List
   GET /peerlist -> /api/peers
   curl -i 'http://<host>:<port>/api/peers/<channel>'
@@ -126,17 +117,16 @@ const dbroutes = (app, persist) => {
     }
   ]
   */
-  app.get("/api/peers/:channel", function (req, res) {
+  app.get('/api/peers/:channel', function(req, res) {
     let channelName = req.params.channel;
     if (channelName) {
-      statusMetrics.getPeerList(channelName, function (data) {
+      statusMetrics.getPeerList(channelName, function(data) {
         res.send({ status: 200, peers: data });
       });
     } else {
       return requtil.invalidRequest(req, res);
     }
   });
-
 
   /***
    List of blocks and transaction list per block
@@ -149,7 +139,7 @@ const dbroutes = (app, persist) => {
   *
   */
 
-  app.get("/api/blockAndTxList/:channel/:blocknum", function (req, res) {
+  app.get('/api/blockAndTxList/:channel/:blocknum', function(req, res) {
     let channelName = req.params.channel;
     let blockNum = parseInt(req.params.blocknum);
     if (channelName && !isNaN(blockNum)) {
@@ -164,7 +154,6 @@ const dbroutes = (app, persist) => {
     }
   });
 
-
   // TRANSACTION METRICS
 
   /***
@@ -177,7 +166,7 @@ const dbroutes = (app, persist) => {
 
   */
 
-  app.get("/api/txByMinute/:channel/:hours", function (req, res) {
+  app.get('/api/txByMinute/:channel/:hours', function(req, res) {
     let channelName = req.params.channel;
     let hours = parseInt(req.params.hours);
 
@@ -202,7 +191,7 @@ const dbroutes = (app, persist) => {
   {"datetime":"2018-03-12T20:00:00.000Z","count":"0"}]}
   */
 
-  app.get("/api/txByHour/:channel/:days", function (req, res) {
+  app.get('/api/txByHour/:channel/:days', function(req, res) {
     let channelName = req.params.channel;
     let days = parseInt(req.params.days);
 
@@ -229,7 +218,7 @@ const dbroutes = (app, persist) => {
 
   */
 
-  app.get("/api/blocksByMinute/:channel/:hours", function (req, res) {
+  app.get('/api/blocksByMinute/:channel/:hours', function(req, res) {
     let channelName = req.params.channel;
     let hours = parseInt(req.params.hours);
 
@@ -254,7 +243,7 @@ const dbroutes = (app, persist) => {
 
   */
 
-  app.get("/api/blocksByHour/:channel/:days", function (req, res) {
+  app.get('/api/blocksByHour/:channel/:days', function(req, res) {
     let channelName = req.params.channel;
     let days = parseInt(req.params.days);
 
@@ -278,7 +267,7 @@ const dbroutes = (app, persist) => {
   {"rows":[{"count":"4","creator_msp_id":"Org1"}]}
 
   */
-  app.get("/api/txByOrg/:channel", function (req, res) {
+  app.get('/api/txByOrg/:channel', function(req, res) {
     let channelName = req.params.channel;
 
     if (channelName) {
@@ -293,7 +282,7 @@ const dbroutes = (app, persist) => {
     }
   });
 
- /**
+  /**
           Channels
           GET /channels -> /api/channels/info
           curl -i 'http://<host>:<port>/api/channels/<info>'
@@ -307,13 +296,14 @@ const dbroutes = (app, persist) => {
           ]
         */
 
-       app.get("/api/channels/info", function (req, res) {
-        crudService.getChannelsInfo().then(data=>{
-          res.send({ status: 200, channels:data })
-        }).catch(err=>res.send({status:500}))
-    });
-
-
-}
+  app.get('/api/channels/info', function(req, res) {
+    crudService
+      .getChannelsInfo()
+      .then(data => {
+        res.send({ status: 200, channels: data });
+      })
+      .catch(err => res.send({ status: 500 }));
+  });
+};
 
 module.exports = dbroutes;

@@ -12,14 +12,14 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     paddingTop: 42,
-    position: 'relative',
+    position: 'relative'
   },
   card: {
     height: 250,
     minWidth: 1290,
     margin: 20,
     textAlign: 'left',
-    display: 'inline-block',
+    display: 'inline-block'
   },
   title: {
     fontSize: 16,
@@ -45,15 +45,16 @@ export class BlocksView extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <div className="view-fullwidth" >
+      <div className="view-fullwidth">
         <div className="view-display">
-        <Card className="table-card">
-          <Blocks
-            blockList={this.props.blockList}
-            currentChannel={this.props.currentChannel}
-            transaction={this.props.transaction}
-            getTransaction={this.props.getTransaction} />
-       </Card>
+          <Card className="table-card">
+            <Blocks
+              blockList={this.props.blockList}
+              currentChannel={this.props.currentChannel}
+              transaction={this.props.transaction}
+              getTransaction={this.props.getTransaction}
+            />
+          </Card>
         </div>
       </div>
     );
@@ -61,9 +62,7 @@ export class BlocksView extends Component {
 }
 
 BlocksView.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
-export default compose(
-  withStyles(styles)
-)(BlocksView);
+export default compose(withStyles(styles))(BlocksView);

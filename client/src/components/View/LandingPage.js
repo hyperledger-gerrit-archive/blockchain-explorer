@@ -6,9 +6,9 @@ import React, { Component } from 'react';
 import Slider from 'react-slick';
 import { connect } from 'react-redux';
 import Logo from '../../static/images/Explorer_Logo.svg';
-import { chartOperations } from '../../state/redux/charts/'
-import { tableOperations } from '../../state/redux/tables/'
-import { chartSelectors } from '../../state/redux/charts/'
+import { chartOperations } from '../../state/redux/charts/';
+import { tableOperations } from '../../state/redux/tables/';
+import { chartSelectors } from '../../state/redux/charts/';
 
 const {
   blockPerHour,
@@ -20,7 +20,7 @@ const {
   transactionByOrg,
   transactionPerHour,
   transactionPerMin
-} = chartOperations
+} = chartOperations;
 
 const {
   blockList,
@@ -28,9 +28,9 @@ const {
   channels,
   peerList,
   transactionList
-} = tableOperations
+} = tableOperations;
 
-const { currentChannelSelector } = chartSelectors
+const { currentChannelSelector } = chartSelectors;
 
 export class LandingPage extends Component {
   constructor(props) {
@@ -52,7 +52,7 @@ export class LandingPage extends Component {
         height: '100px'
       },
       hasDbError: false
-    }
+    };
   }
 
   async componentDidMount() {
@@ -77,7 +77,7 @@ export class LandingPage extends Component {
       this.props.getTransactionList(currentChannel),
       this.props.getTransactionPerHour(currentChannel),
       this.props.getTransactionPerMin(currentChannel)
-    ])
+    ]);
     clearTimeout(promiseTimeout);
     this.props.updateLoadStatus();
   }
@@ -85,19 +85,32 @@ export class LandingPage extends Component {
   render() {
     if (this.state.hasDbError) {
       return (
-        <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div
+          style={{
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           <h1>Error: One or more components failed to render.</h1>
         </div>
       );
     }
     return (
       <div className="landingBackground">
-        <div className="landing" >
+        <div className="landing">
           <img src={Logo} style={this.state.logoStyle} alt="Hyperledger Logo" />
           <Slider {...this.state.settings}>
-            <div><h3>ACCESSING THE NETWORK</h3></div>
-            <div><h3>CONNECTING TO CHANNEL</h3></div>
-            <div><h3>LOADING BLOCKS</h3></div>
+            <div>
+              <h3>ACCESSING THE NETWORK</h3>
+            </div>
+            <div>
+              <h3>CONNECTING TO CHANNEL</h3>
+            </div>
+            <div>
+              <h3>LOADING BLOCKS</h3>
+            </div>
           </Slider>
         </div>
       </div>
@@ -105,9 +118,11 @@ export class LandingPage extends Component {
   }
 }
 
-export default connect((state) => ({
-  currentChannel: currentChannelSelector(state),
-}), {
+export default connect(
+  state => ({
+    currentChannel: currentChannelSelector(state)
+  }),
+  {
     getBlockList: blockList,
     getBlocksPerHour: blockPerHour,
     getBlocksPerMin: blockPerMin,
@@ -121,5 +136,6 @@ export default connect((state) => ({
     getTransactionByOrg: transactionByOrg,
     getTransactionList: transactionList,
     getTransactionPerHour: transactionPerHour,
-    getTransactionPerMin: transactionPerMin,
-  })(LandingPage)
+    getTransactionPerMin: transactionPerMin
+  }
+)(LandingPage);

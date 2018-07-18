@@ -9,7 +9,7 @@ const setup = () => {
 
   return {
     wrapper
-  }
+  };
 };
 
 describe('Main', () => {

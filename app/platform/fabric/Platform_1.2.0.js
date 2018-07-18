@@ -2,15 +2,15 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-var path = require("path");
+var path = require('path');
 var fs = require('fs-extra');
 var FabricClient = require('./FabricClient.js');
 var FabricServices = require('./service/FabricServices.js');
 var RestServices = require('./service/RestServices.js');
-var dbroutes = require("./rest/dbroutes.js");
-var platformroutes = require("./rest/platformroutes.js");
-var helper = require("../../helper.js");
-var logger = helper.getLogger("Platform");
+var dbroutes = require('./rest/dbroutes.js');
+var platformroutes = require('./rest/platformroutes.js');
+var helper = require('../../helper.js');
+var logger = helper.getLogger('Platform');
 
 var config_path = path.resolve(__dirname, './config_1.2.0.json');
 
@@ -42,26 +42,23 @@ class Platform {
     await dbroutes(this.app, this.restServices);
     await platformroutes(this.app, this.restServices);
 
-    setInterval(function () {
+    setInterval(function() {
       _self.isChannelEventHubConnected();
     }, this.synchBlocksTime);
-
   }
 
   async buildClientsFromFile(config_path) {
-
     let _self = this;
 
     let all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
     let client_configs = all_config[NETWORK_CONFIGS];
     await this.setSynchBlocksTime(client_configs);
     global.hfc.config.set('discovery-cache-life', this.synchBlocksTime);
-    var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config));// clone global.hfc.config configuration
+    var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config)); // clone global.hfc.config configuration
 
     this.client_configs = await this.setAdminPrivateKey(client_configs);
 
     for (let client_name in this.client_configs) {
-
       if (!this.defaultClient) {
         this.defaultClient = client_name;
       }
@@ -94,7 +91,6 @@ class Platform {
   }
 
   async buildClientFromJSON(client_name, client_config) {
-
     let client = new FabricClient(client_name, this.fabricServices);
     await client.initialize(client_config);
     return client;
@@ -114,7 +110,6 @@ class Platform {
   }
 
   async setSynchBlocksTime(client_configs) {
-
     if (client_configs.synchBlocksTime) {
       let time = parseInt(client_configs.synchBlocksTime, 10);
       if (!isNaN(time)) {
@@ -122,21 +117,20 @@ class Platform {
         this.synchBlocksTime = time * 60 * 1000;
       }
     }
-
   }
   async setAdminPrivateKey(client_configs) {
-
-
     for (let client_name in client_configs) {
-
       let client_config = client_configs[client_name];
 
       if (client_config && client_config.organizations) {
         for (let organization_name in client_config.organizations) {
-          let fPath = client_config.organizations[organization_name].adminPrivateKey.path;
+          let fPath =
+            client_config.organizations[organization_name].adminPrivateKey.path;
           var files = fs.readdirSync(fPath);
           if (files && files.length > 0) {
-            client_config.organizations[organization_name].adminPrivateKey.path = path.join(fPath, files[0]);
+            client_config.organizations[
+              organization_name
+            ].adminPrivateKey.path = path.join(fPath, files[0]);
           }
         }
       }

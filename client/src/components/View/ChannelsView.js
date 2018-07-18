@@ -12,14 +12,14 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     paddingTop: 42,
-    position: 'relative',
+    position: 'relative'
   },
   card: {
     height: 250,
     minWidth: 1290,
     margin: 20,
     textAlign: 'left',
-    display: 'inline-block',
+    display: 'inline-block'
   },
   title: {
     fontSize: 16,
@@ -44,7 +44,7 @@ export class ChannelsView extends Component {
 
   render() {
     return (
-      <div className="view-fullwidth" >
+      <div className="view-fullwidth">
         <div className="view-display">
           <Card className="table-card">
             <Channels channels={this.props.channels} />
@@ -55,6 +55,4 @@ export class ChannelsView extends Component {
   }
 }
 
-export default compose(
-  withStyles(styles)
-)(ChannelsView);
+export default compose(withStyles(styles))(ChannelsView);

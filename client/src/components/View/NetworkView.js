@@ -62,6 +62,4 @@ NetworkView.propTypes = {
   peerList: PropTypes.array.isRequired
 };
 
-export default compose(
-  withStyles(styles)
-)(NetworkView);
+export default compose(withStyles(styles))(NetworkView);

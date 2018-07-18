@@ -10,15 +10,15 @@ const initialState = {};
 
 const blockPerHourReducer = (state = initialState, action) => {
   switch (action.type) {
-    case types.BLOCK_CHART_HOUR:{
-            return {
+    case types.BLOCK_CHART_HOUR: {
+      return {
         rows: action.payload.blockPerHour.rows,
         loaded: true,
         errors: action.errors
-      }
+      };
     }
-    default:{
-            return state;
+    default: {
+      return state;
     }
   }
 };
@@ -55,7 +55,7 @@ const channelListReducer = (state = initialState, action) => {
 
 const channelReducer = (state = initialState, action) => {
   switch (action.type) {
-    case types.CHANNEL:{
+    case types.CHANNEL: {
       return action.payload.channel;
     }
     case types.CHANGE_CHANNEL: {
@@ -137,7 +137,7 @@ const transactionPerHourReducer = (state = initialState, action) => {
 const transactionPerMinReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.TRANSACTION_CHART_MIN: {
-            return {
+      return {
         rows: action.payload.transactionPerMin.rows,
         loaded: true,
         errors: action.errors
@@ -159,7 +159,7 @@ const reducer = combineReducers({
   peerStatus: peerStatusReducer,
   transactionByOrg: transactionByOrgReducer,
   transactionPerHour: transactionPerHourReducer,
-  transactionPerMin: transactionPerMinReducer,
+  transactionPerMin: transactionPerMinReducer
 });
 
 export default reducer;

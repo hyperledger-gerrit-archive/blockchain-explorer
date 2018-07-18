@@ -2,102 +2,100 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import { combineReducers } from 'redux'
-import types from './types'
+import { combineReducers } from 'redux';
+import types from './types';
 
-const initialState = {}
+const initialState = {};
 
 const blockListReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.BLOCK_LIST: {
-      return ({
+      return {
         rows: action.payload.rows,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};
 
 const chaincodeListReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.CHAINCODE_LIST: {
-      return ({
+      return {
         rows: action.payload.chaincode,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};
 
 const channelsReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.CHANNELS: {
-      return ({
+      return {
         rows: action.payload.channels,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};
 
 const peerListReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.PEER_LIST: {
-      return ({
+      return {
         rows: action.payload.peers,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};
 
 const transactionReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.TRANSACTION: {
-      return ({
+      return {
         transaction: action.payload.row,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
+};
 
 const transactionListReducer = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case types.TRANSACTION_LIST: {
-      return ({
+      return {
         rows: action.payload,
         loaded: true,
         errors: action.error
-      })
+      };
     }
     default: {
-      return state
+      return state;
     }
   }
-}
-
-
+};
 
 const reducer = combineReducers({
   blockList: blockListReducer,
@@ -106,6 +104,6 @@ const reducer = combineReducers({
   peerList: peerListReducer,
   transaction: transactionReducer,
   transactionList: transactionListReducer
-})
+});
 
 export default reducer;

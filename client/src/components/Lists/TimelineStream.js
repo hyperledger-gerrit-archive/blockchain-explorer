@@ -30,7 +30,8 @@ class TimelineStream extends Component {
     });
     this.setState({
       dialogOpenBlockHash: true,
-      blockHash: data });
+      blockHash: data
+    });
   };
 
   handleDialogCloseBlockHash = () => {
@@ -50,14 +51,14 @@ class TimelineStream extends Component {
                 iconColor="#0D3799"
                 container="card"
                 className="timeline-event"
-                titleStyle={{ fontWeight: "bold" }}
-                style={{ width: "65%" }}
+                titleStyle={{ fontWeight: 'bold' }}
+                style={{ width: '65%' }}
                 cardHeaderStyle={{
-                  backgroundColor: "#6283D0",
-                  fontSize: "13pt"
+                  backgroundColor: '#6283D0',
+                  fontSize: '13pt'
                 }}
                 contentStyle={{
-                  backgroundColor: "transparent"
+                  backgroundColor: 'transparent'
                 }}
                 buttons={
                   <a
@@ -76,7 +77,7 @@ class TimelineStream extends Component {
                 }
               >
                 <Typography variant="body1">
-                  <b className="timeLineText"> Datahash:</b> {item.datahash}{" "}
+                  <b className="timeLineText"> Datahash:</b> {item.datahash}{' '}
                   <br />
                   <b className="timeLineText"> Number of Tx:</b> {item.txcount}
                 </Typography>
@@ -99,7 +100,7 @@ class TimelineStream extends Component {
           open={this.state.dialogOpenBlockHash}
           onClose={this.handleDialogCloseBlockHash}
           fullWidth={true}
-          maxWidth={"md"}
+          maxWidth={'md'}
         >
           <BlockView
             blockHash={this.state.blockHash}
