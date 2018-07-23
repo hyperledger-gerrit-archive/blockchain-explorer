@@ -65,6 +65,7 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.1.0",
     "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-react-app": "^3.0.0",
     "jest-enzyme": "^4.2.0",
     "mock-local-storage": "^1.0.5",
     "react-addons-test-utils": "^15.6.2",

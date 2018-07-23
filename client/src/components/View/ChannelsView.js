@@ -5,8 +5,8 @@
 import React, { Component } from 'react';
 import compose from 'recompose/compose';
 import { withStyles } from 'material-ui/styles';
-import Channels from '../Lists/Channels';
 import Card from 'material-ui/Card';
+import Channels from '../Lists/Channels';
 
 const styles = theme => ({
   root: {
@@ -26,25 +26,21 @@ const styles = theme => ({
     color: theme.palette.text.secondary,
     position: 'absolute',
     left: 40,
-    top: 60
+    top: 60,
   },
   content: {
     fontSize: 12,
     color: theme.palette.text.secondary,
     position: 'absolute',
     left: 40,
-    top: 70
-  }
+    top: 70,
+  },
 });
 
 export class ChannelsView extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
-      <div className="view-fullwidth" >
+      <div className="view-fullwidth">
         <div className="view-display">
           <Card className="table-card">
             <Channels channels={this.props.channels} />
@@ -56,5 +52,5 @@ export class ChannelsView extends Component {
 }
 
 export default compose(
-  withStyles(styles)
+  withStyles(styles),
 )(ChannelsView);
