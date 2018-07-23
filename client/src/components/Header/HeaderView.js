@@ -108,7 +108,13 @@ export class HeaderView extends Component {
       selectedChannel: selectedValue
     });
 
-    setInterval(() => this.syncData(this.props.currentChannel), 60000);
+    this.timerId = setInterval(() => this.syncData(this.props.currentChannel), 60000);
+  }
+
+  componentWillUnmount() {
+    if(this.timerId) {
+      clearInterval(this.timerId);
+    }
   }
 
   async syncData(currentChannel) {

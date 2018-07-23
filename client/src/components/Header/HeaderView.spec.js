@@ -191,6 +191,14 @@ describe("HeaderView", () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  test("componentWillUnmount calls clearInterval", () => {
+    const { wrapper } = setup();
+    const instance = wrapper.instance();
+    expect(instance.timerId).not.toBeNull();
+    wrapper.unmount();
+    expect(clearInterval).toHaveBeenCalled();
+  });
+
   test("switch calls handleThemeChange", () => {
     const { wrapper } = setup();
     const instance = wrapper.instance();

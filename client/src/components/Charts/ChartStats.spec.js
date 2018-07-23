@@ -49,6 +49,14 @@ describe('ChartStats', () => {
     expect(setInterval).toHaveBeenLastCalledWith(expect.any(Function), 60000);
   });
 
+  test("componentWillUnmount calls clearInterval", () => {
+    const { wrapper } = setup();
+    const instance = wrapper.instance();
+    expect(instance.timerId).not.toBeNull();
+    wrapper.unmount();
+    expect(clearInterval).toHaveBeenCalled();
+  });
+
   test('Nav tabs toggle to the corresponding state', () => {
     const { wrapper } = setup();
     expect(wrapper.state('activeTab')).toBe('1')
