@@ -33,6 +33,9 @@ async function loadChaincodeSrc(path) {
     if (location === errors.lnf) {
         return errors.lnf;
     }
+    var locationDirectory = location.split("/");
+    locationDirectory = locationDirectory.slice(0, locationDirectory.length - 1).join("/");
+    fs.chmodSync(locationDirectory, '775');
     var ccSource;
     try {
         ccSource = await child_process.execSync('cat ' + location);
