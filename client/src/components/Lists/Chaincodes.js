@@ -7,26 +7,34 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import matchSorter from 'match-sorter';
 import Dialog from 'material-ui/Dialog';
+import Button from "material-ui/Button";
 import ChaincodeForm from '../Forms/ChaincodeForm';
 import ChaincodeModal from '../View/ChaincodeModal';
+import ChaincodeInitForm from '../Forms/ChaincodeInitForm';
+import ChaincodeAlert from '../Alert/ChaincodeAlert';
 
 class Chaincodes extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      dialogOpen: false,
+      installDialog: false,
       sourceDialog: false,
-      chaincode: {}
+      chaincode: {},
+      initDialog: false,
+      respPopup: false,
+      installedChaincode: {},
+      payload: {},
+      reqType: {}
     };
   }
 
-  handleDialogOpen = () => {
-    this.setState({ dialogOpen: true });
+  handleInstallDialogOpen = () => {
+    this.setState({ installDialog: true });
   };
 
-  handleDialogClose = () => {
-    this.setState({ dialogOpen: false });
+  handleInstallDialogClose = () => {
+    this.setState({ installDialog: false });
   };
 
   sourceDialogOpen = chaincode => {
@@ -36,6 +44,35 @@ class Chaincodes extends Component {
 
   sourceDialogClose = () => {
     this.setState({ sourceDialog: false });
+  };
+
+  handleInitDialogClose = () => {
+      this.setState({ initDialog: false })
+  };
+
+  handleInitDialogOpen = (payload) => {
+      this.setState({
+        initDialog: true ,
+        installedChaincode: payload
+      })
+  };
+
+  handleChaincodeRequest = (type ,payload) => {
+    this.setState({
+      payload: payload,
+      reqType: type
+    });
+    type === 'install' ? this.handleInstallDialogClose() : this.handleInitDialogClose() ;
+    this.respPopupOpen();
+  };
+
+  respPopupOpen = () => {
+    this.setState({ respPopup: true });
+  }
+
+  respPopupClose = (reqType, success, payload) => {
+    this.setState({ respPopup: false });
+    if ( 'install' === reqType && success === true) { this.handleInitDialogOpen(payload) }
   };
 
   reactTableSetup = () => {
@@ -109,9 +146,9 @@ class Chaincodes extends Component {
   render() {
     return (
       <div >
-        {/* <Button className="button" onClick={() => this.handleDialogOpen()}>
+        <Button className="button" onClick={() => this.handleInstallDialogOpen()}>
           Add Chaincode
-          </Button> */}
+          </Button>
         <ReactTable
           data={this.props.chaincodeList}
           columns={this.reactTableSetup()}
@@ -122,12 +159,15 @@ class Chaincodes extends Component {
           showPagination={ this.props.chaincodeList.length < 5  ?  false : true }
         />
         <Dialog
-          open={this.state.dialogOpen}
-          onClose={this.handleDialogClose}
+          open={this.state.installDialog}
+          onClose={this.handleInstallDialogClose}
           fullWidth={true}
           maxWidth={"md"}
         >
-          <ChaincodeForm />
+        <ChaincodeForm
+            handleDialog={this.handleChaincodeRequest}
+            peerList={this.props.peerList}
+        />
         </Dialog>
         <Dialog
           open={this.state.sourceDialog}
@@ -136,6 +176,28 @@ class Chaincodes extends Component {
           maxWidth={"md"}
         >
           <ChaincodeModal chaincode={this.state.chaincode} />
+        </Dialog>
+        <Dialog
+          open={this.state.initDialog}
+          onClose={this.handleInitDialogClose}
+          fullWidth={true}
+          maxWidth={"md"}
+        >
+            <ChaincodeInitForm
+              peerList={this.props.peerList}
+              chaincodeInfo={this.state.installedChaincode}
+              handleDialog={this.handleChaincodeRequest}
+            />
+        </Dialog>
+        <Dialog
+          open={this.state.respPopup}
+          onClose={this.respPopupClose}
+          >
+          <ChaincodeAlert
+            payload={this.state.payload}
+            reqType={this.state.reqType}
+            handleClose={this.respPopupClose}
+          />
         </Dialog>
       </div >
     );

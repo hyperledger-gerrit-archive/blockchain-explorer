@@ -45,7 +45,8 @@ export const Main = (props) => {
   }
 
   const chaincodeViewProps = {
-    chaincodeList: props.chaincodeList
+    chaincodeList: props.chaincodeList,
+    peerList: props.peerList,
   }
 
   const channelsViewProps = {

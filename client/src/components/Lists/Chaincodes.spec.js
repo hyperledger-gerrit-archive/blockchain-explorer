@@ -27,7 +27,13 @@ const setup = () => {
       peerCount: '4',
       txCount: '36'
     },
-    getChaincodes: jest.fn()
+    getChaincodes: jest.fn(),
+    peerList: [
+      {
+        requests: "grpcs://127.0.0.1:7051",
+        server_hostname: "peer0.org1.example.com"
+      }
+    ]
   };
 
   const chaincode = {
@@ -101,15 +107,15 @@ describe('Chaincodes', () => {
 
   test('handleDialogOpen sets state to true', () => {
     const { wrapper } = setup();
-    wrapper.instance().handleDialogOpen();
-    expect(wrapper.state('dialogOpen')).toBe(true)
+    wrapper.instance().handleInstallDialogOpen();
+    expect(wrapper.state('installDialog')).toBe(true)
   })
 
   test('handleDialogClose sets state to false', () => {
     const { wrapper } = setup();
-    wrapper.setState({ dialogOpen: true })
-    wrapper.instance().handleDialogClose();
-    expect(wrapper.state('dialogOpen')).toBe(false)
+    wrapper.setState({ installDialog: true })
+    wrapper.instance().handleInstallDialogClose();
+    expect(wrapper.state('installDialog')).toBe(false)
   })
 
   test('sourceDialogOpen', () => {

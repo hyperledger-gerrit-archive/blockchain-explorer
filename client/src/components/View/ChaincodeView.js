@@ -44,13 +44,14 @@ export class ChaincodeView extends Component {
   }
 
   render() {
-    const { chaincodeList } = this.props;
+    const { chaincodeList, peerList } = this.props;
     return (
       <div className="view-fullwidth">
         <div className="view-display">
           <Card className="table-card">
             <Chaincodes
-              chaincodeList={chaincodeList}
+              chaincodeList={ chaincodeList }
+              peerList={ peerList }
             />
           </Card>
         </div>
