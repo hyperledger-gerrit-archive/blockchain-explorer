@@ -72,15 +72,17 @@ describe('HeaderView', () => {
     const { wrapper } = setup();
     expect(wrapper.exists()).toBe(true);
   });
-
-  test('toggle changes the state of isOpen', () => {
-    const { wrapper } = setup();
-    expect(wrapper.state('isOpen')).toBe(false);
-    wrapper.instance().toggle();
-    expect(wrapper.state('isOpen')).toBe(true);
-    wrapper.instance().toggle();
-    expect(wrapper.state('isOpen')).toBe(false);
-  });
+  //Should set the state of isOpen only when the screen size is lesser than 992px
+  if (window.matchMedia('(max-width:992px)').matches) {
+    test('toggle changes the state of isOpen', () => {
+      const { wrapper } = setup();
+      expect(wrapper.state('isOpen')).toBe(false);
+      wrapper.instance().toggle();
+      expect(wrapper.state('isOpen')).toBe(true);
+      wrapper.instance().toggle();
+      expect(wrapper.state('isOpen')).toBe(false);
+    });
+  }
 
   test('handleData sets notification', () => {
     const { wrapper } = setup();
