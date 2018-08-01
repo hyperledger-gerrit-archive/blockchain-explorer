@@ -7,6 +7,7 @@ import FontAwesome from 'react-fontawesome';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Table, Card, CardBody, CardTitle } from 'reactstrap';
 import { blockHashType, onCloseType } from '../types';
+import moment from 'moment-timezone';
 
 class BlockView extends Component {
   componentWillMount() {
@@ -72,7 +73,11 @@ class BlockView extends Component {
                   </tr>
                   <tr>
                     <th>Created at</th>
-                    <td>{blockHash.createdt}</td>
+                    <td>
+                      {moment(blockHash.createdt)
+                        .tz(moment.tz.guess())
+                        .format('M-D-YYYY h:mm A zz')}
+                    </td>
                   </tr>
 
                   <tr>
