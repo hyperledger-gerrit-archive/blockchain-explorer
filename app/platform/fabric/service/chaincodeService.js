@@ -1,66 +1,114 @@
 /*
 *SPDX-License-Identifier: Apache-2.0
 */
+var child_process = require('child_process');
+var fs = require('fs');
 var util = require("util");
-var child_process = require("child_process");
 var helper = require('../../../helper.js');
 var logger = helper.getLogger("chaincodeService");
-var fs = require('fs');
-var path = "/chaincode/chaincode_example02/go/";
-var path = "/home/maedwards/example_cc/";
-var path = "/doesntexist/nope";
-var pathUtil = require('path');
-var regXjs = "[a-z,A-Z,0-9]*.js$"
-var regXgo = "[a-z,A-Z,0-9]*.go$"
+
+// var path = "/chaincode/chaincode_example02/go/";
+var path = '/home/maedwards/example_cc/';
+var regXjs = '[a-z,A-Z,0-9]*.js$';
+var regXgo = '[a-z,A-Z,0-9]*.go$';
 var location;
+
+var pathUtil = require('path');
 var orgPath = pathUtil.join(__dirname, '../artifacts/channel/org1.yaml');
 var networkCfgPath = pathUtil.join(__dirname, '../artifacts/channel/network-config-tls.yaml');
-const errors = {
-    lnf: "Location not found",
-    erf: "Error reading file"
-};
 const defaultOrg = "Org1";
-async function loadChaincodeSrc(path) {
-    if (path.substring(0, 10) === "github.com") {
-        path = path.slice(10);
-    }
-    try {
-        location = await child_process.execSync('locate -r ' + path + regXgo).toString();
-    } catch (error) {
-        try {
-            location = await child_process.execSync('locate -r ' + path + regXjs).toString();
-        } catch (error) {
-            try {
-                location = await child_process.execSync('locate -r ' + path).toString();
-            } catch (error) {
-                location = errors.lnf;
-            }
-        }
-    }
-    if (location === errors.lnf) {
-        return errors.lnf;
-    }
-    var ccSource;
-    try {
-       ccSource = await child_process.execSync('cat ' + location);
 
-    } catch (error) {
-        return  errors.erf;
-    }
-    ccSource = ccSource.toString();
-    return ccSource;
-
+const errors = {
+  lnf: 'Location not found',
+  erf: 'Error reading file'
 };
+var MAC_FIND_CMD = 'locate ';
+var CURRENT_OS = process.platform;
+let locate_cmd = 'locate -r ';
+if (CURRENT_OS === 'darwin') {
+  locate_cmd = MAC_FIND_CMD;
+}
+
+async function loadChaincodeSrc(path) {
+  if (path.substring(0, 10) === 'github.com') {
+    path = path.slice(10);
+  }
+  try {
+    if (CURRENT_OS === 'darwin') {
+      location = await child_process.execSync(locate_cmd).toString();
+    }
+    {
+      location = await child_process
+        .execSync(locate_cmd + path + regXgo)
+        .toString();
+    }
+  } catch (error) {
+    try {
+      if (CURRENT_OS === 'darwin') {
+        location = await child_process.execSync(locate_cmd).toString();
+      }
+      {
+        location = await child_process
+          .execSync(locate_cmd + path + regXjs)
+          .toString();
+      }
+    } catch (error) {
+      try {
+        location = await child_process.execSync(locate_cmd + path).toString();
+      } catch (error) {
+        location = errors.lnf;
+      }
+    }
+  }
+  if (location === errors.lnf) {
+    return errors.lnf;
+  }
+  var ccSource;
+  var chaincodePath;
+
+  try {
+    if (Array.isArray(location) && location[0]) {
+      // get the first path
+      chaincodePath = location[0];
+    } else {
+      chaincodePath = location.split('\n');
+    }
+    if (Array.isArray(chaincodePath) && chaincodePath[0]) {
+      chaincodePath = chaincodePath[0];
+      chaincodePath = chaincodePath.trim();
+    }
+
+    var locationDirectory = chaincodePath.split('/');
+    locationDirectory = locationDirectory
+      .slice(0, locationDirectory.length - 1)
+      .join('/');
+    if (locationDirectory) {
+      fs.chmodSync(locationDirectory.trim(), '775');
+    } else {
+      return errors.lnf;
+    }
+  } catch (error) {
+    return errors.lnf;
+  }
+  try {
+    ccSource = await child_process.execSync('cat ' + chaincodePath);
+  } catch (error) {
+    return errors.erf;
+  }
+  ccSource = ccSource.toString();
+  return ccSource;
+}
 
 loadChaincodeSrc(path);
 
-async function installChaincode(peers, name, path, version, type, platform) {
+async function installChaincode(peers, orgName, name, path, version, type, platform) {
     logger.debug('===================START INSTALL CHAINCODE=========================');
     let error_message = null;
     let message = '';
     let response = {};
     let results = '';
-    let client = await platform.getClientFromPath(defaultOrg, orgPath, networkCfgPath);
+    let org = !orgName ?  defaultOrg : orgName;
+    let client = await platform.getClientFromPath( org, orgPath, networkCfgPath);
     let request = {
         targets: peers,
         chaincodePath: path,
@@ -112,12 +160,13 @@ async function installChaincode(peers, name, path, version, type, platform) {
   return response;
 }
 
-async function instantiateChaincode(channelName, peers, name, version, txtype, policy, args, platform) {
+async function instantiateChaincode(channelName, peers, orgName, name, version, orgName, txtype, policy, args, platform) {
   logger.debug('===================START INSTANTIATE CHAINCODE=========================');
   let results = '';
-  let client = await platform.getClientFromPath(defaultOrg, orgPath, networkCfgPath);
+  let org = !orgName ?  defaultOrg : orgName;
+  let client = await platform.getClientFromPath(org, orgPath, networkCfgPath);
   let channel = client.getChannel(channelName, true);
-  let tx_id = client.newTransactionID(true); // Get an admin based transactionID
+  let tx_id = client.newTransactionID(true);
 
   let request = {
     targets : peers,
@@ -175,6 +224,6 @@ async function instantiateChaincode(channelName, peers, name, version, txtype, p
 }
 
 // getPath();
-exports.loadChaincodeSrc = loadChaincodeSrc;
 exports.installChaincode = installChaincode;
 exports.instantiateChaincode = instantiateChaincode;
+exports.loadChaincodeSrc = loadChaincodeSrc;
