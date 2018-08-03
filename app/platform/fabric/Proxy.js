@@ -290,13 +290,13 @@ class Proxy {
 	}
 
 	  // Install Chaincode BE-268
-    async installChaincode(peers, name, path, version, type, platform) {
-    	return chaincodeService.installChaincode(peers, name, path, version, type, platform);
+    async installChaincode(peers, orgName, name, path, version, type, platform) {
+    	return chaincodeService.installChaincode(peers, orgName, name, path, version, type, platform);
 	}
 
 	  // Instantiate chaincode BE-268
-  async instantiateChaincode(channel, peers, name, version, txtype, policy, args, platform) {
-  	return chaincodeService.instantiateChaincode(channel, peers, name, version, txtype, policy, args, platform);
+  async instantiateChaincode(channel, peers, orgName, name, version, txtype, policy, args, platform) {
+  	return chaincodeService.instantiateChaincode(channel, peers, orgName, name, version, txtype, policy, args, platform);
 	}
 
 	getSyncStartDate() {

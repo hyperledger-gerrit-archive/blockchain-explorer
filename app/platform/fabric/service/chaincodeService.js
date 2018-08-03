@@ -6,10 +6,9 @@ var child_process = require("child_process");
 var helper = require('../../../helper.js');
 var logger = helper.getLogger("chaincodeService");
 var fs = require('fs');
-var path = "/chaincode/chaincode_example02/go/";
-var path = "/home/maedwards/example_cc/";
-var path = "/doesntexist/nope";
-var pathUtil = require('path');
+// var path = "/chaincode/chaincode_example02/go/";
+//var path = "/home/maedwards/example_cc/";
+// var path = "/doesntexist/nope";
 var regXjs = "[a-z,A-Z,0-9]*.js$"
 var regXgo = "[a-z,A-Z,0-9]*.go$"
 var location;
@@ -42,25 +41,25 @@ async function loadChaincodeSrc(path) {
     }
     var ccSource;
     try {
-       ccSource = await child_process.execSync('cat ' + location);
+        ccSource = await child_process.execSync('cat ' + location);
 
     } catch (error) {
-        return  errors.erf;
+        return errors.erf;
     }
     ccSource = ccSource.toString();
     return ccSource;
 
 };
 
-loadChaincodeSrc(path);
 
-async function installChaincode(peers, name, path, version, type, platform) {
+async function installChaincode(peers, orgName, name, path, version, type, platform) {
     logger.debug('===================START INSTALL CHAINCODE=========================');
     let error_message = null;
     let message = '';
     let response = {};
     let results = '';
-    let client = await platform.getClientFromPath(defaultOrg, orgPath, networkCfgPath);
+    let org = !orgName ?  defaultOrg : orgName;
+    let client = await platform.getClientFromPath( org, orgPath, networkCfgPath);
     let request = {
         targets: peers,
         chaincodePath: path,
@@ -112,12 +111,13 @@ async function installChaincode(peers, name, path, version, type, platform) {
   return response;
 }
 
-async function instantiateChaincode(channelName, peers, name, version, txtype, policy, args, platform) {
+async function instantiateChaincode(channelName, peers, orgName, name, version, orgName, txtype, policy, args, platform) {
   logger.debug('===================START INSTANTIATE CHAINCODE=========================');
   let results = '';
-  let client = await platform.getClientFromPath(defaultOrg, orgPath, networkCfgPath);
+  let org = !orgName ?  defaultOrg : orgName;
+  let client = await platform.getClientFromPath(org, orgPath, networkCfgPath);
   let channel = client.getChannel(channelName, true);
-  let tx_id = client.newTransactionID(true); // Get an admin based transactionID
+  let tx_id = client.newTransactionID(true);
 
   let request = {
     targets : peers,
@@ -174,7 +174,9 @@ async function instantiateChaincode(channelName, peers, name, version, txtype, p
   return results;
 }
 
+
+//loadChaincodeSrc(path);
 // getPath();
-exports.loadChaincodeSrc = loadChaincodeSrc;
 exports.installChaincode = installChaincode;
 exports.instantiateChaincode = instantiateChaincode;
+exports.loadChaincodeSrc = loadChaincodeSrc
