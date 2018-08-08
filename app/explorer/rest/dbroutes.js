@@ -76,7 +76,20 @@ const dbroutes = (app, persist) => {
     if (txid && txid != '0' && channel_genesis_hash) {
       crudService.getTransactionByID(channel_genesis_hash, txid).then(row => {
         if (row) {
-          row.createdt = new Date(row.createdt).toISOString();
+          row.createdt = new Date(row.createdt).toISOString();
+          return res.send({ status: 200, row });
+        }
+      });
+    } else {
+      return requtil.invalidRequest(req, res);
+    }
+  });
+
+  app.get('/api/orgs/:channel_genesis_hash', function(req, res) {
+    let channel_genesis_hash = req.params.channel_genesis_hash;
+    if (channel_genesis_hash) {
+      statusMetrics.getOrgsData(channel_genesis_hash).then(row => {
+        if (row) {
           return res.send({ status: 200, row });
         }
       });
@@ -94,26 +107,60 @@ const dbroutes = (app, persist) => {
   "txhash":"c42c4346f44259628e70d52c672d6717d36971a383f18f83b118aaff7f4349b8",
   "createdt":"2018-03-09T19:40:59.000Z","chaincodename":"mycc"}]}
   */
-  app.get('/api/txList/:channel_genesis_hash/:blocknum/:txid', function(
+  app.get('/api/txList/:channel_genesis_hash/:blocknum/:txid', async function(
     req,
     res
   ) {
     let channel_genesis_hash = req.params.channel_genesis_hash;
     let blockNum = parseInt(req.params.blocknum);
     let txid = parseInt(req.params.txid);
+    let from = req.query.from;
+    // let page = parseInt(req.query.page)
+    let orgs = req.query.orgs;
+    let to = req.query.to;
+    let temp = '';
 
+    if (typeof orgs === 'array' || typeof orgs === 'object') {
+      orgs.forEach((element, i) => {
+        temp += `'` + element + `'`;
+        if (orgs.length - 1 != i) {
+          temp += ',';
+        }
+      });
+    } else if (orgs) {
+      temp = `'` + orgs + `'`;
+    }
+    let today = new Date();
+    if (!isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      from = new Date(from).toISOString();
+      to = new Date(to).toISOString();
+      if (
+        Date.parse(from) > Date.parse(today) ||
+        Date.parse(to) > Date.parse(today) ||
+        Date.parse(from) > Date.parse(to)
+      ) {
+        from = new Date(Date.now() - 864e5).toISOString();
+        to = new Date().toISOString();
+      }
+    } else {
+      from = new Date(Date.now() - 864e5).toISOString();
+      to = new Date().toISOString();
+    }
     if (isNaN(txid)) {
       txid = 0;
     }
+    //  if (isNaN(page)) {
+    //   page = 1
+    // }
     if (channel_genesis_hash) {
-      crudService.getTxList(channel_genesis_hash, blockNum, txid).then(rows => {
-        if (rows) {
-          rows.forEach(element => {
-            element.createdt = new Date(element.createdt).toISOString();
-          });
-          return res.send({ status: 200, rows });
-        }
-      });
+      // let row = await crudService.getTxListCount(channel_genesis_hash, blockNum, txid, from, to)
+      crudService
+        .getTxList(channel_genesis_hash, blockNum, txid, from, to, temp)
+        .then(rows => {
+          if (rows) {
+            return res.send({ status: 200, rows });
+          }
+        });
     } else {
       return requtil.invalidRequest(req, res);
     }
@@ -152,20 +199,55 @@ const dbroutes = (app, persist) => {
   *
   */
 
-  app.get('/api/blockAndTxList/:channel_genesis_hash/:blocknum', function(
+  app.get('/api/blockAndTxList/:channel_genesis_hash/:blocknum', async function(
     req,
     res
   ) {
     let channel_genesis_hash = req.params.channel_genesis_hash;
     let blockNum = parseInt(req.params.blocknum);
+    //let page = parseInt(req.query.page);
+
+    let from = req.query.from;
+    let to = req.query.to;
+    let orgs = req.query.orgs;
+    let temp = '';
+
+    if (typeof orgs === 'array' || typeof orgs === 'object') {
+      orgs.forEach((element, i) => {
+        temp += `'` + element + `'`;
+        if (orgs.length - 1 != i) {
+          temp += ',';
+        }
+      });
+    } else if (orgs) {
+      temp = `'` + orgs + `'`;
+    }
+
+    let today = new Date();
+    if (!isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+      from = new Date(from).toISOString();
+      to = new Date(to).toISOString();
+      if (
+        Date.parse(from) > Date.parse(today) ||
+        Date.parse(to) > Date.parse(today) ||
+        Date.parse(from) > Date.parse(to)
+      ) {
+        from = new Date(Date.now() - 864e5).toISOString();
+        to = new Date().toISOString();
+      }
+    } else {
+      from = new Date(Date.now() - 864e5).toISOString();
+      to = new Date().toISOString();
+    }
+    // if (isNaN(page)) {
+    // page = 1
+    // }
     if (channel_genesis_hash && !isNaN(blockNum)) {
+      //let row = await crudService.getBlockAndTxListCount(channel_genesis_hash, blockNum, from, to, (page - 1) * 500)
       crudService
-        .getBlockAndTxList(channel_genesis_hash, blockNum)
+        .getBlockAndTxList(channel_genesis_hash, blockNum, from, to, temp)
         .then(rows => {
           if (rows) {
-            rows.forEach(element => {
-              element.createdt = new Date(element.createdt).toISOString();
-            });
             return res.send({ status: 200, rows });
           }
           return requtil.notFound(req, res);
@@ -327,7 +409,7 @@ const dbroutes = (app, persist) => {
       .getChannelsInfo()
       .then(data => {
         data.forEach(element => {
-          element.createdat = new Date(element.createdat).toISOString();
+          element.createdat = new Date(element.createdat).toISOString();
         });
         res.send({ status: 200, channels: data });
       })
