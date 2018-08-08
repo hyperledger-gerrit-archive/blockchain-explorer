@@ -1,13 +1,18 @@
 'use strict';
 
-var chaincodeService = require('./chaincodeService.js');
-var helper = require('../../../common/helper');
-var logger = helper.getLogger('RestServices');
+var chaincodeService = require('./service/chaincodeService.js');
+var helper = require('../../common/helper');
+var logger = helper.getLogger('Proxy');
 
-class ProxyServices {
-  constructor(platform, persistence) {
+const ExplorerError = require('../../common/ExplorerError');
+
+const fabric_const = require('./utils/FabricUtils').fabric.const;
+
+class Proxy {
+  constructor(platform) {
     this.platform = platform;
-    this.persistence = persistence;
+    this.persistence = platform.getPersistence();
+    this.broadcaster = platform.getBroadcaster();
   }
 
   async getCurrentChannel() {
@@ -59,8 +64,8 @@ class ProxyServices {
   }
 
   async getChannelsInfo() {
-    let channels = await this.persistence.getCrudService().getChannelsInfo();
     let client = this.platform.getClient();
+    let channels = await this.persistence.getCrudService().getChannelsInfo(client.getDefaultPeer().getName());
     let currentchannels = [];
     for (var channel of channels) {
       let channel_genesis_hash = client.getChannelGenHash(channel.channelname);
@@ -75,18 +80,29 @@ class ProxyServices {
     return currentchannels;
   }
 
-  async getOrganizations(channel_genesis_hash) {
+  async getTxByOrgs(channel_genesis_hash) {
+    let rows = await this.persistence.getMetricService().getTxByOrgs(channel_genesis_hash);
     let client = this.platform.getClient();
     let channel = client.getChannelByHash(channel_genesis_hash);
     let msps = [];
     let organizations = [];
-    if (channel._msp_manager) {
+    if (channel && channel._msp_manager) {
       msps = channel._msp_manager.getMSPs();
     }
     for (let msp_id in msps) {
       organizations.push(msp_id);
     }
-    return organizations;
+
+    for (let organization of rows) {
+      var index = organizations.indexOf(organization.creator_msp_id);
+      if (index > -1) {
+        organizations.splice(index, 1);
+      }
+    }
+    for (let org_id of organizations) {
+      rows.push({ count: '0', creator_msp_id: org_id });
+    }
+    return rows;
   }
 
   async getBlockByNumber(channel_genesis_hash, number) {
@@ -125,8 +141,9 @@ class ProxyServices {
   }
 
   async getChannels() {
-    let client_channels = this.platform.getClient().getChannelNames();
-    let channels = await this.persistence.getCrudService().getChannelsInfo();
+    let client = this.platform.getClient();
+    let client_channels = client.getChannelNames();
+    let channels = await this.persistence.getCrudService().getChannelsInfo(client.getDefaultPeer().getName());
     let respose = [];
 
     for (let i = 0; i < channels.length; i++) {
@@ -140,13 +157,70 @@ class ProxyServices {
     return respose;
   }
 
-  getPlatform() {
-    return this.platform;
-  }
+  processSyncMessage(msg) {
 
-  getPersistence() {
-    return this.persistence;
+    // get message from child process
+    logger.debug('Message from child %j', msg);
+    if (fabric_const.NOTITY_TYPE_NEWCHANNEL === msg.notify_type) {
+      // initialize new channel instance in parent
+      if (msg.network_name && msg.client_name) {
+        let client = this.platform.networks.get(msg.network_name).get(msg.client_name);
+        if (msg.channel_name) {
+          client.initializeNewChannel(msg.channel_name);
+        } else {
+          logger.error(
+            'Channel name should pass to proces the notification from child process'
+          );
+        }
+      } else {
+        logger.error(
+          'Network name and client name should pass to proces the notification from child process'
+        );
+      }
+    } else if (
+      fabric_const.NOTITY_TYPE_UPDATECHANNEL === msg.notify_type ||
+      fabric_const.NOTITY_TYPE_CHAINCODE === msg.notify_type
+    ) {
+      // update channel details in parent
+      if (msg.network_name && msg.client_name) {
+        let client = this.platform.networks.get(msg.network_name).get(msg.client_name);
+        if (msg.channel_name) {
+          client.initializeChannelFromDiscover(msg.channel_name);
+        } else {
+          logger.error(
+            'Channel name should pass to proces the notification from child process'
+          );
+        }
+      } else {
+        logger.error(
+          'Network name and client name should pass to proces the notification from child process'
+        );
+      }
+    } else if (fabric_const.NOTITY_TYPE_BLOCK === msg.notify_type) {
+      // broad cast new block message to client
+      var notify = {
+        title: msg.title,
+        type: msg.type,
+        message: msg.message,
+        time: msg.time,
+        txcount: msg.txcount,
+        datahash: msg.datahash
+      };
+      this.broadcaster.broadcast(notify);
+    } else if (fabric_const.NOTITY_TYPE_EXISTCHANNEL === msg.notify_type) {
+      throw new ExplorerError('Channel name [' +
+        msg.channel_name +
+        '] is already exist in DB , Kindly re-run the DB scripts to proceed');
+    } else if (msg.error) {
+      throw new ExplorerError('Client Processor Error >> ' + msg.error);
+    } else {
+      logger.error(
+        'Child process notify is not implemented for this type %s ',
+        msg.notify_type
+      );
+    }
+
   }
 }
 
-module.exports = ProxyServices;
+module.exports = Proxy;

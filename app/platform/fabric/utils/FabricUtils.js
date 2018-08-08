@@ -6,6 +6,7 @@ var utils = require('fabric-client/lib/utils');
 var FabricClient = require('./../FabricClient.js');
 var helper = require('../../../common/helper');
 var logger = helper.getLogger('FabricUtils');
+var ExplorerError = require('../../../common/ExplorerError');
 
 exports.fabric = {
   const: {
@@ -25,15 +26,7 @@ exports.fabric = {
 
 async function createFabricClient(client_configs, client_name, persistence) {
   // clone global.hfc.config configuration
-  var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config));
-
-  let client_config = global_hfc_config;
-  client_config.client = client_configs.clients[client_name];
-  client_config.version = client_configs.version;
-  client_config.channels = client_configs.channels;
-  client_config.organizations = client_configs.organizations;
-  client_config.peers = client_configs.peers;
-  client_config.orderers = client_configs.orderers;
+  let client_config = cloneConfig(client_configs, client_name);
 
   // validate client configuration
   logger.debug('Validating client [%s] configuration', client_name);
@@ -49,14 +42,44 @@ async function createFabricClient(client_configs, client_name, persistence) {
     );
     await client.initialize(client_config, persistence);
     return client;
+  } else {
+    throw new ExplorerError('Invalid platform configuration, Please check the log');
   }
+}
+
+async function createDetachClient(client_configs, client_name, persistence) {
+
+  // clone global.hfc.config configuration
+  let client_config = cloneConfig(client_configs, client_name);
+
+  let client = new FabricClient(client_name);
+  await client.initializeDetachClient(client_config, persistence);
+
+  return client;
+
+}
+
+function cloneConfig(client_configs, client_name) {
+
+  var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config));
+
+  let client_config = global_hfc_config;
+  client_config.client = client_configs.clients[client_name];
+  client_config.version = client_configs.version;
+  client_config.channels = client_configs.channels;
+  client_config.organizations = client_configs.organizations;
+  client_config.peers = client_configs.peers;
+  client_config.orderers = client_configs.orderers;
+
+  return client_config;
+
 }
 
 function validateClientConfig(client_config) {
   logger.debug('Client configuration >> %j ', client_config);
   let message = !client_config.version
     ? 'Client network version is not defined in configuration'
-    : '';
+    : null;
   if (message) {
     logger.error(message);
     return false;
@@ -353,16 +376,6 @@ async function getBlockTimeStamp(dateStr) {
   return new Date(dateStr);
 }
 
-function toUTCmilliseconds(dateStr) {
-  var startSyncMills = null;
-  try {
-    startSyncMills = Date.parse(dateStr);
-  } catch (err) {
-    logger.error('Unparsable date format, dateStr= ', dateStr, ' ', err);
-  }
-  return startSyncMills;
-}
-
 async function generateDir() {
   var tempDir = '/tmp/' + new Date().getTime();
   try {
@@ -421,7 +434,7 @@ exports.setOrgEnrolmentPath = setOrgEnrolmentPath;
 exports.generateBlockHash = generateBlockHash;
 exports.createFabricClient = createFabricClient;
 exports.getBlockTimeStamp = getBlockTimeStamp;
-exports.toUTCmilliseconds = toUTCmilliseconds;
 exports.generateDir = generateDir;
 exports.generateBlockHash = generateBlockHash;
 exports.getPEMfromConfig = getPEMfromConfig;
+exports.createDetachClient = createDetachClient;

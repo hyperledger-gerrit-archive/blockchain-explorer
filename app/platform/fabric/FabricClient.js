@@ -5,6 +5,7 @@
 var Fabric_Client = require('fabric-client');
 var helper = require('../../common/helper');
 var logger = helper.getLogger('FabricClient');
+var ExplorerError = require('../../common/ExplorerError');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 var Admin = require('./Admin.js');
 var grpc = require('grpc');
@@ -77,7 +78,7 @@ class FabricClient {
         let result = await this.defaultChannel.getDiscoveryResults();
       } catch (e) {
         logger.debug('Channel Discovery >>  %s', e);
-        throw new Error(
+        throw new ExplorerError(
           'Default defined channel ' +
           this.defaultChannel.getName() +
           ' not found for the client ' +
@@ -92,7 +93,7 @@ class FabricClient {
       if (temp_orderers && temp_orderers.length > 0) {
         this.defaultOrderer = temp_orderers[0];
       } else {
-        throw new Error(
+        throw new ExplorerError(
           'There are no orderers defined on this channel in the network configuration'
         );
       }
@@ -103,39 +104,96 @@ class FabricClient {
       );
     } else {
       if (persistence) {
-        let channels = await persistence.getCrudService().getChannelsInfo();
-        for (let channel of channels) {
-          this.setChannelGenHash(
-            channel.channelname,
-            channel.channel_genesis_hash
-          );
-          let nodes = await persistence
-            .getMetricService()
-            .getPeerList(channel.channel_genesis_hash);
-          for (let node of nodes) {
-            let peer_config = this.client_config.peers[node.server_hostname];
-            if (peer_config && peer_config.tlsCACerts) {
-              let pem = FabricUtils.getPEMfromConfig(peer_config.tlsCACerts);
-              let adminpeer = await this.newAdminPeer(node, pem);
-              if (adminpeer) {
-                let username = this.client_name + '_' + node.mspid + 'Admin';
-                if (!this.adminusers.get(username)) {
-                  let user = await this.newUser(node.mspid, username);
+        this.initializeDetachClient(client_config, persistence);
+      }
+    }
+  }
 
-                  if (user) {
-                    logger.debug(
-                      'Successfully created user [%s] for client [%s]',
-                      username,
-                      this.client_name
-                    );
-                    this.adminusers.set(username, user);
-                  }
+  async initializeDetachClient(client_config, persistence) {
+
+    this.client_config = client_config;
+
+    console.log('\n**************************************************************************************');
+    console.log('Error : Failed to connect client peer, please check the configuration and peer status');
+    console.log('Info : Explorer will continue working with only DB data');
+    console.log('**************************************************************************************\n');
+    let defaultClientId = Object.keys(client_config.channels[client_config.client.channel].peers)[0]
+    let channels = await persistence.getCrudService().getChannelsInfo(defaultClientId);
+
+    let default_channel_name = client_config.client.channel;
+
+    if (channels.length == 0) {
+      throw new ExplorerError('Default client peer is down and no channel details available database');
+    }
+
+
+    for (let channel of channels) {
+      this.setChannelGenHash(
+        channel.channelname,
+        channel.channel_genesis_hash
+      );
+
+      let nodes = await persistence
+        .getMetricService()
+        .getPeerList(channel.channel_genesis_hash);
+
+      let newchannel;
+      try {
+        newchannel = this.hfc_client.getChannel(channel.channelname);
+      } catch (e) { }
+      if (newchannel === undefined) {
+
+        newchannel = this.hfc_client.newChannel(channel.channelname);
+        if (nodes.length > 0) {
+          let url = nodes[0].requests.replace("grpcs", "grpc")
+          let newpeer = this.hfc_client.newPeer(url, {
+            'ssl-target-name-override': nodes[0].server_hostname,
+            name:nodes[0].server_hostname
+          });
+          newchannel.addPeer(newpeer);
+        }
+      }
+
+      if (channel.channelname === default_channel_name) {
+        this.defaultChannel = newchannel;
+        if (this.defaultChannel.getPeers().length > 0) {
+          this.defaultPeer = this.defaultChannel.getPeers()[0];
+        }
+      }
+
+      for (let node of nodes) {
+        let peer_config = this.client_config.peers[node.server_hostname];
+        if (peer_config && peer_config.tlsCACerts) {
+          let pem;
+          try {
+            pem = FabricUtils.getPEMfromConfig(peer_config.tlsCACerts);
+          } catch (e) { }
+          if (pem) {
+            let adminpeer = await this.newAdminPeer(node, pem);
+            if (adminpeer) {
+              let username = this.client_name + '_' + node.mspid + 'Admin';
+              if (!this.adminusers.get(username)) {
+                let user = await this.newUser(node.mspid, username);
+
+                if (user) {
+                  logger.debug(
+                    'Successfully created user [%s] for client [%s]',
+                    username,
+                    this.client_name
+                  );
+                  this.adminusers.set(username, user);
                 }
               }
             }
           }
         }
       }
+    }
+    if (this.defaultChannel === undefined) {
+      throw new ExplorerError('Default channel is not available  in database');
+    }
+    if (this.defaultPeer === undefined) {
+      throw new ExplorerError('Default peer is not available  in database');
     }
   }
 
@@ -189,7 +247,7 @@ class FabricClient {
     if (this.defaultChannel.getPeers().length > 0) {
       this.defaultPeer = this.defaultChannel.getPeers()[0];
     } else {
-      throw new Error(
+      throw new ExplorerError(
         'Default peer is not added to the client ' + this.client_name
       );
     }
@@ -388,7 +446,7 @@ class FabricClient {
         );
         channel.addOrderer(newOrderer, true);
       } else {
-        throw new Error('No TLS cert information available');
+        throw new ExplorerError('No TLS cert information available');
       }
     }
     return newOrderer;
@@ -429,7 +487,11 @@ class FabricClient {
           signature: signature,
           payload: seekPayloadBytes
         };
-        status = await adminpeer.GetStatus(envelope);
+        try {
+          status = await adminpeer.GetStatus(envelope);
+        } catch (e) {
+          logger.error(e);
+        }
       }
     } else {
       logger.debug('Admin peer Not found for %s', peer.requests);

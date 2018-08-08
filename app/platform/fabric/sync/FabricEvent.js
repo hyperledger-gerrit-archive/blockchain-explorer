@@ -1,15 +1,15 @@
 /*
     SPDX-License-Identifier: Apache-2.0
 */
-var helper = require('../../common/helper');
+var helper = require('../../../common/helper');
 var logger = helper.getLogger('FabricEvent');
 
 class FabricEvent {
   constructor(client, fabricServices) {
-    this.peerEventHub = {};
     this.client = client;
-    this.channelEventHubs = new Map();
     this.fabricServices = fabricServices;
+    this.peerEventHub = {};
+    this.channelEventHubs = new Map();
   }
 
   async initialize() {

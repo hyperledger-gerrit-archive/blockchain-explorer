@@ -90,7 +90,6 @@
   },
   "keyValueStore": "/tmp/fabric-client-kvs",
   "configtxgenToolPath": "/home/satyanarayana/hlfabric/fabric-samples/bin",
-  "eventWaitTime": "30000",
-  "synchBlocksTime": "3",
+  "eventWaitTime": "30000",  
   "license": "Apache-2.0"
 }

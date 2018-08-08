@@ -2,6 +2,7 @@
 *SPDX-License-Identifier: Apache-2.0
 */
 var explorer_const = require('../common/helper.js').explorer.const;
+var ExplorerError = require('../common/ExplorerError');
 
 class PersistenceFactory {
   static async create(db, dbconfig) {
@@ -12,7 +13,7 @@ class PersistenceFactory {
       await persistence.getPGService().handleDisconnect();
       return persistence;
     }
-    throw 'Persistence implementation is not found for ' + db;
+    throw new ExplorerError('Persistence implementation is not found for ' + db);
   }
 }
 

@@ -4,7 +4,7 @@ var fs = require('fs-extra');
 var grpc = require('grpc');
 var convertHex = require('convert-hex');
 var helper = require('../../../common/helper');
-var logger = helper.getLogger('FabricSyncServices');
+var logger = helper.getLogger('SyncServices');
 const FabricUtils = require('../../../platform/fabric/utils/FabricUtils');
 const fabric_const = require('../../../platform/fabric/utils/FabricUtils').fabric.const;
 
@@ -23,9 +23,9 @@ for (let i = 0; i < keys.length; i++) {
   _validation_codes[new_key] = keys[i];
 }
 
-class FabricSyncServices {
-  constructor(fabricScanner, persistence) {
-    this.fabricScanner = fabricScanner;
+class SyncServices {
+  constructor(platform, persistence) {
+    this.platform = platform;
     this.persistence = persistence;
     this.blocks = [];
     this.synchInProcess = [];
@@ -35,22 +35,17 @@ class FabricSyncServices {
 
   async synchNetworkConfigToDB(client) {
     let channels = client.getChannels();
-
-
     for (var [channel_name, channel] of channels.entries()) {
-
       let block = await client.getGenesisBlock(channel);
       let channel_genesis_hash = await FabricUtils.generateBlockHash(
         block.header
       );
-
       let res = await this.insertNewChannel(
         client,
         channel,
         block,
         channel_genesis_hash
       );
-
       if (res) {
         await this.insertFromDiscoveryResults(
           client,
@@ -60,7 +55,6 @@ class FabricSyncServices {
       } else {
         return false;
       }
-
     }
     return true;
   }
@@ -96,11 +90,11 @@ class FabricSyncServices {
       } else {
         var notify = {
           notify_type: fabric_const.NOTITY_TYPE_EXISTCHANNEL,
-          network_name: this.fabricScanner.network_name,
+          network_name: this.platform.network_name,
           client_name: client.client_name,
           channel_name: channel_name
         };
-        this.fabricScanner.send(notify);
+        this.platform.send(notify);
         return false;
       }
     }
@@ -344,12 +338,12 @@ class FabricSyncServices {
 
           var notify = {
             notify_type: fabric_const.NOTITY_TYPE_NEWCHANNEL,
-            network_name: _self.fabricScanner.network_name,
+            network_name: _self.platform.network_name,
             client_name: client.client_name,
             channel_name: channel_name
           };
 
-          _self.fabricScanner.send(notify);
+          _self.platform.send(notify);
         },
         10000,
         client,
@@ -371,12 +365,12 @@ class FabricSyncServices {
           );
           var notify = {
             notify_type: fabric_const.NOTITY_TYPE_UPDATECHANNEL,
-            network_name: _self.fabricScanner.network_name,
+            network_name: _self.platform.network_name,
             client_name: client.client_name,
             channel_name: channel_name
           };
 
-          _self.fabricScanner.send(notify);
+          _self.platform.send(notify);
         },
         10000,
         client,
@@ -508,12 +502,12 @@ class FabricSyncServices {
 
               var notify = {
                 notify_type: fabric_const.NOTITY_TYPE_CHAINCODE,
-                network_name: _self.fabricScanner.network_name,
+                network_name: _self.platform.network_name,
                 client_name: client.client_name,
                 channel_name: channel_name
               };
 
-              _self.fabricScanner.send(notify);
+              _self.platform.send(notify);
 
             },
             10000,
@@ -557,7 +551,7 @@ class FabricSyncServices {
         //push last block
         var notify = {
           notify_type: fabric_const.NOTITY_TYPE_BLOCK,
-          network_name: _self.fabricScanner.network_name,
+          network_name: _self.platform.network_name,
           client_name: client.client_name,
           channel_name: channel_name,
           title: 'Block ' + block.header.number + ' Added',
@@ -573,7 +567,7 @@ class FabricSyncServices {
           datahash: block.header.data_hash
         };
 
-        _self.fabricScanner.send(notify);
+        _self.platform.send(notify);
       }
     } else {
       logger.error('Failed to process the block %j', block);
@@ -586,8 +580,8 @@ class FabricSyncServices {
     return;
   }
 
-  getFabricScanner() {
-    return this.fabricScanner;
+  getPlatform() {
+    return this.platform;
   }
 
   getPersistence() {
@@ -595,7 +589,7 @@ class FabricSyncServices {
   }
 }
 
-module.exports = FabricSyncServices;
+module.exports = SyncServices;
 // transaction validation code
 function convertValidationCode(code) {
   if (typeof code === 'string') {

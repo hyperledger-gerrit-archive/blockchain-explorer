@@ -14,7 +14,7 @@ import FooterView from '../Header/footerView';
 import LandingPage from '../View/LandingPage';
 import '../../static/css/main.css';
 import '../../static/css/main-dark.css';
-
+import '../../static/css/media-queries.css';
 const muiTheme = createMuiTheme({
   palette: {
     contrastThreshold: 3,
@@ -35,7 +35,6 @@ class App extends Component {
       loading: true
     };
   }
-
   componentWillMount() {
     // Check if sessionStorage is true, then theme is true, else false.
     const theme = sessionStorage.getItem('toggleTheme') === 'true';
@@ -43,9 +42,6 @@ class App extends Component {
       theme
         ? (document.body.className = 'dark-theme')
         : (document.body.className = '');
-      theme
-        ? (document.body.style.backgroundColor = '#242036')
-        : (document.body.style.backgroundColor = '#F0F5F9');
     });
   }
 
@@ -56,9 +52,6 @@ class App extends Component {
   refreshComponent = val => {
     this.setState({ toggleClass: val }, () => {
       const { toggleClass } = this.state;
-      toggleClass
-        ? (document.body.style.backgroundColor = '#242036')
-        : (document.body.style.backgroundColor = '#F0F5F9');
       toggleClass
         ? (document.body.className = 'dark-theme')
         : (document.body.className = '');

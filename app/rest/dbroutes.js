@@ -2,11 +2,11 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-var requtil = require('../requestutils.js');
+var requtil = require('./requestutils.js');
 
 const dbroutes = (app, platform) => {
 
-  let proxyServices = platform.getProxyServices();
+  let proxy = platform.getProxy();
   let statusMetrics = platform.getPersistence().getMetricService();
   let crudService = platform.getPersistence().getCrudService();
 
@@ -79,6 +79,7 @@ const dbroutes = (app, platform) => {
     if (txid && txid != '0' && channel_genesis_hash) {
       crudService.getTransactionByID(channel_genesis_hash, txid).then(row => {
         if (row) {
+          row.createdt = new Date(row.createdt).toISOString();
           return res.send({ status: 200, row });
         }
       });
@@ -110,6 +111,9 @@ const dbroutes = (app, platform) => {
     if (channel_genesis_hash) {
       crudService.getTxList(channel_genesis_hash, blockNum, txid).then(rows => {
         if (rows) {
+          rows.forEach(element => {
+            element.createdt = new Date(element.createdt).toISOString();
+          });
           return res.send({ status: 200, rows });
         }
       });
@@ -162,6 +166,9 @@ const dbroutes = (app, platform) => {
         .getBlockAndTxList(channel_genesis_hash, blockNum)
         .then(rows => {
           if (rows) {
+            rows.forEach(element => {
+              element.createdt = new Date(element.createdt).toISOString();
+            });
             return res.send({ status: 200, rows });
           }
           return requtil.notFound(req, res);
@@ -293,20 +300,10 @@ const dbroutes = (app, platform) => {
     let channel_genesis_hash = req.params.channel_genesis_hash;
 
     if (channel_genesis_hash) {
-      statusMetrics.getTxByOrgs(channel_genesis_hash).then(rows => {
-        proxyServices.getOrganizations(channel_genesis_hash).then(data => {
-          for (let organization of rows) {
-            var index = data.indexOf(organization.creator_msp_id);
-            if (index > -1) {
-              data.splice(index, 1);
-            }
-          }
-          for (let org_id of data) {
-            rows.push({ count: '0', creator_msp_id: org_id });
-          }
-          return res.send({ status: 200, rows });
-        });
+      proxy.getTxByOrgs(channel_genesis_hash).then(rows => {
+        return res.send({ status: 200, rows });
       });
+
     } else {
       return requtil.invalidRequest(req, res);
     }
@@ -327,9 +324,12 @@ const dbroutes = (app, platform) => {
          */
 
   app.get('/api/channels/info', function (req, res) {
-    proxyServices
+    proxy
       .getChannelsInfo()
       .then(data => {
+        data.forEach(element => {
+          element.createdat = new Date(element.createdat).toISOString();
+        });
         res.send({ status: 200, channels: data });
       })
       .catch(err => res.send({ status: 500 }));

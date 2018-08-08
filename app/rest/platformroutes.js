@@ -2,11 +2,11 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-var requtil = require('../requestutils');
+var requtil = require('./requestutils');
 
 const platformroutes = async function (app, platform) {
 
-  let proxyServices = platform.getProxyServices();
+  let proxy = platform.getProxy();
   let statusMetrics = platform.getPersistence().getMetricService();
   let crudService = platform.getPersistence().getCrudService();
 
@@ -21,7 +21,7 @@ const platformroutes = async function (app, platform) {
     let number = parseInt(req.params.number);
     let channel_genesis_hash = req.params.channel_genesis_hash;
     if (!isNaN(number) && channel_genesis_hash) {
-      proxyServices
+      proxy
         .getBlockByNumber(channel_genesis_hash, number)
         .then(block => {
           res.send({
@@ -53,7 +53,7 @@ const platformroutes = async function (app, platform) {
 
   app.get('/api/channels', function (req, res) {
 
-    proxyServices.getChannels().then(channels => {
+    proxy.getChannels().then(channels => {
       let response = {
         status: 200
       };
@@ -69,7 +69,7 @@ const platformroutes = async function (app, platform) {
   curl -i 'http://<host>:<port>/api/curChannel'
   */
   app.get('/api/curChannel', function (req, res) {
-    proxyServices.getCurrentChannel().then(data => {
+    proxy.getCurrentChannel().then(data => {
       res.send(data);
     });
   });
@@ -81,7 +81,7 @@ const platformroutes = async function (app, platform) {
   */
   app.get('/api/changeChannel/:channel_genesis_hash', function (req, res) {
     let channel_genesis_hash = req.params.channel_genesis_hash;
-    proxyServices.changeChannel(channel_genesis_hash).then(data => {
+    proxy.changeChannel(channel_genesis_hash).then(data => {
       res.send({
         currentChannel: data
       });
@@ -115,7 +115,7 @@ const platformroutes = async function (app, platform) {
     try {
       // upload channel config, and org config
       let artifacts = await requtil.aSyncUpload(req, res);
-      let chCreate = await proxyServices.createChannel(artifacts);
+      let chCreate = await proxy.createChannel(artifacts);
       let channelResponse = {
         success: chCreate.success,
         message: chCreate.message
@@ -145,7 +145,7 @@ const platformroutes = async function (app, platform) {
     var peers = req.body.peers;
     var orgName = req.body.orgName;
     if (channelName && peers && orgName) {
-      proxyServices.joinChannel(channelName, peers, orgName).then(resp => {
+      proxy.joinChannel(channelName, peers, orgName).then(resp => {
         return res.send(resp);
       });
     } else {
@@ -174,7 +174,7 @@ const platformroutes = async function (app, platform) {
     if (channelName) {
       statusMetrics.getTxPerChaincode(channelName, async function (data) {
         for (let chaincode of data) {
-          let temp = await proxyServices.loadChaincodeSrc(chaincode.path);
+          let temp = await proxy.loadChaincodeSrc(chaincode.path);
           chaincode.source = temp;
         }
         res.send({
@@ -202,7 +202,7 @@ const platformroutes = async function (app, platform) {
   app.get('/api/peersStatus/:channel', function (req, res) {
     let channelName = req.params.channel;
     if (channelName) {
-      proxyServices.getPeersStatus(channelName).then(data => {
+      proxy.getPeersStatus(channelName).then(data => {
         res.send({ status: 200, peers: data });
       });
     } else {

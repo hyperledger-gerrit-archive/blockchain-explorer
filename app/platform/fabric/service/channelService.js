@@ -9,6 +9,7 @@ const exec = util.promisify(require('child_process').exec);
 var config = require('../../../platform/fabric/config.json');
 var FabricUtils = require('./../utils/FabricUtils.js');
 var helper = require('../../../common/helper');
+var ExplorerError = require('../../../common/ExplorerError');
 var configtxgenToolPath = config.configtxgenToolPath;
 //var orgPath = path.join(__dirname, '../artifacts/channel/org1.yaml');
 //var networkCfgPath = path.join(__dirname, '../artifacts/channel/network-config-tls.yaml');
@@ -163,7 +164,7 @@ var joinChannel = async function(
         channel_name
       );
       logger.error(message);
-      throw new Error(message);
+      throw new ExplorerError(message);
     }
 
     // next step is to get the genesis_block from the orderer,

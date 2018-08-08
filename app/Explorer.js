@@ -6,6 +6,10 @@ var bodyParser = require('body-parser');
 var PlatformBuilder = require('./platform/PlatformBuilder');
 var explorerconfig = require('./explorerconfig.json');
 var PersistenceFactory = require('./persistence/PersistenceFactory');
+var ExplorerError = require('./common/ExplorerError');
+
+let dbroutes = require('./rest/dbroutes');
+let platformroutes = require('./rest/platformroutes');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
@@ -34,21 +38,31 @@ class Explorer {
 
   async initialize(broadcaster) {
     if (!explorerconfig[explorer_const.PERSISTENCE]) {
-      throw 'Missing persistence type parameter [persistence] in explorerconfig.json';
+      throw new ExplorerError('Missing persistence type parameter [persistence] in explorerconfig.json');
     }
     if (!explorerconfig[explorerconfig[explorer_const.PERSISTENCE]]) {
-      throw 'Missing database configuration parameter [' + explorerconfig[explorer_const.PERSISTENCE] + '] in explorerconfig.json';
+      throw new ExplorerError('Missing database configuration parameter [' + explorerconfig[explorer_const.PERSISTENCE] + '] in explorerconfig.json');
     }
     this.persistence = await PersistenceFactory.create(explorerconfig[explorer_const.PERSISTENCE], explorerconfig[explorerconfig[explorer_const.PERSISTENCE]]);
 
     for (let pltfrm of explorerconfig[explorer_const.PLATFORMS]) {
       let platform = await PlatformBuilder.build(
-        this.app,
         pltfrm,
         this.persistence,
-        broadcaster,
-        explorerconfig
+        broadcaster
       );
+
+      platform.setPersistenceService();
+      // // initializing the platfrom
+      await platform.initialize();
+
+      // initializing the rest app services
+      await dbroutes(this.app, platform);
+      await platformroutes(this.app, platform);
+
+      // initializing sync listener
+      platform.initializeListener(explorerconfig.sync);
+
       this.platforms.push(platform);
     }
 

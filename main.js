@@ -17,6 +17,7 @@ var logger = helper.getLogger('main');
 var express = require('express');
 var path = require('path');
 var Explorer = require('./app/Explorer');
+var ExplorerError = require('./app/common/ExplorerError');
 
 var host = process.env.HOST || appconfig.host;
 var port = process.env.PORT || appconfig.port;
@@ -100,13 +101,21 @@ var shutDown = function() {
 };
 
 process.on('unhandledRejection', up => {
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<< Unhandled Rejection >>>>>>>>>>>>>>>>>>>>>');
-  console.log(up);
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<< Explorer Error >>>>>>>>>>>>>>>>>>>>>');
+  if (up instanceof ExplorerError) {
+    console.log('Error : ', up.message);
+  } else {
+    console.log(up);
+  }
   shutDown();
 });
 process.on('uncaughtException', up => {
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<< Unhandled Exception >>>>>>>>>>>>>>>>>>>>>');
-  console.log(up);
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<< Explorer Error >>>>>>>>>>>>>>>>>>>>>');
+  if (up instanceof ExplorerError) {
+    console.log('Error : ', up.message);
+  } else {
+    console.log(up);
+  }
   shutDown();
 });
 

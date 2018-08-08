@@ -11,7 +11,8 @@
     "passwd": "password"
   },
   "sync": {
-    "type": "host",
-    "platform": "fabric"
+    "type": "local",
+    "platform": "fabric",
+    "synchBlocksTime": "3"
   }
 }

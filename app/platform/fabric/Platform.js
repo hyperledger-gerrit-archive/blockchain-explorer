@@ -5,35 +5,46 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const ProxyServices = require('./service/ProxyServices.js');
+const Proxy = require('./Proxy');
 const helper = require('../../common/helper');
+const ExplorerError = require('../../common/ExplorerError');
 const logger = helper.getLogger('Platform');
 const FabricUtils = require('./utils/FabricUtils.js');
-const FabricSyncListener = require('./FabricSyncListener.js');
+const ExplorerListener = require('../../sync/listener/ExplorerListener');
+
+let CRUDService = require('../../persistence/fabric/CRUDService');
+let MetricService = require('../../persistence/fabric/MetricService');
 
 const fabric_const = require('./utils/FabricUtils.js').fabric.const;
-
 const config_path = path.resolve(__dirname, './config.json');
 
 class Platform {
-  constructor(persistence) {
+  constructor(persistence, broadcaster) {
     this.persistence = persistence;
+    this.broadcaster = broadcaster;
     this.networks = new Map();
-    this.proxyServices = new ProxyServices(this, persistence);
+    this.proxy = new Proxy(this);
     this.defaultNetwork;
     this.defaultClient;
     this.network_configs;
-    this.syncListener;
+    this.syncType;
+    this.explorerListeners = [];
   }
 
   async initialize() {
     let _self = this;
 
+    // loading the config.json
+    let all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
+    let network_configs = all_config[fabric_const.NETWORK_CONFIGS];
+    this.syncType = all_config.syncType;
+
     // build client context
     logger.debug(
       '******* Initialization started for hyperledger fabric platform ******'
     );
-    await this.buildClientsFromFile(config_path);
+
+    await this.buildClients(network_configs);
 
     if (
       this.networks.size == 0 &&
@@ -42,26 +53,26 @@ class Platform {
       logger.error(
         '************* There is no client found for Hyperledger fabric platform *************'
       );
-      throw 'There is no client found for Hyperledger fabric platform';
+      throw new ExplorerError('There is no client found for Hyperledger fabric platform');
     }
-
   }
 
-  async buildClientsFromFile(config_path) {
+  async buildClients(network_configs) {
     let _self = this;
-    // loading the config.json
-    let all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
-    let network_configs = all_config[fabric_const.NETWORK_CONFIGS];
+    let clientstatus = true;
 
     // setting organization enrolment files
     logger.debug('Setting admin organization enrolment files');
-    this.network_configs = await FabricUtils.setAdminEnrolmentPath(
-      network_configs
-    );
+    try {
+      this.network_configs = await FabricUtils.setAdminEnrolmentPath(network_configs);
+    } catch (e) {
+      console.log(e);
+      clientstatus = false;
+      this.network_configs = network_configs;
+    }
 
     for (let network_name in this.network_configs) {
       this.networks.set(network_name, new Map());
-
       let client_configs = this.network_configs[network_name];
       if (!this.defaultNetwork) {
         this.defaultNetwork = network_name;
@@ -74,13 +85,24 @@ class Platform {
         if (!this.defaultClient) {
           this.defaultClient = client_name;
         }
+
         // create client instance
         logger.debug('Creatinging client [%s] >> ', client_name);
-        let client = await FabricUtils.createFabricClient(
-          client_configs,
-          client_name,
-          this.persistence
-        );
+        let client;
+
+        if (clientstatus) {
+          client = await FabricUtils.createFabricClient(
+            client_configs,
+            client_name,
+            this.persistence
+          );
+        }
+        else {
+          client = await FabricUtils.createDetachClient(
+            client_configs,
+            client_name,
+            this.persistence);
+        }
         if (client) {
           // set client into clients map
           let clients = this.networks.get(network_name);
@@ -90,9 +112,23 @@ class Platform {
     }
   }
 
-  initializeSyncLocal(broadcaster) {
-    this.syncListener = new FabricSyncListener(this, broadcaster);
-    this.syncListener.initialize();
+  initializeListener(syncconfig) {
+    for (var [network_name, clients] of this.networks.entries()) {
+      for (var [client_name, client] of clients.entries()) {
+        if (this.getClient(network_name, client_name).getStatus()) {
+          let explorerListener = new ExplorerListener(this, syncconfig);
+          explorerListener.initialize([network_name, client_name]);
+          explorerListener.send('Successfully send a message to child process');
+          this.explorerListeners.push(explorerListener);
+        }
+      }
+    }
+  }
+
+  setPersistenceService() {
+    // setting platfrom specific CRUDService and MetricService
+    this.persistence.setMetricService(new MetricService(this.persistence.getPGService()));
+    this.persistence.setCrudService(new CRUDService(this.persistence.getPGService()));
   }
 
   changeNetwork(network_name, client_name, channel_name) {
@@ -127,6 +163,7 @@ class Platform {
   }
 
   getClient(network_name, client_name) {
+
     return this.networks
       .get(network_name ? network_name : this.defaultNetwork)
       .get(client_name ? client_name : this.defaultClient);
@@ -139,12 +176,8 @@ class Platform {
     return this.broadcaster;
   }
 
-  getFabricServices() {
-    return this.fabricServices;
-  }
-
-  getProxyServices() {
-    return this.proxyServices;
+  getProxy() {
+    return this.proxy;
   }
 
   setDefaultClient(defaultClient) {
@@ -155,8 +188,8 @@ class Platform {
     console.log(
       '<<<<<<<<<<<<<<<<<<<<<<<<<< Closing explorer  >>>>>>>>>>>>>>>>>>>>>'
     );
-    if (this.syncListener) {
-      this.syncListener.close();
+    for (let explorerListener of this.explorerListeners) {
+      explorerListener.close();
     }
   }
 }

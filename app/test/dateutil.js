@@ -9,7 +9,7 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 chai.use(chaiHttp);
-var dateUtils = require('../platform/fabric/utils/FabricUtils.js');
+var dateUtils = require('../common/commonUtils');
 
 describe('dateUtils().toUTCmilliseconds', function() {
   var DATE = '2018/06/18';
