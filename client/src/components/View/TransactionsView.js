@@ -15,6 +15,7 @@ import {
   transactionType,
   transactionListType
 } from '../types';
+import { get } from 'http';
 
 const styles = theme => ({
   root: {
@@ -51,7 +52,11 @@ export const TransactionsView = ({
   getTransactionInfo,
   getTransactionList,
   transaction,
-  transactionList
+  transactionList,
+  getTransactionListSearch,
+  getOrgs,
+  orgs,
+  transactionListSearch
 }) => (
   <div className="view-fullwidth">
     <div className="view-display">
@@ -63,6 +68,10 @@ export const TransactionsView = ({
           transaction={transaction}
           getTransactionInfo={getTransactionInfo}
           getTransaction={getTransaction}
+          getTransactionListSearch={getTransactionListSearch}
+          getOrgs={getOrgs}
+          orgs={orgs}
+          transactionListSearch={transactionListSearch}
         />
       </Card>
     </div>

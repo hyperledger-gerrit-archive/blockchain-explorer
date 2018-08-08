@@ -190,7 +190,7 @@ describe('Tables', () => {
 
     test('transactionList', async done => {
       nock(/\w*(\W)/g)
-        .get(`/api/txList/${channel}/0/0/`)
+        .get(`/api/txList/${channel}/0/0`)
         .reply(200, {
           rows: [{ test: 'rows' }]
         });
