@@ -7,9 +7,17 @@ import Dialog from '@material-ui/core/Dialog';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import matchSorter from 'match-sorter';
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
 import find from 'lodash/find';
 import BlockView from '../View/BlockView';
 import TransactionView from '../View/TransactionView';
+import Select from 'react-select';
+import { chartSelectors } from '../../state/redux/charts';
+import { tableOperations, tableSelectors } from '../../state/redux/tables';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   blockListType,
   currentChannelType,
@@ -17,12 +25,23 @@ import {
   transactionType
 } from '../types';
 
+const { blockListSearch, orgs } = tableOperations;
+const { currentChannelSelector } = chartSelectors;
+const { blockListSearchSelector, orgsSelector } = tableSelectors;
+
 class Blocks extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dialogOpen: false,
       dialogOpenBlockHash: false,
+      search: false,
+      to: moment().utc(),
+      orgs: [],
+      options: [],
+      from: moment()
+        .utc()
+        .subtract(1, 'days'),
       blockHash: {}
     };
   }
@@ -33,7 +52,13 @@ class Blocks extends Component {
     blockList.forEach(element => {
       selection[element.blocknum] = false;
     });
-    this.setState({ selection });
+    this.props.getOrgs(this.props.currentChannel).then(() => {
+      let opts = [];
+      this.props.orgs.forEach(val => {
+        opts.push({ label: val, value: val });
+      });
+      this.setState({ selection, options: opts });
+    });
   }
 
   handleDialogOpen = async tid => {
@@ -41,11 +66,34 @@ class Blocks extends Component {
     await getTransaction(currentChannel, tid);
     this.setState({ dialogOpen: true });
   };
+  handleMultiSelect = value => {
+    console.log(this.state.orgs);
+    this.setState({ orgs: value });
+  };
 
   handleDialogClose = () => {
     this.setState({ dialogOpen: false });
   };
-
+  handleSearch = async () => {
+    let query = `from=${new Date(this.state.from).toISOString()}&&to=${new Date(
+      this.state.to
+    ).toISOString()}`;
+    for (let i = 0; i < this.state.orgs.length; i++) {
+      query += `&&orgs=${this.state.orgs[i].value}`;
+    }
+    await this.props.getBlockListSearch(this.props.currentChannel, query);
+    this.setState({ search: true });
+  };
+  handleClearSearch = () => {
+    this.setState({
+      search: false,
+      to: moment().utc(),
+      orgs: [],
+      from: moment()
+        .utc()
+        .subtract(1, 'days')
+    });
+  };
   handleDialogOpenBlockHash = blockHash => {
     const { blockList } = this.props;
     const data = find(blockList, item => item.blockhash === blockHash);
@@ -224,10 +272,75 @@ class Blocks extends Component {
   ];
 
   render() {
-    const { blockList, transaction } = this.props;
+    const blockList = this.state.search
+      ? this.props.blockListSearch
+      : this.props.blockList;
+    const { transaction } = this.props;
     const { blockHash, dialogOpen, dialogOpenBlockHash } = this.state;
     return (
       <div>
+        <div className="filter">
+          <div className="filter">
+            <label htmlFor="from" className="label">
+              From
+            </label>
+            <DatePicker
+              id="from"
+              selected={this.state.from}
+              showTimeSelect
+              maxDate={moment()}
+              timeIntervals={5}
+              dateFormat="LLL"
+              utcOffset={moment().utcOffset()}
+              onChange={date => {
+                console.log(date);
+                this.setState({ from: date });
+              }}
+            />
+          </div>
+          <div className="filter">
+            <label htmlFor="to" className="label">
+              To
+            </label>
+            <DatePicker
+              id="to"
+              selected={this.state.to}
+              showTimeSelect
+              maxDate={moment()}
+              timeIntervals={5}
+              dateFormat="LLL"
+              utcOffset={moment().utcOffset()}
+              onChange={date => {
+                console.log(date);
+                this.setState({ to: date });
+              }}
+            />
+          </div>
+
+          <Select
+            className="orgs-dropdown"
+            multi={true}
+            value={this.state.orgs}
+            options={this.state.options}
+            onChange={value => {
+              this.handleMultiSelect(value);
+            }}
+          />
+          <button
+            onClick={async () => {
+              await this.handleSearch();
+            }}
+          >
+            Search
+          </button>
+          <button
+            onClick={() => {
+              this.handleClearSearch();
+            }}
+          >
+            Reset
+          </button>
+        </div>
         <ReactTable
           data={blockList}
           columns={this.reactTableSetup()}
@@ -278,4 +391,16 @@ Blocks.defaultProps = {
   transaction: null
 };
 
-export default Blocks;
+export default compose(
+  connect(
+    state => ({
+      currentChannel: currentChannelSelector(state),
+      blockListSearch: blockListSearchSelector(state),
+      orgs: orgsSelector(state)
+    }),
+    {
+      getBlockListSearch: blockListSearch,
+      getOrgs: orgs
+    }
+  )
+)(Blocks);
