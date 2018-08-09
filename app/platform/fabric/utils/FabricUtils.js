@@ -26,7 +26,7 @@ exports.fabric = {
 
 async function createFabricClient(client_configs, client_name, persistence) {
   // clone global.hfc.config configuration
-  let client_config = cloneConfig(client_configs, client_name);
+  let client_config = cloneConfig(client_configs,client_name);
 
   // validate client configuration
   logger.debug('Validating client [%s] configuration', client_name);
@@ -50,16 +50,15 @@ async function createFabricClient(client_configs, client_name, persistence) {
 async function createDetachClient(client_configs, client_name, persistence) {
 
   // clone global.hfc.config configuration
-  let client_config = cloneConfig(client_configs, client_name);
+  let client_config = cloneConfig(client_configs,client_name);
 
   let client = new FabricClient(client_name);
   await client.initializeDetachClient(client_config, persistence);
-
   return client;
 
 }
 
-function cloneConfig(client_configs, client_name) {
+function cloneConfig(client_configs,client_name) {
 
   var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config));
 

@@ -5,6 +5,7 @@ var grpc = require('grpc');
 var convertHex = require('convert-hex');
 var helper = require('../../../common/helper');
 var logger = helper.getLogger('SyncServices');
+const ExplorerError = require('../../../common/ExplorerError');
 const FabricUtils = require('../../../platform/fabric/utils/FabricUtils');
 const fabric_const = require('../../../platform/fabric/utils/FabricUtils').fabric.const;
 
@@ -95,6 +96,12 @@ class SyncServices {
           channel_name: channel_name
         };
         this.platform.send(notify);
+        //setTimeout(() => {
+          throw new ExplorerError('Channel name [' +
+          channel_name +
+          '] is already exist in DB , Kindly re-run the DB scripts to proceed');
+        //}, 1000);
+
         return false;
       }
     }

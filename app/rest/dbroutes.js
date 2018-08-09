@@ -88,6 +88,19 @@ const dbroutes = (app, platform) => {
     }
   });
 
+  app.get('/api/orgs/:channel_genesis_hash', function (req, res) {
+    let channel_genesis_hash = req.params.channel_genesis_hash;
+    if (channel_genesis_hash) {
+      statusMetrics.getOrgsData(channel_genesis_hash).then(row => {
+        if (row) {
+          return res.send({ status: 200, row });
+        }
+      });
+    } else {
+      return requtil.invalidRequest(req, res);
+    }
+  });
+
   /***
   Transaction list
   GET /api/txList/
@@ -97,26 +110,26 @@ const dbroutes = (app, platform) => {
   'txhash':'c42c4346f44259628e70d52c672d6717d36971a383f18f83b118aaff7f4349b8',
   'createdt':'2018-03-09T19:40:59.000Z','chaincodename':'mycc'}]}
   */
-  app.get('/api/txList/:channel_genesis_hash/:blocknum/:txid', function (
+  app.get('/api/txList/:channel_genesis_hash/:blocknum/:txid', async function (
     req,
     res
   ) {
     let channel_genesis_hash = req.params.channel_genesis_hash;
     let blockNum = parseInt(req.params.blocknum);
     let txid = parseInt(req.params.txid);
-
+    let orgs = requtil.orgsArrayToString(req.query.orgs);
+    let { from, to } = requtil.queryDatevalidator(req.query.from, req.query.to);
     if (isNaN(txid)) {
       txid = 0;
     }
     if (channel_genesis_hash) {
-      crudService.getTxList(channel_genesis_hash, blockNum, txid).then(rows => {
-        if (rows) {
-          rows.forEach(element => {
-            element.createdt = new Date(element.createdt).toISOString();
-          });
-          return res.send({ status: 200, rows });
-        }
-      });
+      crudService
+        .getTxList(channel_genesis_hash, blockNum, txid, from, to, orgs)
+        .then(rows => {
+          if (rows) {
+            return res.send({ status: 200, rows });
+          }
+        });
     } else {
       return requtil.invalidRequest(req, res);
     }
@@ -155,20 +168,22 @@ const dbroutes = (app, platform) => {
   *
   */
 
-  app.get('/api/blockAndTxList/:channel_genesis_hash/:blocknum', function (
+  app.get('/api/blockAndTxList/:channel_genesis_hash/:blocknum', async function (
     req,
     res
   ) {
     let channel_genesis_hash = req.params.channel_genesis_hash;
     let blockNum = parseInt(req.params.blocknum);
+    let orgs = requtil.orgsArrayToString(req.query.orgs);
+    let { from, to } = requtil.queryDatevalidator(req.query.from, req.query.to);
+    //console.log('/api/blockAndTxList/:channel_genesis_hash/:blocknum %j', req.params);
+    console.log('/api/blockAndTxList/:channel_genesis_hash/:blocknum %j', req.query);
     if (channel_genesis_hash && !isNaN(blockNum)) {
       crudService
-        .getBlockAndTxList(channel_genesis_hash, blockNum)
+        .getBlockAndTxList(channel_genesis_hash, blockNum, from, to, orgs)
         .then(rows => {
+          console.log('/api/blockAndTxList/:channel_genesis_hash/:blocknum %j', rows);
           if (rows) {
-            rows.forEach(element => {
-              element.createdt = new Date(element.createdt).toISOString();
-            });
             return res.send({ status: 200, rows });
           }
           return requtil.notFound(req, res);

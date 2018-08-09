@@ -15,7 +15,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 var compression = require('compression');
 
-var explorer_const = require('./common/helper.js').explorer.const;
+var explorer_const = require('./common/helper').explorer.const;
 
 class Explorer {
   constructor() {

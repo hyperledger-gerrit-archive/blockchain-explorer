@@ -2,7 +2,7 @@
 *SPDX-License-Identifier: Apache-2.0
 */
 
-var explorer_const = require('../common/helper.js').explorer.const;
+var explorer_const = require('../common/helper').explorer.const;
 var ExplorerError = require('../common/ExplorerError');
 
 class PlatformBuilder {

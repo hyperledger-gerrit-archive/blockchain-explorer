@@ -26,6 +26,7 @@ import {
   transactionByOrgType,
   transactionListType
 } from './types';
+import PageNotFound from './View/PageNotFound';
 
 const {
   currentChannelSelector,
@@ -41,7 +42,10 @@ const {
   channelsSelector,
   peerListSelector,
   transactionSelector,
-  transactionListSelector
+  transactionListSelector,
+  blockListSearchSelector,
+  transactionListSearchSelector,
+  orgsSelector
 } = tableSelectors;
 
 export const Main = props => {
@@ -56,16 +60,25 @@ export const Main = props => {
     peerStatus,
     transaction,
     transactionByOrg,
-    transactionList
+    transactionList,
+    blockListSearch,
+    transactionListSearch,
+    orgs,
+    getBlockListSearch,
+    getTransactionListSearch,
+    getOrgs
   } = props;
 
   const blocksViewProps = {
     blockList,
+    blockListSearch,
+    getBlockListSearch,
+    getOrgs,
+    orgs,
     currentChannel,
     getTransaction,
     transaction
   };
-
   const chaincodeViewProps = {
     chaincodeList
   };
@@ -89,7 +102,11 @@ export const Main = props => {
     currentChannel,
     transaction,
     transactionList,
-    getTransaction
+    getTransaction,
+    transactionListSearch,
+    getTransactionListSearch,
+    getOrgs,
+    orgs
   };
 
   return (
@@ -102,25 +119,31 @@ export const Main = props => {
             render={() => <DashboardView {...dashboardViewProps} />}
           />
           <Route
+            exact
             path="/blocks"
             render={() => <BlocksView {...blocksViewProps} />}
           />
           <Route
+            exact
             path="/chaincodes"
             render={() => <ChaincodeView {...chaincodeViewProps} />}
           />
           <Route
+            exact
             path="/channels"
             render={() => <ChannelsView {...channelsViewProps} />}
           />
           <Route
+            exact
             path="/network"
             render={() => <NetworkView {...networkViewProps} />}
           />
           <Route
+            exact
             path="/transactions"
             render={() => <TransactionsView {...transactionsViewProps} />}
           />
+          <Route exact render={() => <PageNotFound />} />
         </Switch>
       </div>
     </Router>
@@ -153,9 +176,15 @@ export default connect(
     peerStatus: peerStatusSelector(state),
     transaction: transactionSelector(state),
     transactionByOrg: transactionByOrgSelector(state),
-    transactionList: transactionListSelector(state)
+    transactionList: transactionListSelector(state),
+    blockListSearch: blockListSearchSelector(state),
+    transactionListSearch: transactionListSearchSelector(state),
+    orgs: orgsSelector(state)
   }),
   {
-    getTransaction: tableOperations.transaction
+    getTransaction: tableOperations.transaction,
+    getBlockListSearch: tableOperations.blockListSearch,
+    getOrgs: tableOperations.orgs,
+    getTransactionListSearch: tableOperations.transactionListSearch
   }
 )(Main);

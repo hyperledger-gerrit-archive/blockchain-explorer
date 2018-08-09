@@ -12,7 +12,7 @@ var http = require('http');
 var url = require('url');
 var WebSocket = require('ws');
 var appconfig = require('./appconfig.json');
-var helper = require('./app/common/helper.js');
+var helper = require('./app/common/helper');
 var logger = helper.getLogger('main');
 var express = require('express');
 var path = require('path');
@@ -107,7 +107,9 @@ process.on('unhandledRejection', up => {
   } else {
     console.log(up);
   }
-  shutDown();
+  setTimeout(() => {
+    shutDown();
+  }, 2000);
 });
 process.on('uncaughtException', up => {
   console.log('<<<<<<<<<<<<<<<<<<<<<<<<<< Explorer Error >>>>>>>>>>>>>>>>>>>>>');
@@ -116,7 +118,9 @@ process.on('uncaughtException', up => {
   } else {
     console.log(up);
   }
-  shutDown();
+  setTimeout(() => {
+    shutDown();
+  }, 2000);
 });
 
 // listen for TERM signal .e.g. kill

@@ -44,10 +44,10 @@ function reqPayload(req) {
  */
 
 var storage = multer.diskStorage({
-  destination: function(req, file, callback) {
+  destination: function (req, file, callback) {
     callback(null, '/tmp');
   },
-  filename: function(req, file, callback) {
+  filename: function (req, file, callback) {
     callback(null, file.originalname);
   }
 });
@@ -58,8 +58,8 @@ var upload = multer({
 }).array('channelArtifacts', 2);
 
 function aSyncUpload(req, res) {
-  return new Promise(function(resolve, reject) {
-    upload(req, res, function(err) {
+  return new Promise(function (resolve, reject) {
+    upload(req, res, function (err) {
       var channelTxPath = null;
       var blockPath = null;
       var channelName = req.body.channelName;
@@ -111,9 +111,45 @@ function aSyncUpload(req, res) {
   });
 }
 
+var orgsArrayToString = function (orgs) {
+  let temp = '';
+  if (typeof orgs === 'array' || typeof orgs === 'object') {
+    orgs.forEach((element, i) => {
+      temp += `'` + element + `'`;
+      if (orgs.length - 1 != i) {
+        temp += ',';
+      }
+    });
+  } else if (orgs) {
+    temp = `'` + orgs + `'`;
+  }
+  return temp;
+};
+var queryDatevalidator = function (from, to) {
+  let today = new Date();
+  if (!isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
+    from = new Date(from).toISOString();
+    to = new Date(to).toISOString();
+
+    if (Date.parse(from) > Date.parse(today)) {
+      from = new Date(Date.now() - 864e5).toISOString();
+    }
+
+    if (Date.parse(from) > Date.parse(to)) {
+      from = new Date(Date.now() - 864e5).toISOString();
+    }
+  } else {
+    from = new Date(Date.now() - 864e5).toISOString();
+    to = new Date().toISOString();
+  }
+  return { from, to };
+};
+
 module.exports = {
   invalidRequest,
   notFound,
   reqPayload,
-  aSyncUpload
+  aSyncUpload,
+  orgsArrayToString,
+  queryDatevalidator
 };

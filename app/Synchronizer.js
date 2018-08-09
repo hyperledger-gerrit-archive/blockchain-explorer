@@ -1,12 +1,12 @@
 var syncconfig = require('./explorerconfig.json');
-var helper = require('./common/helper.js');
+var helper = require('./common/helper');
 var ExplorerError = require('./common/ExplorerError');
 var logger = helper.getLogger('Synchronizer');
 var SyncBuilder = require('./sync/SyncBuilder')
 var PersistenceFactory = require('./persistence/PersistenceFactory');
 var ExplorerSender = require('./sync/sender/ExplorerSender');
 
-var explorer_const = require('./common/helper.js').explorer.const;
+var explorer_const = require('./common/helper').explorer.const;
 
 var syncScanner;
 
@@ -55,7 +55,7 @@ class Synchronizer {
 
   close() {
     if (this.persistence) {
-      this.persistence.closeconnection();
+      //this.persistence.closeconnection();
     }
     if (this.platform) {
       this.platform.destroy();

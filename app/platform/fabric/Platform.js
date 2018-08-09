@@ -66,7 +66,7 @@ class Platform {
     try {
       this.network_configs = await FabricUtils.setAdminEnrolmentPath(network_configs);
     } catch (e) {
-      console.log(e);
+      logger.error(e);
       clientstatus = false;
       this.network_configs = network_configs;
     }

@@ -131,9 +131,6 @@ class SyncPlatform {
     if (this.eventHub) {
       this.eventHub.disconnectEventHubs();
     }
-    if (this.persistence) {
-      this.persistence.closeconnection();
-    }
   }
 }
 

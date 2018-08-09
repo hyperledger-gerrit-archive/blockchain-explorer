@@ -15,7 +15,6 @@ var configtxgenToolPath = config.configtxgenToolPath;
 //var networkCfgPath = path.join(__dirname, '../artifacts/channel/network-config-tls.yaml');
 
 var logger = helper.getLogger('channelservice');
-logger.setLevel('INFO');
 
 var generateChannelArtifacts = async function(artifacts) {
   let artifactsDir = await FabricUtils.generateDir();

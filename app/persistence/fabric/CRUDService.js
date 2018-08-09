@@ -20,25 +20,34 @@ class CRUDService {
     }
 
     getTransactionByID(channel_genesis_hash, txhash) {
-        let sqlTxById = ` select t.txhash,t.validation_code,t.payload_proposal_hash,t.creator_msp_id,t.endorser_msp_id,
-        t.chaincodename,t.type,t.createdt,t.read_set,t.write_set,channel.name as channelName from TRANSACTIONS as t inner join channel on
-        t.channel_genesis_hash=channel.channel_genesis_hash where t.txhash = '${txhash}' `;
+        let sqlTxById = ` select t.txhash,t.validation_code,t.payload_proposal_hash,t.creator_msp_id,t.endorser_msp_id,t.chaincodename,t.type,t.createdt,t.read_set,
+        t.write_set,channel.name as channelName from TRANSACTIONS as t inner join channel on t.channel_genesis_hash=channel.channel_genesis_hash where t.txhash = '${txhash}' `;
         return this.sql.getRowByPkOne(sqlTxById);
     }
 
-    getTxList(channel_genesis_hash, blockNum, txid) {
+    getTxList(channel_genesis_hash, blockNum, txid, from, to, orgs) {
+        let orgsSql = '';
+        if (orgs && orgs != '') {
+            orgsSql = `and t.creator_msp_id in (${orgs})`;
+        }
         let sqlTxList = ` select t.creator_msp_id,t.txhash,t.type,t.chaincodename,t.createdt,channel.name as channelName from transactions as t
-        inner join channel on t.channel_genesis_hash=channel.channel_genesis_hash where  t.blockid >= ${blockNum} and t.id >= ${txid} and
-        t.channel_genesis_hash = '${channel_genesis_hash}'  order by  t.id desc`;
+       inner join channel on t.channel_genesis_hash=channel.channel_genesis_hash where  t.blockid >= ${blockNum} and t.id >= ${txid} ${orgsSql} and
+       t.channel_genesis_hash = '${channel_genesis_hash}'  and t.createdt between '${from}' and '${to}'  order by  t.id desc`;
         return this.sql.getRowsBySQlQuery(sqlTxList);
     }
 
-    getBlockAndTxList(channel_genesis_hash, blockNum) {
+    getBlockAndTxList(channel_genesis_hash, blockNum, from, to, orgs) {
+        let orgsSql = '';
+        if (orgs && orgs != '') {
+            orgsSql = `and t.creator_msp_id in (${orgs})`;
+        }
         let sqlBlockTxList = ` select blocks.blocknum,blocks.txcount ,blocks.datahash ,blocks.blockhash ,blocks.prehash,blocks.createdt,(
-        SELECT  array_agg(txhash) as txhash FROM transactions where blockid = blocks.blocknum and channel_genesis_hash = '${channel_genesis_hash}' group by transactions.blockid ),
-        channel.name as channelName  from blocks inner join channel on blocks.channel_genesis_hash =channel.channel_genesis_hash  where
-         blocks.channel_genesis_hash ='${channel_genesis_hash}' and blocknum >= ${blockNum}
-         order by blocks.blocknum desc`;
+           SELECT  array_agg(txhash) as txhash FROM transactions where blockid = blocks.blocknum ${orgsSql} and
+            channel_genesis_hash = '${channel_genesis_hash}' and createdt between '${from}' and '${to}' group by transactions.blockid ),
+            channel.name as channelName  from blocks inner join channel on blocks.channel_genesis_hash =channel.channel_genesis_hash inner join transactions as t
+           on   blocks.channel_genesis_hash =t.channel_genesis_hash and t.blockid = blocks.blocknum  where
+            blocks.channel_genesis_hash ='${channel_genesis_hash}' and blocknum >= ${blockNum} and blocks.createdt between '${from}' and '${to}'
+           ${orgsSql} order by blocks.blocknum desc`;
         return this.sql.getRowsBySQlQuery(sqlBlockTxList);
     }
 
@@ -207,6 +216,14 @@ class CRUDService {
                 channel_hash: channel.channel_hash,
                 channel_genesis_hash: channel.channel_genesis_hash
             });
+        } else {
+            await this.sql.updateBySql(
+                `update channel set blocks='${channel.blocks}',trans='${
+                channel.trans
+                }',channel_hash='${channel.channel_hash}' where name='${
+                channel.name
+                }'and channel_genesis_hash='${channel.channel_genesis_hash}'`
+            );
         }
     }
 
