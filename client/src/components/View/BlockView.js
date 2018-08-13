@@ -22,6 +22,13 @@ class BlockView extends Component {
           <CardTitle className="dialogTitle">
             <FontAwesome name="cube" />
             Block Details
+            <button
+              type="button"
+              onClick={this.handleClose}
+              className="closeBtn"
+            >
+              <FontAwesome name="close" />
+            </button>
           </CardTitle>
           <CardBody>
             <span className="loading-wheel">

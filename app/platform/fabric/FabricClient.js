@@ -20,6 +20,8 @@ const _commonProto = grpc.load(
 var Constants = require('fabric-client/lib/Constants.js');
 var ROLES = Constants.NetworkConfig.ROLES;
 
+var explorer_mess = require('../../common/ExplorerMessage').explorer;
+
 class FabricClient {
   constructor(client_name) {
     this.client_name = client_name;
@@ -78,12 +80,9 @@ class FabricClient {
         let result = await this.defaultChannel.getDiscoveryResults();
       } catch (e) {
         logger.debug('Channel Discovery >>  %s', e);
-        throw new ExplorerError(
-          'Default defined channel ' +
-          this.defaultChannel.getName() +
-          ' not found for the client ' +
-          this.client_name +
-          ' peer'
+        throw new ExplorerError(explorer_mess.error.ERROR_2001,
+          this.defaultChannel.getName(),
+          this.client_name
         );
       }
       // setting default orderer
@@ -93,9 +92,7 @@ class FabricClient {
       if (temp_orderers && temp_orderers.length > 0) {
         this.defaultOrderer = temp_orderers[0];
       } else {
-        throw new ExplorerError(
-          'There are no orderers defined on this channel in the network configuration'
-        );
+        throw new ExplorerError(explorer_mess.error.ERROR_2002);
       }
       logger.debug(
         'Set client [%s] default orderer as  >> %s',
@@ -114,16 +111,17 @@ class FabricClient {
     this.client_config = client_config;
 
     console.log('\n**************************************************************************************');
-    console.log('Error : Failed to connect client peer, please check the configuration and peer status');
-    console.log('Info : Explorer will continue working with only DB data');
+    console.log('Error :', explorer_mess.error.ERROR_1009);
+    console.log('Info : ', explorer_mess.message.MESSAGE_1001);
     console.log('**************************************************************************************\n');
     let defaultClientId = Object.keys(client_config.channels[client_config.client.channel].peers)[0]
     let channels = await persistence.getCrudService().getChannelsInfo(defaultClientId);
 
     let default_channel_name = client_config.client.channel;
+    let default_peer_name = Object.keys(client_config.channels[default_channel_name].peers)[0];
 
     if (channels.length == 0) {
-      throw new ExplorerError('Default client peer is down and no channel details available database');
+      throw new ExplorerError(explorer_mess.error.ERROR_2003);
     }
 
 
@@ -145,19 +143,12 @@ class FabricClient {
 
         newchannel = this.hfc_client.newChannel(channel.channelname);
         if (nodes.length > 0) {
-          let url = nodes[0].requests.replace("grpcs", "grpc")
+          let url = "grpc://localhost";
           let newpeer = this.hfc_client.newPeer(url, {
-            'ssl-target-name-override': nodes[0].server_hostname,
-            name:nodes[0].server_hostname
+            'ssl-target-name-override': default_peer_name,
+            name: default_peer_name
           });
           newchannel.addPeer(newpeer);
-        }
-      }
-
-      if (channel.channelname === default_channel_name) {
-        this.defaultChannel = newchannel;
-        if (this.defaultChannel.getPeers().length > 0) {
-          this.defaultPeer = this.defaultChannel.getPeers()[0];
         }
       }
 
@@ -189,11 +180,16 @@ class FabricClient {
         }
       }
     }
+    this.defaultChannel = this.hfc_client.getChannel(default_channel_name);
+    if (this.defaultChannel.getPeers().length > 0) {
+      this.defaultPeer = this.defaultChannel.getPeer(default_peer_name);
+    }
+
     if (this.defaultChannel === undefined) {
-      throw new ExplorerError('Default channel is not available  in database');
+      throw new ExplorerError(explorer_mess.error.ERROR_2004);
     }
     if (this.defaultPeer === undefined) {
-      throw new ExplorerError('Default peer is not available  in database');
+      throw new ExplorerError(explorer_mess.error.ERROR_2005);
     }
   }
 
@@ -237,6 +233,7 @@ class FabricClient {
 
     // Loading default Peer and channel
     let channel_name = client_config.client.channel;
+    let peer_name = Object.keys(client_config.channels[channel_name].peers)[0];
     this.defaultChannel = this.hfc_client.getChannel(channel_name);
     logger.debug(
       'Set client [%s] default channel as  >> %s',
@@ -245,11 +242,9 @@ class FabricClient {
     );
 
     if (this.defaultChannel.getPeers().length > 0) {
-      this.defaultPeer = this.defaultChannel.getPeers()[0];
+      this.defaultPeer = this.defaultChannel.getPeer(peer_name);
     } else {
-      throw new ExplorerError(
-        'Default peer is not added to the client ' + this.client_name
-      );
+      throw new ExplorerError(explorer_mess.error.ERROR_2006, this.client_name);
     }
     logger.debug(
       'Set client [%s] default peer as  >> %s',
@@ -446,7 +441,7 @@ class FabricClient {
         );
         channel.addOrderer(newOrderer, true);
       } else {
-        throw new ExplorerError('No TLS cert information available');
+        throw new ExplorerError(explorer_mess.error.ERROR_2007);
       }
     }
     return newOrderer;

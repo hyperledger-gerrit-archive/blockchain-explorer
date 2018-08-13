@@ -1,7 +1,7 @@
 /*
     SPDX-License-Identifier: Apache-2.0
 */
-var explorer_const = require('../../common/helper').explorer.const;
+var explorer_const = require('../../common/ExplorerConst').explorer.const;
 
 class ExplorerListener {
 

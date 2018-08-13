@@ -8,21 +8,7 @@ var helper = require('../../../common/helper');
 var logger = helper.getLogger('FabricUtils');
 var ExplorerError = require('../../../common/ExplorerError');
 
-exports.fabric = {
-  const: {
-    NETWORK_CONFIGS: 'network-configs',
-    PERSISTENCE: 'persistence',
-    BLOCK_TYPE_CONFIG: 'CONFIG',
-    BLOCK_TYPE_ENDORSER_TRANSACTION: 'ENDORSER_TRANSACTION',
-    CHAINCODE_LSCC: 'lscc',
-    NOTITY_TYPE_NEWCHANNEL: '1',
-    NOTITY_TYPE_UPDATECHANNEL: '2',
-    NOTITY_TYPE_CHAINCODE: '3',
-    NOTITY_TYPE_BLOCK: '4',
-    NOTITY_TYPE_EXISTCHANNEL: '5',
-    NOTITY_TYPE_CLIENTERROR: '6'
-  }
-};
+var explorer_error = require('../../../common/ExplorerMessage').explorer.error;
 
 async function createFabricClient(client_configs, client_name, persistence) {
   // clone global.hfc.config configuration
@@ -43,7 +29,7 @@ async function createFabricClient(client_configs, client_name, persistence) {
     await client.initialize(client_config, persistence);
     return client;
   } else {
-    throw new ExplorerError('Invalid platform configuration, Please check the log');
+    throw new ExplorerError(explorer_error.ERROR_2014);
   }
 }
 

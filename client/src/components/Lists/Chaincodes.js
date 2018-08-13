@@ -141,7 +141,8 @@ class Chaincodes extends Component {
           fullWidth
           maxWidth="md"
         >
-          <ChaincodeModal chaincode={chaincode} />
+          <ChaincodeModal chaincode={chaincode}
+            onClose={this.sourceDialogClose} />
         </Dialog>
       </div>
     );

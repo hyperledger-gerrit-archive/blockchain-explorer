@@ -1,3 +1,8 @@
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
+'use strict';
+
 var syncconfig = require('./explorerconfig.json');
 var helper = require('./common/helper');
 var ExplorerError = require('./common/ExplorerError');
@@ -6,7 +11,8 @@ var SyncBuilder = require('./sync/SyncBuilder')
 var PersistenceFactory = require('./persistence/PersistenceFactory');
 var ExplorerSender = require('./sync/sender/ExplorerSender');
 
-var explorer_const = require('./common/helper').explorer.const;
+var explorer_const = require('./common/ExplorerConst').explorer.const;
+var explorer_error = require('./common/ExplorerMessage').explorer.error;
 
 var syncScanner;
 
@@ -20,23 +26,26 @@ class Synchronizer {
   async  initialize() {
 
     if (!syncconfig[explorer_const.PERSISTENCE]) {
-      throw new ExplorerError('Missing persistence type parameter [persistence] in explorerconfig.json');
+      throw new ExplorerError(explorer_error.ERROR_1001);
     }
     if (!syncconfig[syncconfig[explorer_const.PERSISTENCE]]) {
-      throw new ExplorerError('Missing database configuration parameter [' + syncconfig[explorer_const.PERSISTENCE] + '] in explorerconfig.json');
+      throw new ExplorerError(explorer_error.ERROR_1002,syncconfig[explorer_const.PERSISTENCE]);
     }
 
     let pltfrm;
     if (syncconfig && syncconfig.sync && syncconfig.sync.platform) {
       pltfrm = syncconfig.sync.platform;
     } else {
-      throw new ExplorerError('Platform type is not found in syncconfig or argument');
+      throw new ExplorerError(explorer_error.ERROR_1006);
     }
 
-    if (!this.args || this.args.length == 0) {
-      throw new ExplorerError('Missing network_name and client_name , Please run as > sync.js network_name client_name');
-    }
+    //if (!this.args || this.args.length == 0) {
+      //throw new ExplorerError(explorer_error.ERROR_1007);
+    //}
 
+    if (!(this.args && this.args.length>2 && this.args[2] === '1') && syncconfig.sync.type !== explorer_const.SYNC_TYPE_HOST) {
+      throw new ExplorerError(explorer_error.ERROR_1008);
+    }
 
     this.persistence = await PersistenceFactory.create(syncconfig[explorer_const.PERSISTENCE], syncconfig[syncconfig[explorer_const.PERSISTENCE]]);
 

@@ -1,7 +1,8 @@
 /*
 *SPDX-License-Identifier: Apache-2.0
 */
-var explorer_const = require('../common/helper').explorer.const;
+var explorer_const = require('../common/ExplorerConst').explorer.const;
+var explorer_error = require('../common/ExplorerMessage').explorer.error;
 const ExplorerError = require('../common/ExplorerError');
 
 class SyncBuilder {
@@ -13,7 +14,7 @@ class SyncBuilder {
       var platform = new SyncPlatform(persistence, sender);
       return platform;
     }
-    throw new ExplorerError('Platform implimenation is not found for synch process' + pltfrm);
+    throw new ExplorerError(explorer_error.ERROR_1005, pltfrm);
   }
 }
 

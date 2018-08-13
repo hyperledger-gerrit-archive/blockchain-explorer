@@ -15,7 +15,8 @@ const ExplorerListener = require('../../sync/listener/ExplorerListener');
 let CRUDService = require('../../persistence/fabric/CRUDService');
 let MetricService = require('../../persistence/fabric/MetricService');
 
-const fabric_const = require('./utils/FabricUtils.js').fabric.const;
+const fabric_const = require('./utils/FabricConst').fabric.const;
+const explorer_error = require('../../common/ExplorerMessage').explorer.error;
 const config_path = path.resolve(__dirname, './config.json');
 
 class Platform {
@@ -53,7 +54,7 @@ class Platform {
       logger.error(
         '************* There is no client found for Hyperledger fabric platform *************'
       );
-      throw new ExplorerError('There is no client found for Hyperledger fabric platform');
+      throw new ExplorerError(explorer_error.ERROR_2008);
     }
   }
 
@@ -117,7 +118,7 @@ class Platform {
       for (var [client_name, client] of clients.entries()) {
         if (this.getClient(network_name, client_name).getStatus()) {
           let explorerListener = new ExplorerListener(this, syncconfig);
-          explorerListener.initialize([network_name, client_name]);
+          explorerListener.initialize([network_name, client_name, '1']);
           explorerListener.send('Successfully send a message to child process');
           this.explorerListeners.push(explorerListener);
         }

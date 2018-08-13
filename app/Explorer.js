@@ -15,7 +15,9 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 var compression = require('compression');
 
-var explorer_const = require('./common/helper').explorer.const;
+var explorer_const = require('./common/ExplorerConst').explorer.const;
+var explorer_error = require('./common/ExplorerMessage').explorer.error;
+
 
 class Explorer {
   constructor() {
@@ -38,10 +40,10 @@ class Explorer {
 
   async initialize(broadcaster) {
     if (!explorerconfig[explorer_const.PERSISTENCE]) {
-      throw new ExplorerError('Missing persistence type parameter [persistence] in explorerconfig.json');
+      throw new ExplorerError(explorer_error.ERROR_1001);
     }
     if (!explorerconfig[explorerconfig[explorer_const.PERSISTENCE]]) {
-      throw new ExplorerError('Missing database configuration parameter [' + explorerconfig[explorer_const.PERSISTENCE] + '] in explorerconfig.json');
+      throw new ExplorerError(explorer_error.ERROR_1002,explorerconfig[explorer_const.PERSISTENCE]);
     }
     this.persistence = await PersistenceFactory.create(explorerconfig[explorer_const.PERSISTENCE], explorerconfig[explorerconfig[explorer_const.PERSISTENCE]]);
 

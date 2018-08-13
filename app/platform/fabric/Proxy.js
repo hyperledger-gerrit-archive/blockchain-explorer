@@ -1,3 +1,6 @@
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
 'use strict';
 
 var chaincodeService = require('./service/chaincodeService.js');
@@ -6,7 +9,8 @@ var logger = helper.getLogger('Proxy');
 
 const ExplorerError = require('../../common/ExplorerError');
 
-const fabric_const = require('./utils/FabricUtils').fabric.const;
+const fabric_const = require('./utils/FabricConst').fabric.const;
+const explorer_error = require('../../common/ExplorerMessage').explorer.error;
 
 class Proxy {
   constructor(platform) {
@@ -199,11 +203,9 @@ class Proxy {
       };
       this.broadcaster.broadcast(notify);
     } else if (fabric_const.NOTITY_TYPE_EXISTCHANNEL === msg.notify_type) {
-      throw new ExplorerError('Explorer is closing due to channel name [' +
-        msg.channel_name +
-        '] is already exist in DB');
+      throw new ExplorerError(explorer_error.ERROR_2009, msg.channel_name);
     } else if (msg.error) {
-      throw new ExplorerError('Client Processor Error >> ' + msg.error);
+      throw new ExplorerError(explorer_error.ERROR_2010, msg.error);
     } else {
       logger.error(
         'Child process notify is not implemented for this type %s ',

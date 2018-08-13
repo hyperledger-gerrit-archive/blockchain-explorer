@@ -90,7 +90,14 @@ class Blocks extends Component {
   };
   handleDialogOpenBlockHash = blockHash => {
     const { blockList } = this.props;
-    const data = find(blockList, item => item.blockhash === blockHash);
+    var data;
+    if (this.state.search) {
+      const { blockListSearch } = this.props;
+      data = find(blockListSearch, item => item.blockhash === blockHash);
+    } else {
+      const { blockList } = this.props;
+      data = find(blockList, item => item.blockhash === blockHash);
+    }
 
     this.setState({
       dialogOpenBlockHash: true,

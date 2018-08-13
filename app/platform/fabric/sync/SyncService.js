@@ -1,3 +1,6 @@
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
 'use strict';
 
 var fs = require('fs-extra');
@@ -7,7 +10,8 @@ var helper = require('../../../common/helper');
 var logger = helper.getLogger('SyncServices');
 const ExplorerError = require('../../../common/ExplorerError');
 const FabricUtils = require('../../../platform/fabric/utils/FabricUtils');
-const fabric_const = require('../../../platform/fabric/utils/FabricUtils').fabric.const;
+const fabric_const = require('../../../platform/fabric/utils/FabricConst').fabric.const;
+const explorer_error = require('../../../common/ExplorerMessage').explorer.error;
 
 var _transProto = grpc.load(
   __dirname +
@@ -96,12 +100,8 @@ class SyncServices {
           channel_name: channel_name
         };
         this.platform.send(notify);
-        //setTimeout(() => {
-          throw new ExplorerError('Channel name [' +
-          channel_name +
-          '] is already exist in DB , Kindly re-run the DB scripts to proceed');
-        //}, 1000);
-
+        throw new ExplorerError(explorer_error.ERROR_2013,
+          channel_name);
         return false;
       }
     }

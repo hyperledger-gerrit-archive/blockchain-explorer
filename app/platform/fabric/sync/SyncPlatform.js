@@ -1,3 +1,8 @@
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
+'use strict';
+
 const path = require('path');
 const fs = require('fs-extra');
 
@@ -12,7 +17,8 @@ const ExplorerError = require('../../../common/ExplorerError');
 let CRUDService = require('../../../persistence/fabric/CRUDService');
 let MetricService = require('../../../persistence/fabric/MetricService');
 
-const fabric_const = require('../utils/FabricUtils').fabric.const;
+const fabric_const = require('../utils/FabricConst').fabric.const;
+const explorer_mess = require('../../../common/ExplorerMessage').explorer;
 const config_path = path.resolve(__dirname, '../config.json');
 
 class SyncPlatform {
@@ -30,8 +36,6 @@ class SyncPlatform {
 
   async initialize(args) {
     let _self = this;
-    this.network_name = args[0];
-    this.client_name = args[1];
 
     logger.debug(
       '******* Initialization started for child client process %s ******',
@@ -41,6 +45,19 @@ class SyncPlatform {
     // loading the config.json
     let all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
     let network_configs = all_config[fabric_const.NETWORK_CONFIGS];
+
+    if (args.length == 0) { // get the first network and first client
+      this.network_name = Object.keys(network_configs)[0];
+      this.client_name = Object.keys(network_configs[Object.keys(network_configs)[0]].clients)[0];
+    } else if (args.length == 1) { // get the first client with respect to the passed network name
+      this.network_name = args[0];
+      this.client_name = Object.keys(network_configs[this.network_name].clients)[0];
+    } else {
+      this.network_name = args[0];
+      this.client_name = args[1];
+    }
+
+    console.log('\n' + explorer_mess.message.MESSAGE_1002, this.network_name, this.client_name);
 
     // setting the block synch interval time
     await this.setSynchBlocksTime(all_config);
@@ -58,7 +75,7 @@ class SyncPlatform {
       this.client_name
     );
     if (!this.client) {
-      throw new ExplorerError('There is no client found for Hyperledger fabric scanner');
+      throw new ExplorerError(explorer_mess.error.ERROR_2011);
     }
     let peer = {
       requests: this.client.getDefaultPeer().getUrl(),
@@ -88,7 +105,7 @@ class SyncPlatform {
         this.client_name
       );
     } else {
-      throw new ExplorerError('Failed to connect client peer, please check the configuration and peer status');
+      throw new ExplorerError(explorer_mess.error.ERROR_2012);
     }
   }
 

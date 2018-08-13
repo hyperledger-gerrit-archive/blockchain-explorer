@@ -24,16 +24,6 @@ var fs = require('fs-extra');
 exports.getLogger = getLogger;
 exports.readAllFiles = readAllFiles;
 
-exports.explorer = {
-  const: {
-    PERSISTENCE: 'persistence',
-    PLATFORMS: 'platforms',
-    PLATFORM_FABRIC: 'fabric',
-    PERSISTENCE_POSTGRESQL: 'postgreSQL',
-    SYNC_TYPE_LOCAL: 'local'
-  }
-}
-
 function readAllFiles(dir) {
   var files = fs.readdirSync(dir);
   var certs = [];
