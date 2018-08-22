@@ -11,7 +11,7 @@ import find from 'lodash/find';
 import ReactTable from '../Styled/Table';
 import BlockView from '../View/BlockView';
 import TransactionView from '../View/TransactionView';
-import Select from '../Styled/Select';
+import MultiSelect from '../Styled/MultiSelect';
 import moment from 'moment';
 import DatePicker from '../Styled/DatePicker';
 import { isNull } from 'util';
@@ -27,16 +27,13 @@ const styles = theme => {
   const dark = type === 'dark';
   return {
     hash: {
-      '&, & li': {
+      '&, & li, & ul': {
         overflow: 'visible !important'
       }
     },
     partialHash: {
       textAlign: 'center',
       position: 'relative !important',
-      '&:hover $lastFullHash': {
-        marginLeft: -400
-      },
       '&:hover $fullHash': {
         display: 'block',
         position: 'absolute !important',
@@ -47,12 +44,25 @@ const styles = theme => {
         borderRadius: 8,
         color: '#ffffff',
         opacity: dark ? 1 : undefined
+      },
+      '&:hover $lastFullHash': {
+        display: 'block',
+        position: 'absolute !important',
+        padding: '4px 4px',
+        backgroundColor: dark ? '#5e558e' : '#000000',
+        marginTop: -30,
+        marginLeft: -415,
+        borderRadius: 8,
+        color: '#ffffff',
+        opacity: dark ? 1 : undefined
       }
     },
     fullHash: {
       display: 'none'
     },
-    lastFullHash: {},
+    lastFullHash: {
+      display: 'none'
+    },
     filter: {
       width: '100%',
       textAlign: 'center',
@@ -135,13 +145,23 @@ export class Blocks extends Component {
   componentWillUnmount() {
     clearInterval(this.interVal);
   }
+  handleCustomRender(selected, options) {
+    if (selected.length === 0) {
+      return 'Select Orgs';
+    }
+    if (selected.length === options.length) {
+      return 'All Orgs Selected';
+    }
+
+    return selected.join(',');
+  }
 
   searchBlockList = async channel => {
     let query = `from=${new Date(this.state.from).toString()}&&to=${new Date(
       this.state.to
     ).toString()}`;
     for (let i = 0; i < this.state.orgs.length; i++) {
-      query += `&&orgs=${this.state.orgs[i].value}`;
+      query += `&&orgs=${this.state.orgs[i]}`;
     }
     let channelhash = this.props.currentChannel;
     if (channel !== undefined) {
@@ -349,7 +369,7 @@ export class Blocks extends Component {
                     href="#/blocks"
                   >
                     <div
-                      className={`${classes.fullHash} ${classes.lastFullHash}`}
+                      className={classes.lastFullHash}
                       id="showTransactionId"
                     >
                       {tid}
@@ -424,17 +444,19 @@ export class Blocks extends Component {
               </div>
             </DatePicker>
           </div>
-
-          <Select
-            className="col-md-2"
-            multi={true}
-            filter={true}
-            value={this.state.orgs}
-            options={this.state.options}
-            onChange={value => {
-              this.handleMultiSelect(value);
-            }}
-          />
+          <div className="col-md-2">
+            <MultiSelect
+              hasSelectAll={true}
+              valueRenderer={this.handleCustomRender}
+              shouldToggleOnHover={false}
+              selected={this.state.orgs}
+              options={this.state.options}
+              selectAllLabel={'All Orgs'}
+              onSelectedChanged={value => {
+                this.handleMultiSelect(value);
+              }}
+            />
+          </div>
           <div className="col-md-2">
             <Button
               className={classes.searchButton}

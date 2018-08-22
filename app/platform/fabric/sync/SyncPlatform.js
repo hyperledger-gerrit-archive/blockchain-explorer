@@ -46,18 +46,28 @@ class SyncPlatform {
     let all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
     let network_configs = all_config[fabric_const.NETWORK_CONFIGS];
 
-    if (args.length == 0) { // get the first network and first client
+    if (args.length == 0) {
+      // get the first network and first client
       this.network_name = Object.keys(network_configs)[0];
-      this.client_name = Object.keys(network_configs[Object.keys(network_configs)[0]].clients)[0];
-    } else if (args.length == 1) { // get the first client with respect to the passed network name
+      this.client_name = Object.keys(
+        network_configs[Object.keys(network_configs)[0]].clients
+      )[0];
+    } else if (args.length == 1) {
+      // get the first client with respect to the passed network name
       this.network_name = args[0];
-      this.client_name = Object.keys(network_configs[this.network_name].clients)[0];
+      this.client_name = Object.keys(
+        network_configs[this.network_name].clients
+      )[0];
     } else {
       this.network_name = args[0];
       this.client_name = args[1];
     }
 
-    console.log('\n' + explorer_mess.message.MESSAGE_1002, this.network_name, this.client_name);
+    console.log(
+      '\n' + explorer_mess.message.MESSAGE_1002,
+      this.network_name,
+      this.client_name
+    );
 
     // setting the block synch interval time
     await this.setSynchBlocksTime(all_config);
@@ -79,8 +89,10 @@ class SyncPlatform {
     }
     let peer = {
       requests: this.client.getDefaultPeer().getUrl(),
-      mspid: this.client_configs.organizations[this.client_configs.clients[this.client_name].organization].mspid
-    }
+      mspid: this.client_configs.organizations[
+        this.client_configs.clients[this.client_name].organization
+      ].mspid
+    };
 
     let peerStatus = await this.client.getPeerStatus(peer);
 
@@ -97,7 +109,7 @@ class SyncPlatform {
 
       // setting interval for validating any missing block from the current client ledger
       // set synchBlocksTime property in platform config.json in minutes
-      setInterval(function () {
+      setInterval(function() {
         _self.isChannelEventHubConnected();
       }, this.synchBlocksTime);
       logger.debug(
@@ -105,7 +117,7 @@ class SyncPlatform {
         this.client_name
       );
     } else {
-      throw new ExplorerError(explorer_mess.error.ERROR_2012);
+      throw new ExplorerError(explorer_mess.error.ERROR_1009);
     }
   }
 
@@ -134,8 +146,12 @@ class SyncPlatform {
 
   setPersistenceService() {
     // setting platfrom specific CRUDService and MetricService
-    this.persistence.setMetricService(new MetricService(this.persistence.getPGService()));
-    this.persistence.setCrudService(new CRUDService(this.persistence.getPGService()));
+    this.persistence.setMetricService(
+      new MetricService(this.persistence.getPGService())
+    );
+    this.persistence.setCrudService(
+      new CRUDService(this.persistence.getPGService())
+    );
   }
 
   send(notify) {
