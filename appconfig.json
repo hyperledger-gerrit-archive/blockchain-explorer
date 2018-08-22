@@ -1,5 +1,12 @@
 {
+<<<<<<< HEAD   (5544ae BE-405 Test Docker change by Blockchain Tecnalia)
 	"host": "0.0.0.0",
 	"port": "8080",
 	"license": "Apache-2.0"
 }
+=======
+  "host": "localhost",
+  "port": "8080",
+  "license": "Apache-2.0"
+}
+>>>>>>> BRANCH (6ba84a Merge "BE-414 Theme Refactoring" into release-3.5)

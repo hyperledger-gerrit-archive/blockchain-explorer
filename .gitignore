@@ -14,5 +14,10 @@ fabric-docker-compose-svt/crypto-config
 first-network/channel-artifacts/*
 .vscode
 log.log
+<<<<<<< HEAD   (5544ae BE-405 Test Docker change by Blockchain Tecnalia)
 
 examples/*
+=======
+logs/*
+tmp/*
+>>>>>>> BRANCH (6ba84a Merge "BE-414 Theme Refactoring" into release-3.5)
