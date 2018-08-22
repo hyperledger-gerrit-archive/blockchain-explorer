@@ -56,16 +56,6 @@ describe('Channels', () => {
     expect(wrapper.find(ReactTable).find('TrGroupComponent').length).toBe(1);
   });
 
-  test('Simulate Channel Hash filterMethod should have one result when given a value of 0bc', () => {
-    const { wrapper } = setup();
-    wrapper
-      .find('ThComponent')
-      .findWhere(n => n.key() === '2-channel_hash')
-      .find('input')
-      .simulate('change', { target: { value: '0bc' } });
-    expect(wrapper.find(ReactTable).find('TrGroupComponent').length).toBe(1);
-  });
-
   test('Simulate Blocks filterMethod should have one result when given a value of 5', () => {
     const { wrapper } = setup();
     wrapper
