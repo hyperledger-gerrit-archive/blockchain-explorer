@@ -44,7 +44,6 @@ const styles = theme => {
   };
 };
 export class ChaincodeModal extends Component {
-
   handleClose = () => {
     const { onClose } = this.props;
     onClose();

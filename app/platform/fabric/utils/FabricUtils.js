@@ -12,7 +12,7 @@ var explorer_error = require('../../../common/ExplorerMessage').explorer.error;
 
 async function createFabricClient(client_configs, client_name, persistence) {
   // clone global.hfc.config configuration
-  let client_config = cloneConfig(client_configs,client_name);
+  let client_config = cloneConfig(client_configs, client_name);
 
   // validate client configuration
   logger.debug('Validating client [%s] configuration', client_name);
@@ -34,18 +34,15 @@ async function createFabricClient(client_configs, client_name, persistence) {
 }
 
 async function createDetachClient(client_configs, client_name, persistence) {
-
   // clone global.hfc.config configuration
-  let client_config = cloneConfig(client_configs,client_name);
+  let client_config = cloneConfig(client_configs, client_name);
 
   let client = new FabricClient(client_name);
   await client.initializeDetachClient(client_config, persistence);
   return client;
-
 }
 
-function cloneConfig(client_configs,client_name) {
-
+function cloneConfig(client_configs, client_name) {
   var global_hfc_config = JSON.parse(JSON.stringify(global.hfc.config));
 
   let client_config = global_hfc_config;
@@ -56,8 +53,31 @@ function cloneConfig(client_configs,client_name) {
   client_config.peers = client_configs.peers;
   client_config.orderers = client_configs.orderers;
 
+  // modify url with respect to TLS enable
+  client_config = processTLS_URL(client_config);
   return client_config;
+}
 
+function processTLS_URL(client_config) {
+  for (let peer_name in client_config.peers) {
+    let url = client_config.peers[peer_name].url;
+    client_config.peers[peer_name].url = client_config.client.tlsEnable
+      ? 'grpcs' + url.substring(url.indexOf('://'))
+      : 'grpc' + url.substring(url.indexOf('://'));
+    if (client_config.peers[peer_name].eventUrl) {
+      let eventUrl = client_config.peers[peer_name].eventUrl;
+      client_config.peers[peer_name].eventUrl = client_config.client.tlsEnable
+        ? 'grpcs' + eventUrl.substring(eventUrl.indexOf('://'))
+        : 'grpc' + eventUrl.substring(eventUrl.indexOf('://'));
+    }
+  }
+  for (let ord_name in client_config.orderers) {
+    let url = client_config.orderers[ord_name].url;
+    client_config.orderers[ord_name].url = client_config.client.tlsEnable
+      ? 'grpcs' + url.substring(url.indexOf('://'))
+      : 'grpc' + url.substring(url.indexOf('://'));
+  }
+  return client_config;
 }
 
 function validateClientConfig(client_config) {
@@ -76,14 +96,14 @@ function validateClientConfig(client_config) {
       : !client_config.client.channel
         ? 'Client default channel is not defined in configuration '
         : !(
-          client_config.client.credentialStore &&
-          client_config.client.credentialStore.path
-        )
+            client_config.client.credentialStore &&
+            client_config.client.credentialStore.path
+          )
           ? 'Client credential store path is not defined in configuration '
           : !(
-            client_config.client.credentialStore.cryptoStore &&
-            client_config.client.credentialStore.cryptoStore.path
-          )
+              client_config.client.credentialStore.cryptoStore &&
+              client_config.client.credentialStore.cryptoStore.path
+            )
             ? 'Client crypto store path is not defined in configuration '
             : null;
 
@@ -96,8 +116,8 @@ function validateClientConfig(client_config) {
     ? 'Channels is not defined in configuration'
     : !client_config.channels[client_config.client.channel]
       ? 'Default channel [' +
-      client_config.client.channel +
-      '] is not defined in configuration'
+        client_config.client.channel +
+        '] is not defined in configuration'
       : null;
 
   if (message) {
@@ -111,50 +131,51 @@ function validateClientConfig(client_config) {
       Object.keys(client_config.channels[channel_name].peers).length > 0
     )
       ? 'Default peer is not defined for channel [' +
-      channel_name +
-      '] in configuration'
+        channel_name +
+        '] in configuration'
       : !client_config.peers
         ? 'Peers is not defined in configuration'
         : !client_config.peers[
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        ]
+            Object.keys(client_config.channels[channel_name].peers)[0]
+          ]
           ? 'Default channel peers [' +
-          Object.keys(client_config.channels[channel_name].peers)[0] +
-          '] is not defined in configuration'
-          : !(
-            client_config.peers[
-              Object.keys(client_config.channels[channel_name].peers)[0]
-            ].tlsCACerts &&
-            client_config.peers[
-              Object.keys(client_config.channels[channel_name].peers)[0]
-            ].tlsCACerts.path
-          )
-            ? 'TLS CA Certs path is not defined default peer [' +
             Object.keys(client_config.channels[channel_name].peers)[0] +
-            '] in configuration'
-            : !client_config.peers[
-              Object.keys(client_config.channels[channel_name].peers)[0]
-            ].url
-              ? 'URL is not defined default peer [' +
+            '] is not defined in configuration'
+          : !(
+              !client_config.client.tlsEnable ||
+              (client_config.peers[
+                Object.keys(client_config.channels[channel_name].peers)[0]
+              ].tlsCACerts &&
+                client_config.peers[
+                  Object.keys(client_config.channels[channel_name].peers)[0]
+                ].tlsCACerts.path)
+            )
+            ? 'TLS CA Certs path is not defined default peer [' +
               Object.keys(client_config.channels[channel_name].peers)[0] +
               '] in configuration'
-              : !client_config.peers[
+            : !client_config.peers[
                 Object.keys(client_config.channels[channel_name].peers)[0]
-              ].eventUrl
-                ? 'Event URL is not defined default peer [' +
+              ].url
+              ? 'URL is not defined default peer [' +
                 Object.keys(client_config.channels[channel_name].peers)[0] +
                 '] in configuration'
-                : !(
-                  client_config.peers[
-                    Object.keys(client_config.channels[channel_name].peers)[0]
-                  ].grpcOptions &&
-                  client_config.peers[
-                    Object.keys(client_config.channels[channel_name].peers)[0]
-                  ].grpcOptions['ssl-target-name-override']
-                )
-                  ? 'Server hostname is not defined default peer [' +
+              : !client_config.peers[
+                  Object.keys(client_config.channels[channel_name].peers)[0]
+                ].eventUrl
+                ? 'Event URL is not defined default peer [' +
                   Object.keys(client_config.channels[channel_name].peers)[0] +
                   '] in configuration'
+                : !(
+                    client_config.peers[
+                      Object.keys(client_config.channels[channel_name].peers)[0]
+                    ].grpcOptions &&
+                    client_config.peers[
+                      Object.keys(client_config.channels[channel_name].peers)[0]
+                    ].grpcOptions['ssl-target-name-override']
+                  )
+                  ? 'Server hostname is not defined default peer [' +
+                    Object.keys(client_config.channels[channel_name].peers)[0] +
+                    '] in configuration'
                   : null;
 
     if (message) {
@@ -167,17 +188,17 @@ function validateClientConfig(client_config) {
     ? 'Organizations is not defined in configuration'
     : !client_config.organizations[client_config.client.organization]
       ? 'Client organization [' +
-      client_config.client.organization +
-      '] is not defined in configuration'
-      : !(
-        client_config.organizations[client_config.client.organization]
-          .signedCert &&
-        client_config.organizations[client_config.client.organization]
-          .signedCert.path
-      )
-        ? 'Client organization signed Cert path for [' +
         client_config.client.organization +
         '] is not defined in configuration'
+      : !(
+          client_config.organizations[client_config.client.organization]
+            .signedCert &&
+          client_config.organizations[client_config.client.organization]
+            .signedCert.path
+        )
+        ? 'Client organization signed Cert path for [' +
+          client_config.client.organization +
+          '] is not defined in configuration'
         : null;
 
   if (message) {
@@ -188,15 +209,15 @@ function validateClientConfig(client_config) {
   for (let org_name in client_config.organizations) {
     message = !client_config.organizations[org_name].mspid
       ? 'Organization mspid for [' +
-      org_name +
-      '] is not defined in configuration'
-      : !(
-        client_config.organizations[org_name].adminPrivateKey &&
-        client_config.organizations[org_name].adminPrivateKey.path
-      )
-        ? 'Organization admin private key path for [' +
         org_name +
         '] is not defined in configuration'
+      : !(
+          client_config.organizations[org_name].adminPrivateKey &&
+          client_config.organizations[org_name].adminPrivateKey.path
+        )
+        ? 'Organization admin private key path for [' +
+          org_name +
+          '] is not defined in configuration'
         : null;
 
     if (message) {
@@ -206,59 +227,60 @@ function validateClientConfig(client_config) {
     message = !client_config.peers
       ? 'Peers is not defined in configuration'
       : !(
-        client_config.peers[
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        ].tlsCACerts &&
-        client_config.peers[
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        ].tlsCACerts.path
-      )
+          !client_config.client.tlsEnable ||
+          (client_config.peers[
+            Object.keys(
+              client_config.channels[client_config.client.channel].peers
+            )[0]
+          ].tlsCACerts &&
+            client_config.peers[
+              Object.keys(
+                client_config.channels[client_config.client.channel].peers
+              )[0]
+            ].tlsCACerts.path)
+        )
         ? 'TLS CA Certs path is not defined default peer [' +
-        Object.keys(
-          client_config.channels[client_config.client.channel].peers
-        )[0] +
-        '] in configuration'
-        : !client_config.peers[
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        ].url
-          ? 'URL is not defined default peer [' +
           Object.keys(
             client_config.channels[client_config.client.channel].peers
           )[0] +
           '] in configuration'
-          : !client_config.peers[
+        : !client_config.peers[
             Object.keys(
               client_config.channels[client_config.client.channel].peers
             )[0]
-          ].eventUrl
-            ? 'Event URL is not defined default peer [' +
+          ].url
+          ? 'URL is not defined default peer [' +
             Object.keys(
               client_config.channels[client_config.client.channel].peers
             )[0] +
             '] in configuration'
-            : !(
-              client_config.peers[
-                Object.keys(
-                  client_config.channels[client_config.client.channel].peers
-                )[0]
-              ].grpcOptions &&
-              client_config.peers[
-                Object.keys(
-                  client_config.channels[client_config.client.channel].peers
-                )[0]
-              ].grpcOptions['ssl-target-name-override']
-            )
-              ? 'Server hostname is not defined default peer [' +
+          : !client_config.peers[
+              Object.keys(
+                client_config.channels[client_config.client.channel].peers
+              )[0]
+            ].eventUrl
+            ? 'Event URL is not defined default peer [' +
               Object.keys(
                 client_config.channels[client_config.client.channel].peers
               )[0] +
               '] in configuration'
+            : !(
+                client_config.peers[
+                  Object.keys(
+                    client_config.channels[client_config.client.channel].peers
+                  )[0]
+                ].grpcOptions &&
+                client_config.peers[
+                  Object.keys(
+                    client_config.channels[client_config.client.channel].peers
+                  )[0]
+                ].grpcOptions['ssl-target-name-override']
+              )
+              ? 'Server hostname is not defined default peer [' +
+                Object.keys(
+                  client_config.channels[client_config.client.channel].peers
+                )[0] +
+                '] in configuration'
               : null;
   }
 
@@ -372,7 +394,7 @@ async function generateDir() {
 }
 
 async function generateBlockHash(header) {
-  let headerAsn = asn.define('headerAsn', function () {
+  let headerAsn = asn.define('headerAsn', function() {
     this.seq().obj(
       this.key('Number').int(),
       this.key('PreviousHash').octstr(),

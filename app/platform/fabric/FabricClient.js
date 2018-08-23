@@ -15,7 +15,7 @@ var channelService = require('./service/channelService.js');
 var FabricUtils = require('./utils/FabricUtils.js');
 const _commonProto = grpc.load(
   __dirname +
-  '/../../../node_modules/fabric-client/lib/protos/common/common.proto'
+    '/../../../node_modules/fabric-client/lib/protos/common/common.proto'
 ).common;
 var Constants = require('fabric-client/lib/Constants.js');
 var ROLES = Constants.NetworkConfig.ROLES;
@@ -80,7 +80,8 @@ class FabricClient {
         let result = await this.defaultChannel.getDiscoveryResults();
       } catch (e) {
         logger.debug('Channel Discovery >>  %s', e);
-        throw new ExplorerError(explorer_mess.error.ERROR_2001,
+        throw new ExplorerError(
+          explorer_mess.error.ERROR_2001,
           this.defaultChannel.getName(),
           this.client_name
         );
@@ -107,29 +108,34 @@ class FabricClient {
   }
 
   async initializeDetachClient(client_config, persistence) {
-
     this.client_config = client_config;
 
-    console.log('\n**************************************************************************************');
+    console.log(
+      '\n**************************************************************************************'
+    );
     console.log('Error :', explorer_mess.error.ERROR_1009);
     console.log('Info : ', explorer_mess.message.MESSAGE_1001);
-    console.log('**************************************************************************************\n');
-    let defaultClientId = Object.keys(client_config.channels[client_config.client.channel].peers)[0]
-    let channels = await persistence.getCrudService().getChannelsInfo(defaultClientId);
+    console.log(
+      '**************************************************************************************\n'
+    );
+    let defaultClientId = Object.keys(
+      client_config.channels[client_config.client.channel].peers
+    )[0];
+    let channels = await persistence
+      .getCrudService()
+      .getChannelsInfo(defaultClientId);
 
     let default_channel_name = client_config.client.channel;
-    let default_peer_name = Object.keys(client_config.channels[default_channel_name].peers)[0];
+    let default_peer_name = Object.keys(
+      client_config.channels[default_channel_name].peers
+    )[0];
 
     if (channels.length == 0) {
       throw new ExplorerError(explorer_mess.error.ERROR_2003);
     }
 
-
     for (let channel of channels) {
-      this.setChannelGenHash(
-        channel.channelname,
-        channel.channel_genesis_hash
-      );
+      this.setChannelGenHash(channel.channelname, channel.channel_genesis_hash);
 
       let nodes = await persistence
         .getMetricService()
@@ -138,12 +144,11 @@ class FabricClient {
       let newchannel;
       try {
         newchannel = this.hfc_client.getChannel(channel.channelname);
-      } catch (e) { }
+      } catch (e) {}
       if (newchannel === undefined) {
-
         newchannel = this.hfc_client.newChannel(channel.channelname);
         if (nodes.length > 0) {
-          let url = "grpc://localhost";
+          let url = 'grpc://localhost';
           let newpeer = this.hfc_client.newPeer(url, {
             'ssl-target-name-override': default_peer_name,
             name: default_peer_name
@@ -154,27 +159,27 @@ class FabricClient {
 
       for (let node of nodes) {
         let peer_config = this.client_config.peers[node.server_hostname];
-        if (peer_config && peer_config.tlsCACerts) {
-          let pem;
-          try {
+        let pem;
+        try {
+          if (
+            this.client_config.client.tlsEnable &&
+            (peer_config && peer_config.tlsCACerts)
+          ) {
             pem = FabricUtils.getPEMfromConfig(peer_config.tlsCACerts);
-          } catch (e) { }
-          if (pem) {
-            let adminpeer = await this.newAdminPeer(node, pem);
-            if (adminpeer) {
-              let username = this.client_name + '_' + node.mspid + 'Admin';
-              if (!this.adminusers.get(username)) {
-                let user = await this.newUser(node.mspid, username);
-
-                if (user) {
-                  logger.debug(
-                    'Successfully created user [%s] for client [%s]',
-                    username,
-                    this.client_name
-                  );
-                  this.adminusers.set(username, user);
-                }
-              }
+          }
+        } catch (e) {}
+        let adminpeer = await this.newAdminPeer(node, pem);
+        if (adminpeer) {
+          let username = this.client_name + '_' + node.mspid + 'Admin';
+          if (!this.adminusers.get(username)) {
+            let user = await this.newUser(node.mspid, username);
+            if (user) {
+              logger.debug(
+                'Successfully created user [%s] for client [%s]',
+                username,
+                this.client_name
+              );
+              this.adminusers.set(username, user);
             }
           }
         }
@@ -361,7 +366,10 @@ class FabricClient {
         for (let org_name in discover_results.peers_by_org) {
           let org = discover_results.peers_by_org[org_name];
           for (var peer of org.peers) {
-            let pem = this.buildTlsRootCerts(discover_results.msps[org_name]);
+            let pem;
+            if (this.client_config.client.tlsEnable) {
+              pem = this.buildTlsRootCerts(discover_results.msps[org_name]);
+            }
             let adminpeer = await this.newAdminPeer(peer, pem);
           }
         }
@@ -373,7 +381,7 @@ class FabricClient {
   }
 
   newAdminPeer(peer, pem) {
-    if (!pem) {
+    if (this.client_config.client.tlsEnable && !pem) {
       logger.debug('Client.newAdminPeer parameter pem is required ');
       return;
     }

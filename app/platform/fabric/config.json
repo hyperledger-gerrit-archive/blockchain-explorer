@@ -3,7 +3,8 @@
     "network-1": {
       "version": "1.0",
       "clients": {
-        "client_1": {
+        "client-1": {
+          "tlsEnable": true,
           "organization": "Org1MSP",
           "channel": "mychannel",
           "credentialStore": {
@@ -88,8 +89,6 @@
     },
     "network-2": {}
   },
-  "keyValueStore": "/tmp/fabric-client-kvs",
   "configtxgenToolPath": "fabric-path/fabric-samples/bin",
-  "eventWaitTime": "30000",  
   "license": "Apache-2.0"
 }

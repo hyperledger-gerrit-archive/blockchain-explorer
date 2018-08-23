@@ -13,6 +13,7 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, highly maintainable, op
 - [Fabric Network Setup](#Fabric-Network-Setup)
 - [Fabric Configure Hyperledger Explorer](#Fabric-Configure-Hyperledger-Explorer)
 - [Composer Configure Hyperledger Explorer](#Composer-Configure-Hyperledger-Explorer)
+- [Cello Configure Hyperledger Explorer](#Cello-Configure-Hyperledger-Explorer)
 - [Build Hyperledger Explorer](#Build-Hyperledger-Explorer)
 - [Run Hyperledger Explorer](#Run-Hyperledger-Explorer)
 - [Hyperledger Explorer Swagger](#Hyperledger-Explorer-Swagger)
@@ -32,9 +33,10 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, highly maintainable, op
 
 ## Directory Structure
 ```
-├── app            	 Application backend root
-	├── explorer     Explorer configuration, REST API
+├── app            	 Application backend root, Explorer configuration
+	├── rest         REST API
 	├── persistence  Persistence layer
+		├── fabric   Persistence API (Hyperledger Fabric)
 	├── platform     Platforms
 		├── fabric   Explorer API (Hyperledger Fabric)
 	├── test         Application backend test
@@ -53,8 +55,9 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, highly maintainable, op
 Following are the software dependencies required to install and run hyperledger explorer
 * nodejs 8.11.x (Note that v9.x is not yet supported)
 * PostgreSQL 9.5 or greater
+* Jq [https://stedolan.github.io/jq/]
 
-Hyperledger Explorer works with Hyperledger Fabric 1.1.  Install the following software dependencies to manage fabric network.
+Hyperledger Explorer works with Hyperledger Fabric 1.2.  Install the following software dependencies to manage fabric network.
 * docker 17.06.2-ce [https://www.docker.com/community-edition]
 * docker-compose 1.14.0 [https://docs.docker.com/compose/]
 
@@ -70,8 +73,27 @@ Clone this repository to get the latest using the following command.
 <a name="Database-Setup"/>
 
 ## Database Setup
-**Important repeat after every git pull
 
+- `cd blockchain-explorer/app`
+- Modify explorerconfig.json to update postgresql properties
+	- postgreSQL host, port, database, username, password details.
+```json
+ "postgreSQL": {
+		"host": "127.0.0.1",
+		"port": "5432",
+		"database": "fabricexplorer",
+		"username": "hppoc",
+		"passwd": "password"
+	}
+```
+
+**Important repeat after every git pull
+Run create database script.
+
+- `cd blockchain-explorer/app/persistence/fabric/postgreSQL/db`
+- `./createdb.sh`
+
+Run db status commands.
 Connect to PostgreSQL database.
 
 #### Ubuntu
@@ -81,13 +103,6 @@ Connect to PostgreSQL database.
 #### macOS
 
  - `psql postgres`
-
-Run create database script.
-
-- `\i app/persistence/postgreSQL/db/explorerpg.sql`
-- `\i app/persistence/postgreSQL/db/updatepg.sql`
-
-Run db status commands.
 
 - `\l` view created fabricexplorer database
 - `\d` view created tables
@@ -105,12 +120,11 @@ Run db status commands.
 On another terminal.
 
 - `cd blockchain-explorer/app/platform/fabric`
-- Modify config.json to update network-config.
+- Modify config.json to update network-configs.
 	- Change "fabric-path" to your fabric network path,
-	example: "/home/user1/workspace/fabric-samples" for the following keys: "tls_cacerts", "key", "cert".
-	- Final path for key "tls_cacerts" will be:  "/home/user1/workspace/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt".
-- Modify "syncStartDate" to filter data by block timestamp
-- Modify "channel" to your default channel
+	example: "/home/user1/workspace/fabric-samples" for the following keys: "tlsCACerts", "adminPrivateKey", "signedCert".
+	- Final path for key "tlsCACerts" will be:  "/home/user1/workspace/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt".
+- Modify "network-id.clients.client-id.channel" to your default channel for each client
 
  **or**
 
@@ -131,18 +145,27 @@ On another terminal.
 - Modify "syncStartDate" to filter data by block timestamp
 - Modify "channel" to your default channel
 
-- `cd blockchain-explorer/app/persistence/postgreSQL/db`
-- Modify pgconfig.json to update postgresql properties
-	- pg host, port, database, username, password details.
-```json
- "pg": {
-		"host": "127.0.0.1",
-		"port": "5432",
-		"database": "fabricexplorer",
-		"username": "hppoc",
-		"passwd": "password"
-	}
-```
+If you are connecting to a non TLS fabric peer, please modify the
+protocol (`grpcs->grpc`) and port (`9051-> 9050`) in the peer url and remove the `tls_cacerts`. Depending on this key, the application decides whether to go TLS or non TLS route.
+
+**or**
+
+## Hyperledger Cello Setup
+
+ Setup your fabric network using Cello [Build your network](https://cello.readthedocs.io/en/latest/setup/) from Hyperledger Cello. Once you setup the network, please modify the values in `/blockchain-explorer/app/platform/fabric/config.json` accordingly.
+
+<a name="Cello-Configure-Hyperledger-Explorer"/>
+
+## Cello Configure Hyperledger Explorer
+
+On another terminal.
+
+- `cd blockchain-explorer/app/platform/fabric`
+- Modify config.json to update network-config.
+	- Change "fabric-path" to your cello network path,
+	- Configure the Hyperledger cello based on this link [CONFIG-CELLO-HLEXPLORER.md](CONFIG-CELLO-HLEXPLORER.md)
+- Modify "syncStartDate" to filter data by block timestamp
+- Modify "channel" to your default channel
 
 If you are connecting to a non TLS fabric peer, please modify the
 protocol (`grpcs->grpc`) and port (`9051-> 9050`) in the peer url and remove the `tls_cacerts`. Depending on this key, the application decides whether to go TLS or non TLS route.
@@ -168,12 +191,24 @@ On another terminal.
 
 ## Run Hyperledger Explorer
 
+- `cd blockchain-explorer/app`
+- Modify explorerconfig.json to update sync properties
+	- sync type (local or host), platform, blocksSyncTime(in min) details.
+		- local : sync process will start with Explorer start.sh
+		- host  : sync process has to be started explicitly with syncstart.sh [Note : pass network-id and client-id to start specific client sync process, else first network and client will be considered]
+
 From new terminal.
 
 - `cd blockchain-explorer/`
 - `./start.sh`  (it will have the backend up).
 - Launch the URL http://localhost:8080 on a browser.
 - `./stop.sh`  (it will stop the node server).
+
+From new terminal(If sync = host in explorerconfig.json).
+
+- `cd blockchain-explorer/`
+- `./syncstart.sh` (it will have the sync node up).
+- `./syncstop.sh`  (it will stop the sync node).
 
 - If the Hyperledger Explorer was used previously in your browser be sure to clear the cache before relaunching.
 

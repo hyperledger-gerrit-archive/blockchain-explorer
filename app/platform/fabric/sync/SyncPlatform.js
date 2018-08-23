@@ -30,7 +30,7 @@ class SyncPlatform {
     this.sender = sender;
     this.persistence = persistence;
     this.syncService = new SyncService(this, this.persistence);
-    this.synchBlocksTime = 60000;
+    this.blocksSyncTime = 60000;
     this.client_configs;
   }
 
@@ -70,11 +70,11 @@ class SyncPlatform {
     );
 
     // setting the block synch interval time
-    await this.setSynchBlocksTime(all_config);
+    await this.setBlocksSyncTime(all_config);
 
-    logger.debug('Blocks synch interval time >> %s', this.synchBlocksTime);
+    logger.debug('Blocks synch interval time >> %s', this.blocksSyncTime);
     // update the discovery-cache-life as block synch interval time in global config
-    global.hfc.config.set('discovery-cache-life', this.synchBlocksTime);
+    global.hfc.config.set('discovery-cache-life', this.blocksSyncTime);
 
     let client_configs = network_configs[this.network_name];
 
@@ -108,10 +108,10 @@ class SyncPlatform {
       await this.eventHub.initialize();
 
       // setting interval for validating any missing block from the current client ledger
-      // set synchBlocksTime property in platform config.json in minutes
+      // set blocksSyncTime property in platform config.json in minutes
       setInterval(function() {
         _self.isChannelEventHubConnected();
-      }, this.synchBlocksTime);
+      }, this.blocksSyncTime);
       logger.debug(
         '******* Initialization end for child client process %s ******',
         this.client_name
@@ -134,12 +134,12 @@ class SyncPlatform {
     }
   }
 
-  setSynchBlocksTime(synchBlocksTime) {
-    if (synchBlocksTime) {
-      let time = parseInt(synchBlocksTime, 10);
+  setBlocksSyncTime(blocksSyncTime) {
+    if (blocksSyncTime) {
+      let time = parseInt(blocksSyncTime, 10);
       if (!isNaN(time)) {
-        this.synchBlocksTime = 1 * 10 * 1000;
-        //this.synchBlocksTime = time * 60 * 1000;
+        //this.blocksSyncTime = 1 * 10 * 1000;
+        this.blocksSyncTime = time * 60 * 1000;
       }
     }
   }

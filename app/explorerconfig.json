@@ -1,8 +1,6 @@
 {
   "persistence": "postgreSQL",
-  "platforms": [
-    "fabric"
-  ],
+  "platforms": ["fabric"],
   "postgreSQL": {
     "host": "127.0.0.1",
     "port": "5432",
@@ -13,6 +11,6 @@
   "sync": {
     "type": "local",
     "platform": "fabric",
-    "synchBlocksTime": "3"
+    "blocksSyncTime": "3"
   }
 }
