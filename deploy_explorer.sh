@@ -69,6 +69,7 @@ function config(){
 	# Default Hyperledger Explorer Database Credentials.
 	explorer_db_user="hppoc"
 	explorer_db_pwd="password"
+	explorer_db_name="fabricexplorer"
 	#configure explorer to connect to specific Blockchain network using given configuration
 	network_config_file=$(pwd)/examples/$fabricBlockchainNetworkName/config.json
 	#configure explorer to connect to specific Blockchain network using given crypto materials
@@ -159,8 +160,13 @@ function deploy_load_database(){
 	echo "Creating Default user..."
 	docker exec $fabric_explorer_db_name psql -h localhost -U postgres -c "CREATE USER $explorer_db_user WITH PASSWORD '$explorer_db_pwd'"
 	echo "Creating default database schemas..."
-	docker exec $fabric_explorer_db_name psql -h localhost -U postgres -a -f /opt/explorerpg.sql
-	docker exec $fabric_explorer_db_name psql -h localhost -U postgres -a -f /opt/updatepg.sql
+
+	DATABASE=$explorer_db_name
+	USER=$explorer_db_user
+	PASSWD=$explorer_db_pwd
+
+	docker exec $fabric_explorer_db_name psql -h localhost -U postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -a -f /opt/explorerpg.sql
+	docker exec $fabric_explorer_db_name psql -h localhost -U postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -a -f /opt/updatepg.sql
 }
 
 function deploy_build_explorer(){
