@@ -272,6 +272,16 @@ From new terminal.
 - `cd blockchain-explorer/`
 - `./deploy_explorer.sh dockerConfig`  (it will automatically deploy both database and frontend apps using Hyperledger Fabric network configuration stored under `examples/dockerConfig` folder)
 
+Note: the example with additional information can be found at [examples/net1](./examples/net1) folder.
+
+### Steps to stop containers
+- `cd blockchain-explorer/`
+- `./deploy_explorer.sh --down`
+
+### Steps to remove containers and clean images
+- `cd blockchain-explorer/`
+- `./deploy_explorer.sh --clean`
+
 <a name="Hyperledger-Explorer-Swagger"/>
 
 ## Hyperledger Explorer Swagger
