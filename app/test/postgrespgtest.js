@@ -5,14 +5,16 @@ const chai = require('chai');
 const should = chai.should();
 const { spy, stub } = require('sinon');
 
-const config = require('../explorerconfig.json');
-const pgconfig = config.postgreSQL;
-const pgtestdb = require('pg-testdb');
 const test = require('tape');
 const readline = require('readline');
 const ArrayList = require('arraylist');
 const StringBuilder = require('string-builder');
 const fs = require('fs');
+const pgtestdb = require('pg-testdb');
+
+const config = require('../explorerconfig.json');
+
+const pgconfig = config.postgreSQL;
 
 const options = {
   testdb: 'pgtestdb',
