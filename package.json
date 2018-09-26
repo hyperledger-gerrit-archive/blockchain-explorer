@@ -1,6 +1,6 @@
 {
   "name": "hyperledger-explorer",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "hyperledger-explorer",
   "private": true,
   "main": "main.js",
@@ -46,6 +46,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "babel-eslint": "^10.0.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
