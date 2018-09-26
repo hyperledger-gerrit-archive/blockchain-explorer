@@ -3,8 +3,8 @@
  */
 
 import React from 'react';
-import ReactTable from '../Styled/Table';
 import matchSorter from 'match-sorter';
+import ReactTable from '../Styled/Table';
 import { peerListType } from '../types';
 
 const Peers = ({ peerList }) => {

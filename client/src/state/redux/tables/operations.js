@@ -3,6 +3,7 @@
  */
 import actions from './actions';
 import { get } from '../../../services/request';
+
 const blockList = channel => dispatch =>
   get(`/api/blockAndTxList/${channel}/0`)
     .then(resp => {

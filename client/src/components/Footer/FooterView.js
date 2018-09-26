@@ -26,19 +26,17 @@ const styles = theme => {
   };
 };
 
-const FooterView = ({ classes }) => {
-  return (
-    <div className={classes.root}>
-      <div>
-        <div className={classes.footer}>
-          {'Hyperledger Explorer Client Version: '}
-          {clientJson.version}
-          &emsp;
-          {'Fabric Compatibility: '} {Version.map(version => version)}
-        </div>
+const FooterView = ({ classes }) => (
+  <div className={classes.root}>
+    <div>
+      <div className={classes.footer}>
+        {'Hyperledger Explorer Client Version: '}
+        {clientJson.version}
+        &emsp;
+        {'Fabric Compatibility: '} {Version.map(version => version)}
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default withStyles(styles)(FooterView);
