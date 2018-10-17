@@ -11,6 +11,12 @@ FROM node:8.11.3-alpine
 ENV DEFAULT_WORKDIR /opt
 ENV EXPLORER_APP_PATH $DEFAULT_WORKDIR/explorer
 
+# create volume
+
+RUN mkdir ~/data
+VOLUME .
+ADD . /opt/data/
+
 # database configuration
 ENV DATABASE_HOST 127.0.0.1
 ENV DATABASE_PORT 5432
