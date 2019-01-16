@@ -50,8 +50,8 @@ class Platform {
     await this.buildClients(network_configs);
 
     if (
-      this.networks.size == 0
-      && this.networks.get(this.defaultNetwork).size == 0
+      this.networks.size == 0 &&
+      this.networks.get(this.defaultNetwork).size == 0
     ) {
       logger.error(
         '************* There is no client found for Hyperledger fabric platform *************'
@@ -172,9 +172,15 @@ class Platform {
   }
 
   getClient(network_name, client_name) {
-    return this.networks
+    var client = this.networks
       .get(network_name || this.defaultNetwork)
       .get(client_name || this.defaultClient);
+    // client.hfc_client.getUserContext().then( (user)=>{
+    //   logger.debug(
+    //     'Current context : %s', user.getName()
+    //   );
+    // });
+    return client;
   }
 
   getPersistence() {

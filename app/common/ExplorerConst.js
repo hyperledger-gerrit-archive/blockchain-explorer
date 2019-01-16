@@ -9,6 +9,7 @@ exports.explorer = {
     PLATFORM_FABRIC: 'fabric',
     PERSISTENCE_POSTGRESQL: 'postgreSQL',
     SYNC_TYPE_LOCAL: 'local',
-    SYNC_TYPE_HOST: 'host'
+    SYNC_TYPE_HOST: 'host',
+    DEFAULT_USERNAME: 'dflt_hlbeuser'
   }
 };
