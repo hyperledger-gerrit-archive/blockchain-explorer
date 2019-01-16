@@ -172,9 +172,15 @@ class Platform {
   }
 
   getClient(network_name, client_name) {
-    return this.networks
+    var client = this.networks
       .get(network_name || this.defaultNetwork)
       .get(client_name || this.defaultClient);
+    // client.hfc_client.getUserContext().then( (user)=>{
+    //   logger.debug(
+    //     'Current context : %s', user.getName()
+    //   );
+    // });
+    return client;
   }
 
   getPersistence() {
