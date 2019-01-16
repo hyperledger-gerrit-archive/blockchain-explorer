@@ -14,6 +14,8 @@ const User = require('fabric-client/lib/User.js');
 const client_utils = require('fabric-client/lib/client-utils.js');
 const channelService = require('./service/channelService.js');
 const FabricUtils = require('./utils/FabricUtils.js');
+const explorer_config = require('../../explorerconfig.json');
+const explorer_const = require('../../common/ExplorerConst.js').explorer.const;
 
 const _commonProto = grpc.load(
   `${__dirname}/../../../node_modules/fabric-client/lib/protos/common/common.proto`
@@ -55,6 +57,33 @@ class FabricClient {
       'Successfully loaded client [%s] from configuration',
       this.client_name
     );
+
+    let organization = client_config.client.organization;
+    logger.debug('Check if CA is enabled or not [%s]', organization);
+    // logger.debug( client_config );
+    logger.debug(
+      client_config.organizations[organization].certificateAuthorities
+    );
+
+    if (
+      client_config.organizations[organization].certificateAuthorities &&
+      client_config.organizations[organization].certificateAuthorities.length
+    ) {
+      logger.debug('CA configured in connection profile [%s]', organization);
+      // CA configured
+      let username;
+      if (
+        explorer_config &&
+        explorer_config.user &&
+        explorer_config.user.username
+      ) {
+        username = explorer_config.user.username;
+      } else {
+        username = explorer_const.DEFAULT_USERNAME;
+        logger.info('Not specified a username. Use default >> %s', username);
+      }
+      await this.getRegisteredUser(client_config, username);
+    }
 
     // getting channels from queryChannels
     let channels;
@@ -209,7 +238,59 @@ class FabricClient {
     }
   }
 
-  async LoadClientFromConfig(client_config) {
+  async getRegisteredUser(client_config, username) {
+    try {
+      var userOrg = client_config.client.organization;
+      var client = await this.LoadClientFromConfig(client_config);
+      logger.debug('Successfully initialized the credential stores');
+      // client can now act as an agent for organization Org1
+      // first check to see if the user is already enrolled
+      var user = await this.hfc_client.getUserContext(username, true);
+      if (user && user.isEnrolled()) {
+        logger.info('Successfully loaded member from persistence');
+      } else {
+        // user was not enrolled, so we will need an admin user object to register
+        logger.info(
+          'User %s was not enrolled, so we will need an admin user object to register',
+          username
+        );
+        var admins = { username: 'admin', secret: 'adminpw' };
+        let adminUserObj = await this.hfc_client.setUserContext({
+          username: admins.username,
+          password: admins.secret
+        });
+        let caClient = this.hfc_client.getCertificateAuthority();
+        let secret = await caClient.register(
+          {
+            enrollmentID: username,
+            affiliation: userOrg.toLowerCase() + '.department1'
+          },
+          adminUserObj
+        );
+        logger.debug('Successfully got the secret for user %s', username);
+        user = await this.hfc_client.setUserContext({
+          username: username,
+          password: secret
+        });
+        logger.debug(
+          'Successfully enrolled username %s  and setUserContext on the client object',
+          username
+        );
+      }
+      if (!user || !user.isEnrolled) {
+        throw new Error('User was not enrolled ');
+      }
+    } catch (error) {
+      logger.error(
+        'Failed to get registered user: %s with error: %s',
+        username,
+        error.toString()
+      );
+      return 'failed ' + error.toString();
+    }
+  }
+
+  async LoadClientFromConfig(client_config, username) {
     const _self = this;
     // load client through hfc client network configuration class
     await this.hfc_client.loadFromConfig(client_config);
@@ -220,6 +301,17 @@ class FabricClient {
       this.client_name
     );
 
+    if (username) {
+      let user = await client.getUserContext(username, true);
+      if (!user) {
+        throw new Error(util.format('User was not found :', username));
+      } else {
+        logger.debug(
+          'User %s was found to be registered and enrolled',
+          username
+        );
+      }
+    }
     // Creating Admin User
     const organization = await this.hfc_client._network_config.getOrganization(
       client_config.client.organization,
@@ -356,9 +448,9 @@ class FabricClient {
           for (const endpoint of endpoints) {
             let requesturl = endpoint.host;
             if (
-              this.client_config.orderers
-              && this.client_config.orderers[requesturl]
-              && this.client_config.orderers[requesturl].url
+              this.client_config.orderers &&
+              this.client_config.orderers[requesturl] &&
+              this.client_config.orderers[requesturl].url
             ) {
               requesturl = this.client_config.orderers[requesturl].url;
               this.newOrderer(
@@ -385,9 +477,9 @@ class FabricClient {
           for (const peer of org.peers) {
             const host = peer.endpoint.split(':')[0];
             if (
-              this.client_config.peers
-              && this.client_config.peers[host]
-              && this.client_config.peers[host].url
+              this.client_config.peers &&
+              this.client_config.peers[host] &&
+              this.client_config.peers[host].url
             ) {
               const adminpeer = this.newAdminPeer(
                 channel,
@@ -432,9 +524,9 @@ class FabricClient {
     if (!this.adminpeers.get(url)) {
       let newpeer = this.newPeer(channel, url, msp_id, host, msps);
       if (
-        newpeer
-        && newpeer.constructor
-        && newpeer.constructor.name === 'ChannelPeer'
+        newpeer &&
+        newpeer.constructor &&
+        newpeer.constructor.name === 'ChannelPeer'
       ) {
         newpeer = newpeer.getPeer();
       }
@@ -451,7 +543,7 @@ class FabricClient {
 
   newOrderer(channel, url, msp_id, host, msps) {
     let newOrderer = null;
-    channel._orderers.forEach((orderer) => {
+    channel._orderers.forEach(orderer => {
       if (orderer.getUrl() === url) {
         logger.debug('Found existing orderer %s', url);
         newOrderer = orderer;
@@ -474,7 +566,7 @@ class FabricClient {
 
   newPeer(channel, url, msp_id, host, msps) {
     let newpeer = null;
-    channel._channel_peers.forEach((peer) => {
+    channel._channel_peers.forEach(peer => {
       if (peer.getUrl() === url) {
         logger.debug('Found existing peer %s', url);
         newpeer = peer;

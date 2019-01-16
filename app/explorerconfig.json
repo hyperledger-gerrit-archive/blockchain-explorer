@@ -12,5 +12,9 @@
     "type": "local",
     "platform": "fabric",
     "blocksSyncTime": "3"
+  },
+  "user": {
+    "username": "hlbeuser2",
+    "affiliation": ".department1"
   }
 }

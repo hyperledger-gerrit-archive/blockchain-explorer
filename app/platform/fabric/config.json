@@ -5,7 +5,7 @@
       "clients": {
         "client-1": {
           "tlsEnable": true,
-          "organization": "Org1MSP",
+          "organization": "Org1",
           "channel": "mychannel",
           "credentialStore": {
             "path": "./tmp/credentialStore_Org1/credential",
@@ -32,7 +32,7 @@
         }
       },
       "organizations": {
-        "Org1MSP": {
+        "Org1": {
           "mspid": "Org1MSP",
           "fullpath": false,
           "adminPrivateKey": {
@@ -40,13 +40,18 @@
           },
           "signedCert": {
             "path": "fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
-          }
+          },
+          "certificateAuthorities": ["ca-org1"]
         },
-        "Org2MSP": {
+        "Org2": {
           "mspid": "Org2MSP",
           "adminPrivateKey": {
             "path": "fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore"
-          }
+          },
+          "signedCert": {
+            "path": "fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts"
+          },
+          "certificateAuthorities": ["ca-org2"]
         },
         "OrdererMSP": {
           "mspid": "OrdererMSP",
@@ -67,18 +72,48 @@
           }
         },
         "peer1.org1.example.com": {
-          "url": "grpcs://localhost:8051"
+          "url": "grpcs://localhost:7056"
         },
         "peer0.org2.example.com": {
-          "url": "grpcs://localhost:9051"
+          "url": "grpcs://localhost:8051"
         },
         "peer1.org2.example.com": {
-          "url": "grpcs://localhost:10051"
+          "url": "grpcs://localhost:8056"
         }
       },
       "orderers": {
         "orderer.example.com": {
           "url": "grpcs://localhost:7050"
+        }
+      },
+      "certificateAuthorities": {
+        "ca-org1": {
+          "url": "https://localhost:7054",
+          "httpOptions": {
+            "verify": false
+          },
+          "tlsCACerts": {
+            "path": "fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"
+          },
+          "registrar": {
+            "enrollId": "admin",
+            "enrollSecret": "adminpw"
+          },
+          "caName": "ca-org1"
+        },
+        "ca-org2": {
+          "url": "https://localhost:8054",
+          "httpOptions": {
+            "verify": false
+          },
+          "tlsCACerts": {
+            "path": "fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem"
+          },
+          "registrar": {
+            "enrollId": "admin",
+            "enrollSecret": "adminpw"
+          },
+          "caName": "ca-org2"
         }
       }
     },
