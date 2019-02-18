@@ -23,9 +23,6 @@
             "peer0.org2.example.com": {},
             "peer1.org2.example.com": {}
           },
-          "orderers": [
-            "orderer.example.com"
-          ],
           "connection": {
             "timeout": {
               "peer": {
@@ -112,9 +109,6 @@
       },
       "orderers": {
         "orderer.example.com": {
-          "tlsCACerts": {
-            "path": "/tmp/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt"
-          },
           "url": "grpcs://orderer.example.com:7050"
         }
       },
