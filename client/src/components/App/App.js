@@ -14,8 +14,9 @@ import LandingPage from '../View/LandingPage';
 import ErrorMesage from '../ErrorMesage';
 import { chartSelectors } from '../../state/redux/charts';
 import { themeSelectors, themeActions } from '../../state/redux/theme';
+import { authSelectors } from '../../state/redux/auth';
 
-const styles = (theme) => {
+const styles = theme => {
   const { type } = theme.palette;
   const dark = type === 'dark';
   return {
@@ -27,9 +28,9 @@ const styles = (theme) => {
       bottom: 0,
       right: 0,
       '& ol, & ul': {
-        listStyle: 'none',
-      },
-    },
+        listStyle: 'none'
+      }
+    }
   };
 };
 
@@ -37,7 +38,7 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: true
     };
   }
 
@@ -45,7 +46,7 @@ export class App extends Component {
     this.setState({ loading: false });
   };
 
-  refreshComponent = (mode) => {
+  refreshComponent = mode => {
     this.props.changeTheme(mode);
   };
 
@@ -54,14 +55,14 @@ export class App extends Component {
     if (loading) {
       return <LandingPage updateLoadStatus={this.updateLoadStatus} />;
     }
-    const { classes, mode, error } = this.props;
+    const { classes, mode, error, auth } = this.props;
     const className = classnames(mode === 'dark' && 'dark-theme', classes.app);
     return (
       <div className={className}>
-        <Header refresh={this.refreshComponent} />
+        {auth && <Header refresh={this.refreshComponent} />}
         {error && <ErrorMesage message={error} />}
         <Main />
-        <Footer />
+        {auth && <Footer />}
       </div>
     );
   }
@@ -70,6 +71,7 @@ export class App extends Component {
 const { modeSelector } = themeSelectors;
 const { changeTheme } = themeActions;
 const { errorMessageSelector } = chartSelectors;
+const { authSelector } = authSelectors;
 
 export default compose(
   withStyles(styles),
@@ -77,7 +79,8 @@ export default compose(
     state => ({
       error: errorMessageSelector(state),
       mode: modeSelector(state),
+      auth: authSelector(state)
     }),
-    { changeTheme },
-  ),
+    { changeTheme }
+  )
 )(App);

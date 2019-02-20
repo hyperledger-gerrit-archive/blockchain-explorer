@@ -26,9 +26,13 @@ import {
   peerStatusType,
   transactionType,
   transactionByOrgType,
-  transactionListType,
+  transactionListType
 } from './types';
 import PageNotFound from './View/PageNotFound';
+
+import Login from './Login';
+
+import Private from './Route';
 
 const {
   currentChannelSelector,
@@ -36,7 +40,7 @@ const {
   channelListSelector,
   dashStatsSelector,
   peerStatusSelector,
-  transactionByOrgSelector,
+  transactionByOrgSelector
 } = chartSelectors;
 
 const {
@@ -47,20 +51,20 @@ const {
   transactionSelector,
   transactionListSelector,
   blockListSearchSelector,
-  transactionListSearchSelector,
+  transactionListSearchSelector
 } = tableSelectors;
 
-const styles = (theme) => {
+const styles = theme => {
   const { type } = theme.palette;
   const dark = type === 'dark';
   return {
     main: {
-      color: dark ? '#ffffff' : undefined,
-    },
+      color: dark ? '#ffffff' : undefined
+    }
   };
 };
 
-export const Main = (props) => {
+export const Main = props => {
   const {
     classes,
     blockList,
@@ -78,7 +82,7 @@ export const Main = (props) => {
     blockListSearch,
     transactionListSearch,
     getBlockListSearch,
-    getTransactionListSearch,
+    getTransactionListSearch
   } = props;
 
   const blocksViewProps = {
@@ -88,14 +92,14 @@ export const Main = (props) => {
     transactionByOrg,
     currentChannel,
     getTransaction,
-    transaction,
+    transaction
   };
   const chaincodeViewProps = {
-    chaincodeList,
+    chaincodeList
   };
 
   const channelsViewProps = {
-    channels,
+    channels
   };
 
   const dashboardViewProps = {
@@ -103,11 +107,11 @@ export const Main = (props) => {
     dashStats,
     peerStatus,
     transactionByOrg,
-    blockActivity,
+    blockActivity
   };
 
   const networkViewProps = {
-    peerList,
+    peerList
   };
 
   const transactionsViewProps = {
@@ -117,7 +121,7 @@ export const Main = (props) => {
     getTransaction,
     transactionByOrg,
     transactionListSearch,
-    getTransactionListSearch,
+    getTransactionListSearch
   };
 
   return (
@@ -126,35 +130,57 @@ export const Main = (props) => {
         <Switch>
           <Route
             exact
-            path="/"
-            render={() => <DashboardView {...dashboardViewProps} />}
+            path="/login"
+            render={routeprops => <Login {...routeprops} />}
           />
-          <Route
+          <Private
+            exact
+            path="/"
+            render={routeprops => (
+              <DashboardView {...{ ...dashboardViewProps, ...routeprops }} />
+            )}
+          />
+          <Private
             exact
             path="/blocks"
-            render={() => <BlocksView {...blocksViewProps} />}
+            render={routeprops => (
+              <BlocksView {...{ ...blocksViewProps, ...routeprops }} />
+            )}
           />
-          <Route
+          <Private
             exact
             path="/chaincodes"
-            render={() => <ChaincodeView {...chaincodeViewProps} />}
+            render={routeprops => (
+              <ChaincodeView {...{ ...chaincodeViewProps, ...routeprops }} />
+            )}
           />
-          <Route
+          <Private
             exact
             path="/channels"
-            render={() => <ChannelsView {...channelsViewProps} />}
+            render={routeprops => (
+              <ChannelsView {...{ ...channelsViewProps, ...routeprops }} />
+            )}
           />
-          <Route
+          <Private
             exact
             path="/network"
-            render={() => <NetworkView {...networkViewProps} />}
+            render={routeprops => (
+              <NetworkView {...{ ...networkViewProps, ...routeprops }} />
+            )}
+          />
+          <Private
+            exact
+            path="/transactions"
+            render={routeprops => (
+              <TransactionsView
+                {...{ ...transactionsViewProps, ...routeprops }}
+              />
+            )}
           />
           <Route
             exact
-            path="/transactions"
-            render={() => <TransactionsView {...transactionsViewProps} />}
+            render={routeprops => <PageNotFound {...routeprops} />}
           />
-          <Route exact render={() => <PageNotFound />} />
         </Switch>
       </div>
     </Router>
@@ -172,7 +198,7 @@ Main.propTypes = {
   peerStatus: peerStatusType.isRequired,
   transaction: transactionType.isRequired,
   transactionByOrg: transactionByOrgType.isRequired,
-  transactionList: transactionListType.isRequired,
+  transactionList: transactionListType.isRequired
 };
 
 export default compose(
@@ -192,12 +218,12 @@ export default compose(
       transactionList: transactionListSelector(state),
       blockListSearch: blockListSearchSelector(state),
       transactionListSearch: transactionListSearchSelector(state),
-      blockActivity: blockActivitySelector(state),
+      blockActivity: blockActivitySelector(state)
     }),
     {
       getTransaction: tableOperations.transaction,
       getBlockListSearch: tableOperations.blockListSearch,
-      getTransactionListSearch: tableOperations.transactionListSearch,
-    },
-  ),
+      getTransactionListSearch: tableOperations.transactionListSearch
+    }
+  )
 )(Main);
