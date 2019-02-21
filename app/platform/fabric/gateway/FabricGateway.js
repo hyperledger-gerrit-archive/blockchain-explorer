@@ -9,69 +9,78 @@ const {
 } = require('fabric-network');
 const Fabric_Client = require('fabric-client');
 const FabricCAServices = require('fabric-ca-client');
+const FabricConfig = require('../FabricConfig');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const helper = require('../../../common/helper');
-//const logger = helper.getLogger('FabricGateway');
+const logger = helper.getLogger('FabricGateway');
+const explorer_mess = require('../../../common/ExplorerMessage').explorer;
+const ExplorerError = require('../../../common/ExplorerError');
 
 class FabricGateway {
-  constructor(networkConfig, caUser, caPassword) {
-    this.hfc_client = new Fabric_Client();
+  constructor(networkConfig) {
     this.networkConfig = networkConfig;
     this.config;
     this.gateway;
-    this.userName = caUser; // admin
-    this.enrollmentSecret = caPassword; // adminpw
-    this.identityLabel = this.userName;
+    this.userName; // admin
+    this.enrollmentSecret; // adminpw
+    this.identityLabel;
     this.mspId;
     this.wallet;
     this.tlsEnable;
-    this.defaultChannel;
+    this.defaultChannelName;
     this.defaultPeer;
+    this.defaultPeerUrl;
     this.gateway = new Gateway();
+    this.fabricConfig = new FabricConfig();
     this.fabricCaEnabled = false;
     this.networkName;
+    this.client;
     this.FSWALLET;
   }
 
   async initialize() {
     const configPath = path.resolve(__dirname, this.networkConfig);
-    const configJson = fs.readFileSync(configPath, 'utf8');
-    this.config = JSON.parse(configJson);
-    this.tlsEnable = this.config.client.tlsEnable;
-    this.networkName = this.config.name;
+    this.fabricConfig = new FabricConfig();
+    this.fabricConfig.initialize(configPath);
+    this.config = this.fabricConfig.getConfig();
+    this.tlsEnable = this.fabricConfig.getTls();
+    this.userName = this.fabricConfig.getAdminUser();
+    this.enrollmentSecret = this.fabricConfig.getAdminPassword();
+    this.networkName = this.fabricConfig.getNetworkName();
+    this.identityLabel = this.userName;
     this.FSWALLET = 'wallet/' + this.networkName;
-    const info = `\n\t\tLoading configuration  ${
-      this.networkName
-    }, tlsEnable: ${this.tlsEnable} \n\n`;
-    console.log(info.toUpperCase());
-    let x;
 
-    let peers = [];
-    this._getPeersConfig(peers);
+    const info = `\n\Loading configuration  ${this.networkName}, tlsEnable: ${
+      this.tlsEnable
+    } \n\n`;
+    logger.debug(info.toUpperCase());
 
-    console.log('========== > peer name ', peers[0].name);
+    let peers = this.fabricConfig.getPeers();
     this.defaultPeer = peers[0].name;
+    this.defaultPeerUrl = peers[0].url;
     let orgMsp = [];
     let signedCertPath;
     let adminPrivateKeyPath;
+    logger.log('========== > defaultPeer ', this.defaultPeer);
 
-    ({ adminPrivateKeyPath, signedCertPath } = this._getOrganizationsConfig(
+    // getting ors masp, and certtificates
+    ({
       orgMsp,
       adminPrivateKeyPath,
       signedCertPath
-    ));
-    console.log(
+    } = this.fabricConfig.getOrganizationsConfig());
+    logger.log(
       '\nsignedCertPath ',
       signedCertPath,
       ' \nadminPrivateKeyPath ',
       adminPrivateKeyPath
     );
 
-    this.defaultChannel = this._getDefaultChannel();
+    this.defaultChannelName = this.fabricConfig.getDefaultChannel();
     this.mspId = orgMsp[0];
-    let caURL = this._getCAurl();
+    let caURL = this.fabricConfig.getCAurl();
     let identity;
     let enrollment;
 
@@ -79,32 +88,36 @@ class FabricGateway {
       // Create a new file system based wallet for managing identities.
       let walletPath = path.join(process.cwd(), this.FSWALLET);
       this.wallet = new FileSystemWallet(walletPath);
+      //TODO, when used after a different network is configured, fails to get the correct user, may need to use identity label, password, or other
       // Check to see if we've already enrolled the admin user.
-      const adminExists = await this.wallet.exists(this.userName);
-      if (adminExists) {
-        console.log(
-          `An identity for the admin user: ${
-            this.userName
-          } already exists in the wallet`
-        );
-        await this.wallet.export(this.userName);
+      //   const adminExists = await this.wallet.exists(this.userName);
+      /*   if (adminExists) {
+           console.debug(
+             `An identity for the admin user: ${
+             this.userName
+             } already exists in the wallet`
+           );
+           await this.wallet.export(this.userName);
+         } else {
+           */
+
+      if (this.fabricCaEnabled) {
+        //TODO best way to verify  if the network has fabric-ca server authorization
+        ({ enrollment, identity } = await this._enrollCaIdentity(
+          caURL,
+          enrollment,
+          identity
+        ));
       } else {
-        if (this.fabricCaEnabled) {
-          ({ enrollment, identity } = await this._enrollCaIdentity(
-            caURL,
-            enrollment,
-            identity
-          ));
-        } else {
-          // Identity to credentials to be stored in the wallet
-          // look for signedCert in first-network-connection.json
-          identity = await this._enrollUserIdentity(
-            signedCertPath,
-            adminPrivateKeyPath,
-            identity
-          );
-        }
+        // Identity to credentials to be stored in the wallet
+        // look for signedCert in first-network-connection.json
+        identity = await this._enrollUserIdentity(
+          signedCertPath,
+          adminPrivateKeyPath,
+          identity
+        );
       }
+      //}
 
       // Set connection options; identity and wallet
       let connectionOptions = {
@@ -121,91 +134,40 @@ class FabricGateway {
         this.config,
         connectionOptions
       );
-      // testing only
-      await this.gateWayInfoTest();
+      this.client = this.gateway.getClient();
+
+      // TODO, testing only, tobe removed
+      // await this.gateWayInfoTest();
     } catch (error) {
-      // logger.error(` ${error}`);
-      console.log('LAST CATCH ', error);
-      //TODO decide how to proceed if error
-      process.exit(1);
-    }
-  }
-  /**
-   * @private method
-   *
-   */
-  _getDefaultChannel() {
-    let x;
-    let defChannel;
-    for (x in this.config.channels) {
-      // getting default channel
-      console.log('this.config.channels ', x);
-      if (x) {
-        defChannel = x;
-      }
-    }
-    return defChannel;
-  }
-
-  /**
-   * @private method
-   *
-   */
-  _getPeersConfig(peers) {
-    let x;
-    for (x in this.config.peers) {
-      //TODO may need to handle multiple fabric-ca server ??
-      if (this.config.peers[x].url) {
-        let peer = {
-          name: x,
-          url: this.config.peers[x].url,
-          tlsCACerts: this.config.peers[x].tlsCACerts,
-          eventUrl: this.config.peers[x].eventUrl,
-          grpcOptions: this.config.peers[x].grpcOptions
-        };
-        peers.push(peer);
-      }
+      ogger.error(` ${error}`);
+      console.debug(error);
+      throw new ExplorerError(explorer_mess.error.ERROR_1010);
     }
   }
 
-  /**
-   * @private method
-   *
-   */
-  _getOrganizationsConfig(orgMsp, adminPrivateKeyPath, signedCertPath) {
-    let x;
-    for (x in this.config.organizations) {
-      //TODO may need to handle multiple MSPID's ??
-      if (this.config.organizations[x].mspid) {
-        orgMsp.push(this.config.organizations[x].mspid);
-      }
-      if (this.config.organizations[x].adminPrivateKey) {
-        adminPrivateKeyPath = this.config.organizations[x].adminPrivateKey.path;
-      }
-      if (this.config.organizations[x].signedCert) {
-        signedCertPath = this.config.organizations[x].signedCert.path;
-      }
-    }
-    return { adminPrivateKeyPath, signedCertPath };
+  getDefaultChannelName() {
+    return this.defaultChannelName;
+  }
+  getDefaultPeer() {
+    return this.defaultPeer;
+  }
+  getDefaultPeerUrl() {
+    return this.defaultPeerUrl;
   }
 
-  /**
-   * @private method
-   *
-   */
-  _getCAurl() {
-    let x;
-    let caURL = [];
-    if (this.config.certificateAuthorities) {
-      this.fabricCaEnabled = true;
-      for (x in this.config.certificateAuthorities) {
-        //TODO may need to handle multiple fabric-ca server ??
-        if (this.config.certificateAuthorities[x].url) {
-          caURL.push(this.config.certificateAuthorities[x].url);
-        }
-      }
-    }
-    return caURL;
+  getDefaultMspId() {
+    return this.mspId;
+  }
+  async getClient() {
+    return this.client;
+  }
+
+  getTls() {
+    return this.tlsEnable;
+  }
+
+  getConfig() {
+    return this.config;
   }
 
   /**
@@ -213,18 +175,15 @@ class FabricGateway {
    *
    */
   async _enrollUserIdentity(signedCertPath, adminPrivateKeyPath, identity) {
-    console.dir(signedCertPath, adminPrivateKeyPath);
-    console.log(typeof signedCertPath);
-    console.log(typeof adminPrivateKeyPath);
     let _signedCertPath = signedCertPath;
     let _adminPrivateKeyPath = adminPrivateKeyPath;
     const cert = fs.readFileSync(_signedCertPath, 'utf8');
-    console.log('cert =========> \n\n\n\n ', cert);
     // see in first-network-connection.json adminPrivateKey key
     const key = fs.readFileSync(_adminPrivateKeyPath, 'utf8');
-    console.log('key =========> \n\n\n\n ', key);
+    //console.log('key =========> \n\n\n\n ', key);
     identity = X509WalletMixin.createIdentity(this.mspId, cert, key);
-    console.log(cert, key);
+    // console.log(cert, key);
+    logger.log('this.identityLabel ', this.identityLabel);
     await this.wallet.import(this.identityLabel, identity);
     return identity;
   }
@@ -235,7 +194,7 @@ class FabricGateway {
    */
   async _enrollCaIdentity(caURL, enrollment, identity) {
     try {
-      console.log(
+      logger.log(
         'this.fabricCaEnabled ',
         this.fabricCaEnabled,
         ' caURL[0] ',
@@ -247,22 +206,22 @@ class FabricGateway {
           enrollmentID: this.userName,
           enrollmentSecret: this.enrollmentSecret
         });
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>> enrollment ', enrollment);
+        logger.log('>>>>>>>>>>>>>>>>>>>>>>>>> enrollment ', enrollment);
         identity = X509WalletMixin.createIdentity(
           this.mspId,
           enrollment.certificate,
           enrollment.key.toBytes()
         );
-        console.log('identity ', identity);
+        logger.log('identity ', identity);
+        // import identity wallet
         await this.wallet.import(this.identityLabel, identity);
       }
     } catch (error) {
-      //  logger.error(` ${error}`);
       //TODO add explanation for message 'Calling enrollment endpoint failed with error [Error: connect ECONNREFUSED 127.0.0.1:7054]'
       // reason : no fabric running, check your network
+      logger.error('Error instantiating FabricCAServices ', error);
       console.dir('Error instantiating FabricCAServices ', error);
       //TODO decide how to proceed if error
-      process.exit(1);
     }
     return { enrollment, identity };
   }
@@ -276,18 +235,18 @@ class FabricGateway {
         return id.label === label;
       });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
     return identityInfo;
   }
-  async gateWayInfoTest() {
-    // console.dir(this.gateway)
-    const client = this.gateway.getClient();
 
+  //TODO testing only, to be removed or a test needs to be created
+  async gateWayInfoTest() {
+    const client = this.gateway.getClient();
     console.log('this.defaultPeer', this.defaultPeer);
     let channels = await client.queryChannels(this.defaultPeer, true);
     console.log(channels);
-    const channel = await client.getChannel(this.defaultChannel, true);
+    const channel = await client.getChannel(this.defaultChannelName, true);
     await channel.initialize({
       discover: true,
       target: this.defaultPeer

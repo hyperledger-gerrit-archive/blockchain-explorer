@@ -10,6 +10,7 @@ const helper = require('../../../common/helper');
 const logger = helper.getLogger('SyncServices');
 const ExplorerError = require('../../../common/ExplorerError');
 const FabricUtils = require('../../../platform/fabric/utils/FabricUtils');
+const Fabric_Client = require('fabric-client');
 const fabric_const = require('../../../platform/fabric/utils/FabricConst')
   .fabric.const;
 const explorer_error = require('../../../common/ExplorerMessage').explorer
@@ -40,6 +41,10 @@ class SyncServices {
   async initialize() {}
 
   async synchNetworkConfigToDB(client) {
+    console.log(
+      'SyncServices.synchNetworkConfigToDB client ',
+      client.client_name
+    );
     const channels = client.getChannels();
     for (const [channel_name, channel] of channels.entries()) {
       const block = await client.getGenesisBlock(channel);
@@ -182,6 +187,8 @@ class SyncServices {
 
   // insert new orderer and channel relation
   async insertNewOrderers(orderer, channel_genesis_hash, client) {
+    console.log('insertNewOrderers orderer ', orderer);
+    // console.dir(client)
     let requesturl = `${orderer.host}:${orderer.port}`;
     if (
       client.client_config.orderers &&
@@ -295,11 +302,7 @@ class SyncServices {
         const block = await client
           .getHFC_Client()
           .getChannel(channel_name)
-          .queryBlock(
-            result.missing_id,
-            client.getDefaultPeer().getName(),
-            true
-          );
+          .queryBlock(result.missing_id, client.getDefaultPeer(), true);
         await this.processBlockEvent(client, block);
       }
     } else {
@@ -490,16 +493,16 @@ class SyncServices {
         }
         const read_set = JSON.stringify(readSet, null, 2);
         const write_set = JSON.stringify(writeSet, null, 2);
-
-        if (typeof read_set === 'string' || read_set instanceof String) {
-          console.log('read_set length', read_set.length);
-          const bytes = Buffer.byteLength(write_set, 'utf8');
-          const kb = (bytes + 512) / 1024;
-          const mb = (kb + 512) / 1024;
-          const size = `${mb} MB`;
-          console.log('write_set size >>>>>>>>> : ', size);
-        }
-
+        /*
+                if (typeof read_set === 'string' || read_set instanceof String) {
+                  console.log('read_set length', read_set.length);
+                  const bytes = Buffer.byteLength(write_set, 'utf8');
+                  const kb = (bytes + 512) / 1024;
+                  const mb = (kb + 512) / 1024;
+                  const size = `${mb} MB`;
+                  console.log('write_set size >>>>>>>>> : ', size);
+                }
+        */
         const chaincode_id = String.fromCharCode.apply(null, chaincodeID);
         // checking new chaincode is deployed
         if (
@@ -562,6 +565,7 @@ class SyncServices {
           .saveTransaction(transaction_row);
       }
       // insert block
+      console.log('block_row.blocknum ', block_row.blocknum);
       const status = await this.persistence
         .getCrudService()
         .saveBlock(block_row);

@@ -46,12 +46,15 @@ class Platform {
     logger.debug(
       '******* Initialization started for hyperledger fabric platform ******'
     );
-
+    console.debug(
+      '******* Initialization started for hyperledger fabric platform ******,',
+      network_configs
+    );
     await this.buildClients(network_configs);
 
     if (
-      this.networks.size == 0
-      && this.networks.get(this.defaultNetwork).size == 0
+      this.networks.size == 0 &&
+      this.networks.get(this.defaultNetwork).size == 0
     ) {
       logger.error(
         '************* There is no client found for Hyperledger fabric platform *************'
@@ -79,41 +82,55 @@ class Platform {
     for (const network_name in this.network_configs) {
       this.networks.set(network_name, new Map());
       const client_configs = this.network_configs[network_name];
+      // console.log('network_name ', network_name, ' client_configs ', client_configs)
       if (!this.defaultNetwork) {
         this.defaultNetwork = network_name;
       }
 
       // Create fabric explorer client for each
       // Each client is connected to only a single peer and monitor that particular peer only
-      for (const client_name in client_configs.clients) {
-        // set default client as first client
-        if (!this.defaultClient) {
-          this.defaultClient = client_name;
-        }
-
-        // create client instance
-        logger.debug('Creatinging client [%s] >> ', client_name);
-        let client;
-
-        if (clientstatus) {
-          client = await FabricUtils.createFabricClient(
-            client_configs,
-            client_name,
-            this.persistence
-          );
-        } else {
-          client = await FabricUtils.createDetachClient(
-            client_configs,
-            client_name,
-            this.persistence
-          );
-        }
-        if (client) {
-          // set client into clients map
-          const clients = this.networks.get(network_name);
-          clients.set(client_name, client);
-        }
+      console.log(
+        ' client_configs.name ',
+        client_configs.name,
+        ' client_configs.profile ',
+        client_configs.profile
+      );
+      const client_name = client_configs.name;
+      //  for (const client_name in client_configs) {
+      // console.log('client_name ', client_name, ' client_configs ', client_configs)
+      // set default client as first client
+      if (!this.defaultClient) {
+        this.defaultClient = client_name;
       }
+
+      // create client instance
+      logger.debug('Creatinging client [%s] >> ', client_configs, client_name);
+
+      let client;
+
+      if (clientstatus) {
+        console.log('FabricUtils.createFabricClient ');
+        client = await FabricUtils.createFabricClient(
+          client_configs,
+          client_name,
+          this.persistence
+        );
+      } else {
+        console.log('FabricUtils.createDetachClient ');
+        client = await FabricUtils.createDetachClient(
+          client_configs,
+          client_name,
+          this.persistence
+        );
+      }
+      if (client) {
+        // set client into clients map
+        console.log('FabricUtils.createDetachClient ');
+        const clients = this.networks.get(network_name);
+        clients.set(client_name, client);
+        console.log('clients ', clients);
+      }
+      //  }
     }
   }
 

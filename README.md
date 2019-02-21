@@ -140,12 +140,25 @@ Connect to PostgreSQL database.
 On another terminal.
 
 - `cd blockchain-explorer/app/platform/fabric`
-- Modify config.json to update network-configs.
-	- Change "fabric-path" to your fabric network path,
-	example: "/home/user1/workspace/fabric-samples" for the following keys: "tlsCACerts", "adminPrivateKey", "signedCert".
-	- Final path for key "tlsCACerts" will be:  "/home/user1/workspace/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt".
-- Modify "network-id.clients.client-id.channel" to your default channel for each client
-- Sample configuration provided, see file: blockchain-explorer/app/platform/fabric/config-balance-transfer.json
+- Modify config.json to define you fabric network connection profile
+	``` {
+         "network-configs": {
+            "first-network": {
+              "name": "firstnetwork",
+              "profile": "./connection-profile/first-network.json",
+              "enableAuthentication": false
+         }
+       },
+        "license": "Apache-2.0"
+     }``` 
+    - "first-network" is the name of your connection profile, can be changed to any name
+	- "name" is a name you want to give to your fabric network, you can change only value of the key "name"
+	- "profile" is the location of your connection profile, you can change only value of the key "profile"
+	- "enableAuthentication" is a flag to enable authentication using a login page
+- Modify connection profile
+	- Change "fabric-path" to your fabric network path in file /blockchain-explorer/app/platform/fabric/connection-profile/first-network.json,
+	- Profide full path to the adminPrivateKey config option, it ussually endt with "_sk", example:
+	```"/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/aaacd899a6362a5c8cc1e6f86d13bfccc777375365bbda9c710bb7119993d71c_sk"```
 
 ### Configure to work with fabric-ca server
 

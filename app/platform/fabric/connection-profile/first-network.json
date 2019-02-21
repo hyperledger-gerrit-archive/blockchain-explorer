@@ -11,7 +11,9 @@
         },
         "orderer": "300"
       }
-    }
+    },
+    "adminUser": "admin",
+    "adminPassword": "adminpw"
   },
   "channels": {
     "mychannel": {
@@ -32,20 +34,16 @@
   "organizations": {
     "Org1MSP": {
       "mspid": "Org1MSP",
-      "fullpath": false,
+      "fullpath": true,
       "adminPrivateKey": {
-        "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/3fc79aaf465cb80a4d393addbfefdd224147d40e324d17ab7d0013f6d600d8ba_sk"
+        "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/aaacd899a6362a5c8cc1e6f86d13bfccc777375365bbda9c710bb7119993d71c_sk"
       },
       "signedCert": {
         "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
       }
     }
   },
-  "orderers": {
-    "orderer.example.com": {
-      "url": "grpcs://localhost:7050"
-    }
-  },
+
   "peers": {
     "peer0.org1.example.com": {
       "tlsCACerts": {

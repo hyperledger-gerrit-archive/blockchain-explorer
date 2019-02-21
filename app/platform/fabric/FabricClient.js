@@ -4,7 +4,8 @@
 
 const Fabric_Client = require('fabric-client');
 const helper = require('../../common/helper');
-
+const fs = require('fs');
+const path = require('path');
 const logger = helper.getLogger('FabricClient');
 const ExplorerError = require('../../common/ExplorerError');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
@@ -16,8 +17,8 @@ const channelService = require('./service/channelService.js');
 const FabricUtils = require('./utils/FabricUtils.js');
 const explorer_config = require('../../explorerconfig.json');
 const explorer_const = require('../../common/ExplorerConst.js').explorer.const;
-const path = require('path');
-
+const FabricGateway = require('../../platform/fabric/gateway/FabricGateway');
+const FabricConfig = require('../fabric/FabricConfig');
 const _commonProto = grpc.load(
   `${__dirname}/../../../node_modules/fabric-client/lib/protos/common/common.proto`
 ).common;
@@ -30,69 +31,80 @@ const explorer_mess = require('../../common/ExplorerMessage').explorer;
 class FabricClient {
   constructor(client_name) {
     this.client_name = client_name;
-    this.hfc_client = new Fabric_Client();
+    this.hfc_client;
+    this.fabricGateway;
     this.defaultPeer = {};
+    this.defaultMspId;
     this.defaultChannel = {};
     this.defaultOrderer = null;
     this.channelsGenHash = new Map();
     this.client_config;
+    this.config;
     this.adminpeers = new Map();
     this.adminusers = new Map();
     this.peerroles = {};
     this.status = false;
+    this.tls = false;
+    this.asLocalhost;
     for (const role of ROLES) {
       this.peerroles[role] = role;
     }
   }
 
   async initialize(client_config, persistence) {
-    // Loading configuration for fabric-ca if enabled.
-    // It might be overriden by environment variables
-    Fabric_Client.addConfigFile(path.join(__dirname, 'config_ca.json'));
-    const asLocalhost = String(Fabric_Client.getConfigSetting('discovery-as-localhost', 'true')) === 'true';
-
     this.client_config = client_config;
 
     // Loading client from network configuration file
     logger.debug(
-      'Loading client  [%s] from configuration ...',
-      this.client_name
+      'Client configuration [%s]  ...',
+      this.client_name,
+      ' this.client_config ',
+      this.client_config
     );
-    await this.LoadClientFromConfig(client_config);
-    logger.debug(
-      'Successfully loaded client [%s] from configuration',
-      this.client_name
-    );
-
-    // enable discover
-    await this.defaultChannel.initialize({
-      discover: true,
-      target: this.defaultPeer,
-      asLocalhost: asLocalhost
-    });
-
-    let organization = client_config.client.organization;
-    logger.debug(
-      client_config.organizations[organization].certificateAuthorities
-    );
-
-    // Check if CA is configured or not
-    if (
-      client_config.organizations[organization].certificateAuthorities &&
-      client_config.organizations[organization].certificateAuthorities.length
-    ) {
-      // CA configured
-      logger.debug('CA configured in connection profile [%s]', organization);
-      await this.getRegisteredUser(client_config);
+    let name = this.client_config.name;
+    let profileConnection = this.client_config.profile;
+    let configPath = path.resolve(__dirname, profileConnection);
+    try {
+      // Use Gateway to connect to fabric network
+      this.fabricGateway = new FabricGateway(configPath);
+      await this.fabricGateway.initialize();
+      this.hfc_client = await this.fabricGateway.getClient();
+      this.hfc_client.setConfigSetting('initialize-with-discovery', true);
+      this.asLocalhost =
+        String(
+          this.hfc_client.getConfigSetting('discovery-as-localhost', 'true')
+        ) === 'true';
+      const channel_name = this.fabricGateway.getDefaultChannelName();
+      this.defaultPeer = this.fabricGateway.getDefaultPeer();
+      this.defaultMspId = this.fabricGateway.getDefaultMspId();
+      this.defaultChannel = this.hfc_client.getChannel(channel_name);
+      this.tls = this.fabricGateway.getTls();
+      this.config = this.fabricGateway.getConfig();
+      logger.debug(
+        'Set client [%s] default channel as  >> %s',
+        this.client_name,
+        this.defaultChannel.getName()
+      );
+      // set discovery protocol
+      if (!this.tls) {
+        this.hfc_client.setConfigSetting('discovery-protocol', 'grpc');
+      }
+      // enable discover service
+      await this.defaultChannel.initialize({
+        discover: true,
+        target: this.defaultPeer,
+        asLocalhost: this.asLocalhost
+      });
+    } catch (error) {
+      //TODO in case of the failure, should terminate explorer?
+      logger.error(error);
     }
 
     // getting channels from queryChannels
     let channels;
     try {
-      channels = await this.hfc_client.queryChannels(
-        this.defaultPeer.getName(),
-        true
-      );
+      logger.debug('this.defaultPeer ', this.defaultPeer);
+      channels = await this.hfc_client.queryChannels(this.defaultPeer, true);
     } catch (e) {
       logger.error(e);
     }
@@ -100,11 +112,18 @@ class FabricClient {
     if (channels) {
       this.status = true;
       logger.debug('Client channels >> %j', channels.channels);
-
       // initialize channel network information from Discover
       for (const channel of channels.channels) {
-        await this.initializeNewChannel(channel.channel_id);
-        logger.debug('Initialized channel >> %s', channel.channel_id);
+        logger.debug('Initializing channel ', channel.channel_id);
+        try {
+          await this.initializeNewChannel(channel.channel_id);
+          logger.debug('Initialized channel >> %s', channel.channel_id);
+        } catch (error) {
+          logger.error(
+            'Failed to initialize new channel: ',
+            channel.channel_id
+          );
+        }
       }
 
       try {
@@ -118,13 +137,16 @@ class FabricClient {
           this.client_name
         );
       }
+
       // setting default orderer
-      const channel_name = client_config.client.channel;
-      const channel = await this.hfc_client.getChannel(channel_name);
+      // the new channel may not be in the configuration, let's use this.defaultChannel.getName()
+      const defaultChannelName = this.defaultChannel.getName();
+      const channel = await this.hfc_client.getChannel(defaultChannelName);
       const temp_orderers = await channel.getOrderers();
       if (temp_orderers && temp_orderers.length > 0) {
         this.defaultOrderer = temp_orderers[0];
       } else {
+        logget.error(' No orderrers found ', temp_orderers);
         throw new ExplorerError(explorer_mess.error.ERROR_2002);
       }
       logger.debug(
@@ -133,32 +155,39 @@ class FabricClient {
         this.defaultOrderer.getName()
       );
     } else if (persistence) {
-      this.initializeDetachClient(client_config, persistence);
+      console.log('\n ********* call to initializeDetachClient **********');
+      this.initializeDetachClient(this.client_config, persistence);
     }
   }
 
   async initializeDetachClient(client_config, persistence) {
-    this.client_config = client_config;
+    console.debug('initializeDetachClient --> client_config ', client_config);
+    const name = client_config.name;
+    const profileConnection = client_config.profile;
+    const configPath = path.resolve(__dirname, profileConnection);
+    let fabricConfig = new FabricConfig();
+    fabricConfig.initialize(configPath);
+    const config = fabricConfig.getConfig();
+    const tlsEnable = fabricConfig.getTls();
+    this.userName = fabricConfig.getAdminUser();
+    const peers = fabricConfig.getPeersConfig();
 
+    console.log('initializeDetachClient, network config) ', config);
     console.log(
-      '\n**************************************************************************************'
+      '\n************************************* initializeDetachClient *************************************************'
     );
     console.log('Error :', explorer_mess.error.ERROR_1009);
     console.log('Info : ', explorer_mess.message.MESSAGE_1001);
     console.log(
-      '**************************************************************************************\n'
+      '************************************** initializeDetachClient ************************************************\n'
     );
-    const defaultClientId = Object.keys(
-      client_config.channels[client_config.client.channel].peers
-    )[0];
+    const defaultPeerConfig = fabricConfig.getDefaultPeerConfig();
+    const default_peer_name = defaultPeerConfig.name;
     const channels = await persistence
       .getCrudService()
-      .getChannelsInfo(defaultClientId);
+      .getChannelsInfo(default_peer_name);
 
-    const default_channel_name = client_config.client.channel;
-    const default_peer_name = Object.keys(
-      client_config.channels[default_channel_name].peers
-    )[0];
+    const default_channel_name = fabricConfig.getDefaultChannel();
 
     if (channels.length == 0) {
       throw new ExplorerError(explorer_mess.error.ERROR_2003);
@@ -166,7 +195,6 @@ class FabricClient {
 
     for (const channel of channels) {
       this.setChannelGenHash(channel.channelname, channel.channel_genesis_hash);
-
       const nodes = await persistence
         .getMetricService()
         .getPeerList(channel.channel_genesis_hash);
@@ -174,13 +202,15 @@ class FabricClient {
       let newchannel;
       try {
         newchannel = this.hfc_client.getChannel(channel.channelname);
-      } catch (e) {}
+      } catch (e) {
+        logger.error('Failed to get channel from client ', e);
+      }
       if (newchannel === undefined) {
         newchannel = this.hfc_client.newChannel(channel.channelname);
       }
 
       for (const node of nodes) {
-        const peer_config = this.client_config.peers[node.server_hostname];
+        const peer_config = peers[node.server_hostname];
         let pem;
         try {
           if (peer_config && peer_config.tlsCACerts) {
@@ -190,39 +220,27 @@ class FabricClient {
                 tls_root_certs: pem
               }
             };
-            const adminpeer = await this.newAdminPeer(
-              newchannel,
-              node.requests,
-              node.mspid,
-              node.server_hostname,
-              msps
-            );
-            if (adminpeer) {
-              const username = `${this.client_name}_${node.mspid}Admin`;
-              if (!this.adminusers.get(username)) {
-                const user = await this.newUser(node.mspid, username);
-                if (user) {
-                  logger.debug(
-                    'Successfully created user [%s] for client [%s]',
-                    username,
-                    this.client_name
-                  );
-                  this.adminusers.set(username, user);
-                }
-              }
-            }
           }
         } catch (e) {}
       }
       try {
         newchannel.getPeer(default_peer_name);
       } catch (e) {
-        const url = 'grpc://localhost:7051';
-        const newpeer = this.hfc_client.newPeer(url, {
-          'ssl-target-name-override': default_peer_name,
-          name: default_peer_name
-        });
-        newchannel.addPeer(newpeer);
+        console.error(
+          'Failed to connect to default peer: ',
+          default_peer_name,
+          ' \n',
+          error
+        );
+        /*
+                const url = 'grpc://localhost:7051';
+                const newpeer = this.hfc_client.newPeer(url, {
+                  'ssl-target-name-override': default_peer_name,
+                  name: default_peer_name
+                });
+                newchannel.addPeer(newpeer);
+        
+                */
       }
     }
 
@@ -239,6 +257,7 @@ class FabricClient {
     }
   }
 
+  //TODO move, or reuse this method to register a user
   async getRegisteredUser(client_config) {
     try {
       var username = Fabric_Client.getConfigSetting(
@@ -300,6 +319,7 @@ class FabricClient {
     }
   }
 
+  //TODO move this method, no longer loading config using client.loadFromConfig method
   async LoadClientFromConfig(client_config, username) {
     const _self = this;
     // load client through hfc client network configuration class
@@ -371,16 +391,25 @@ class FabricClient {
 
   async initializeNewChannel(channel_name) {
     // If the new channel is not defined in configuration, then use default channel configuration as new channel configuration
-    if (!this.client_config.channels[channel_name]) {
+    if (!this.config.channels[channel_name]) {
       this.hfc_client._network_config._network_config.channels[
         channel_name
-      ] = this.client_config.channels[this.defaultChannel.getName()];
+      ] = this.config.channels[this.defaultChannel.getName()];
     }
     // get channel, if the channel is not exist in the hfc client context,
     // then it will create new channel from the netwrok configuration
-    const channel = this.hfc_client.getChannel(channel_name);
-    await this.initializeChannelFromDiscover(channel_name);
+    let channel;
+    try {
+      channel = await this.hfc_client.getChannel(channel_name);
+      // enable discover
 
+      await this.initializeChannelFromDiscover(channel_name);
+    } catch (error) {
+      logger.error(
+        'Failed to initialize Channel From Discover, channel ',
+        channel_name
+      );
+    }
     // get genesis block for the channel
     const block = await this.getGenesisBlock(channel);
     logger.debug(
@@ -388,12 +417,17 @@ class FabricClient {
       this.client_name,
       block
     );
+
     const channel_genesis_hash = await FabricUtils.generateBlockHash(
       block.header
     );
     // setting channel_genesis_hash to map
     this.setChannelGenHash(channel_name, channel_genesis_hash);
-
+    console.debug(
+      'Channel genesis hash for channel [%s] >> %s',
+      channel_name,
+      channel_genesis_hash
+    );
     logger.debug(
       'Channel genesis hash for channel [%s] >> %s',
       channel_name,
@@ -402,17 +436,30 @@ class FabricClient {
   }
 
   async initializeChannelFromDiscover(channel_name) {
+    console.debug('initializeChannelFromDiscover ', channel_name);
     let channel = this.hfc_client.getChannel(channel_name, false);
     if (!channel) {
       await this.initializeNewChannel(channel_name);
       channel = this.getChannel(channel_name);
     }
+    if (channel) {
+      if (!this.tls) {
+        this.hfc_client.setConfigSetting('discovery-protocol', 'grpc');
+      }
+      await channel.initialize({
+        discover: true,
+        target: this.defaultPeer,
+        asLocalhost: this.asLocalhost
+      });
+    }
+
     const discover_results = await this.getChannelDiscover(channel);
     logger.debug(
       'Discover results for client [%s] >> %j',
       this.client_name,
       discover_results
     );
+
     // creating users for admin peers
     if (discover_results) {
       if (discover_results.msps) {
@@ -432,19 +479,6 @@ class FabricClient {
             };
             channel._msp_manager.addMSP(config);
           }
-
-          const username = `${this.client_name}_${msp.id}Admin`;
-          if (!this.adminusers.get(username)) {
-            const user = await this.newUser(msp_name, username, msp.admins);
-            if (user) {
-              logger.debug(
-                'Successfully created user [%s] for client [%s]',
-                username,
-                this.client_name
-              );
-              this.adminusers.set(username, user);
-            }
-          }
         }
       }
       // creating orderers
@@ -452,69 +486,55 @@ class FabricClient {
         for (const msp_id in discover_results.orderers) {
           const endpoints = discover_results.orderers[msp_id].endpoints;
           for (const endpoint of endpoints) {
-            let requesturl = endpoint.host;
-            if (
-              this.client_config.orderers &&
-              this.client_config.orderers[requesturl] &&
-              this.client_config.orderers[requesturl].url
-            ) {
-              requesturl = this.client_config.orderers[requesturl].url;
-              this.newOrderer(
-                channel,
-                requesturl,
-                msp_id,
-                endpoint.host,
-                discover_results.msps
-              );
-              logger.debug(
-                'Successfully created orderer [%s:%s] for client [%s]',
-                endpoint.host,
-                endpoint.port,
-                this.client_name
-              );
-            }
+            console.log(' FabricClient.discover_results  endpoint ', endpoint);
+            let discoveryProtocol = this.hfc_client.getConfigSetting(
+              'discovery-protocol'
+            );
+            let requesturl =
+              `${discoveryProtocol}://${endpoint.host}:` + endpoint.port;
+            console.log(
+              '\ninitializeChannelFromDiscover.discoveryProtocol ',
+              discoveryProtocol,
+              ' requesturl ',
+              requesturl,
+              '\n'
+            );
+            logger.debug(
+              '\ninitializeChannelFromDiscover.discoveryProtocol ',
+              discoveryProtocol,
+              ' requesturl ',
+              requesturl,
+              '\n'
+            );
+            //     if (this.client_config.orderers && this.client_config.orderers[requesturl] && this.client_config.orderers[requesturl].url) {
+            //  requesturl = this.client_config.orderers[requesturl].url;
+            this.newOrderer(
+              channel,
+              requesturl,
+              msp_id,
+              endpoint.host,
+              discover_results.msps
+            );
+            logger.debug(
+              'Successfully created orderer [%s:%s] for client [%s]',
+              endpoint.host,
+              endpoint.port,
+              this.client_name
+            );
+            //  }
           }
         }
       }
-      // creating admin peers
-      if (discover_results && discover_results.peers_by_org) {
-        for (const org_name in discover_results.peers_by_org) {
-          const org = discover_results.peers_by_org[org_name];
-          for (const peer of org.peers) {
-            const host = peer.endpoint.split(':')[0];
-            if (
-              this.client_config.peers &&
-              this.client_config.peers[host] &&
-              this.client_config.peers[host].url
-            ) {
-              const adminpeer = this.newAdminPeer(
-                channel,
-                this.client_config.peers[host].url,
-                peer.mspid,
-                host,
-                discover_results.msps
-              );
-              logger.debug(
-                'Successfully created peer [%s] for client [%s]',
-                peer.endpoint,
-                this.client_name
-              );
-            } else {
-              logger.error(
-                'Peer configuration is not found in config.json for peer %s, so peer status not work for the peer',
-                peer.endpoint
-              );
-              return;
-            }
-          }
-        }
-      }
+
       channel._discovery_results = discover_results;
       return discover_results;
     }
   }
 
   newAdminPeer(channel, url, msp_id, host, msps) {
+    console.log(
+      `newAdminPeer(channel=${channel}, url=${url}, msp_id=${msp_id}, host=${host}, msps= ${msps}) `
+    );
     if (!url) {
       logger.debug('Client.newAdminPeer requesturl is required ');
       return;
@@ -526,6 +546,14 @@ class FabricClient {
     }
 
     if (!this.adminpeers.get(url)) {
+      console.log(
+        'if (!this.adminpeers.get(url)) ',
+        channel,
+        url,
+        msp_id,
+        host,
+        msps
+      );
       let newpeer = this.newPeer(channel, url, msp_id, host, msps);
       if (
         newpeer &&
@@ -593,7 +621,14 @@ class FabricClient {
 
   async getPeerStatus(peer) {
     const channel = this.getDefaultChannel();
+    console.log(
+      'getPeerStatus peer.requests ',
+      peer.requests,
+      ' channel ',
+      channel.getName()
+    );
     const adminpeer = this.adminpeers.get(peer.requests);
+    console.log('adminpeer ', adminpeer);
     let status = {};
     if (adminpeer) {
       const username = `${this.client_name}_${peer.mspid}Admin`;
@@ -634,13 +669,14 @@ class FabricClient {
       }
     } else {
       logger.debug('Admin peer Not found for %s', peer.requests);
+      console.debug('Admin peer Not found for %s', peer.requests);
     }
     return status;
   }
 
   async getChannelDiscover(channel) {
     const discover_request = {
-      target: this.defaultPeer.getName(),
+      target: this.defaultPeer,
       config: true
     };
     const discover_results = await channel._discover(discover_request);
@@ -659,6 +695,9 @@ class FabricClient {
   }
 
   async newUser(msp_name, username, msp_admin_cert) {
+    //console.log('newUser(msp_name, username, msp_admin_cert) ', msp_name, username, msp_admin_cert);
+    //console.log('his.hfc_client._network_config', this.hfc_client._network_config);
+
     const organization = await this.hfc_client._network_config.getOrganization(
       msp_name,
       true
@@ -807,7 +846,9 @@ class FabricClient {
   setDefaultOrderer(defaultOrderer) {
     this.defaultOrderer = defaultOrderer;
   }
-
+  getDefaultMspId() {
+    return this.defaultMspId;
+  }
   getStatus() {
     return this.status;
   }

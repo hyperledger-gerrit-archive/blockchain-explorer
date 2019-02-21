@@ -1,8 +1,8 @@
 {
-  "name": "fabcar-network",
+  "name": "balance-transfer-network",
   "version": "1.0.0",
   "client": {
-    "tlsEnable": false,
+    "tlsEnable": true,
     "organization": "Org1",
     "connection": {
       "timeout": {
@@ -11,7 +11,9 @@
         },
         "orderer": "300"
       }
-    }
+    },
+    "adminUser": "admin",
+    "adminPassword": "adminpw"
   },
   "channels": {
     "mychannel": {
@@ -30,18 +32,18 @@
   },
   "orderers": {
     "orderer.example.com": {
-      "url": "grpc://localhost:7050"
+      "url": "grpcs://localhost:7050"
     }
   },
   "peers": {
     "peer0.org1.example.com": {
-      "url": "grpc://localhost:7051"
+      "url": "grpcs://localhost:7051"
     }
   },
   "certificateAuthorities": {
-    "ca.example.com": {
-      "url": "http://localhost:7054",
-      "caName": "ca.example.com"
+    "ca.org1.example.com": {
+      "url": "https://localhost:7054",
+      "caName": "ca.org1.example.com"
     }
   }
 }

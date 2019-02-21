@@ -19,6 +19,8 @@ exports.explorer = {
       'Sync type is set as [local] hence independent sync process cannot be started. Please change the sync type to [host] and restart explorer',
     ERROR_1009:
       'Failed to connect client peer, please check the configuration and peer status',
+    ERROR_1010:
+      'Failed to create wallet, please check the configuration, and valid file paths',
 
     // Fabric Error message
     ERROR_2001:

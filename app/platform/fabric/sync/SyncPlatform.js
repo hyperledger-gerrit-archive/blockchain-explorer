@@ -42,10 +42,11 @@ class SyncPlatform {
       '******* Initialization started for child client process %s ******',
       this.client_name
     );
-
+    /* TOTDO TRY WITH NO Timeout*/
     setTimeout(() => {
+      console.log('SyncPlatform initialize()-- @ ', new Date().toDateString());
       this.initialize(args);
-    }, 60000);
+    }, 30000);
 
     // loading the config.json
     const all_config = JSON.parse(fs.readFileSync(config_path, 'utf8'));
@@ -94,37 +95,29 @@ class SyncPlatform {
       throw new ExplorerError(explorer_mess.error.ERROR_2011);
     }
     const peer = {
-      requests: this.client.getDefaultPeer().getUrl(),
-      mspid: this.client_configs.organizations[
-        this.client_configs.clients[this.client_name].organization
-      ].mspid
+      requests: this.client.getDefaultPeer(),
+      mspid: this.client.getDefaultMspId()
     };
 
-    const peerStatus = await this.client.getPeerStatus(peer);
-
-    if (peerStatus.status) {
-      // updating the client network and other details to DB
-      const res = await this.syncService.synchNetworkConfigToDB(this.client);
-      if (!res) {
-        return;
-      }
-
-      // start event
-      this.eventHub = new FabricEvent(this.client, this.syncService);
-      await this.eventHub.initialize();
-
-      // setting interval for validating any missing block from the current client ledger
-      // set blocksSyncTime property in platform config.json in minutes
-      setInterval(() => {
-        _self.isChannelEventHubConnected();
-      }, this.blocksSyncTime);
-      logger.debug(
-        '******* Initialization end for child client process %s ******',
-        this.client_name
-      );
-    } else {
-      throw new ExplorerError(explorer_mess.error.ERROR_1009);
+    // updating the client network and other details to DB
+    const res = await this.syncService.synchNetworkConfigToDB(this.client);
+    if (!res) {
+      return;
     }
+
+    // start event
+    this.eventHub = new FabricEvent(this.client, this.syncService);
+    await this.eventHub.initialize();
+
+    // setting interval for validating any missing block from the current client ledger
+    // set blocksSyncTime property in platform config.json in minutes
+    setInterval(() => {
+      _self.isChannelEventHubConnected();
+    }, this.blocksSyncTime);
+    logger.debug(
+      '******* Initialization end for child client process %s ******',
+      this.client_name
+    );
   }
 
   async isChannelEventHubConnected() {
