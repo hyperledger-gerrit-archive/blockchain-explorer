@@ -54,6 +54,12 @@ class FabricClient {
   async initialize(client_config, persistence) {
     this.client_config = client_config;
 
+    // if disabled TLS, notify discovering component to use grpc protocol
+    // before initialising channel
+    if (this.client_config.client.tlsEnable === false) {
+      Fabric_Client.setConfigSetting('discovery-protocol', 'grpc');
+    }
+
     // Loading client from network configuration file
     logger.debug(
       'Client configuration [%s]  ...',
