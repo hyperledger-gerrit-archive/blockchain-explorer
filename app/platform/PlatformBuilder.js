@@ -1,6 +1,6 @@
 /*
-*SPDX-License-Identifier: Apache-2.0
-*/
+ *SPDX-License-Identifier: Apache-2.0
+ */
 
 const explorer_const = require('../common/ExplorerConst').explorer.const;
 const explorer_error = require('../common/ExplorerMessage').explorer.error;

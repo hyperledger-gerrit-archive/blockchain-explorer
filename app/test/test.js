@@ -2,13 +2,13 @@
     SPDX-License-Identifier: Apache-2.0
 */
 
-const expect = require('chai').expect;
+// const expect = require('chai').expect;
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const helper = require('../common/helper');
 
-const should = chai.should();
+// const should = chai.should();
 chai.use(chaiHttp);
 
 describe('getLogger()', () => {

@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip
 } from 'recharts';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -24,19 +24,19 @@ const styles = (theme) => {
     content: {
       backgroundColor: dark ? '#3c3558' : undefined,
       '& .recharts-layer': {
-        fill: dark ? 'rgb(42, 173, 230) !important' : '#5bc5c2 !important',
+        fill: dark ? 'rgb(42, 173, 230) !important' : '#5bc5c2 !important'
       },
       '& .recharts-scatter-line': {
         stroke: dark ? '#ffc145 !important' : '#5bc5c2 !important',
-        strokeWidth: '2 !important',
+        strokeWidth: '2 !important'
       },
       '& .recharts-text': {
-        fill: dark ? '#ffffff !important' : undefined,
+        fill: dark ? '#ffffff !important' : undefined
       },
       '& .recharts-cartesian-axis-line': {
-        stroke: dark ? '#ffffff' : undefined,
-      },
-    },
+        stroke: dark ? '#ffffff' : undefined
+      }
+    }
   };
 };
 
@@ -63,7 +63,7 @@ export const TimeChart = ({ chartData, classes }) => (
 );
 
 TimeChart.propTypes = {
-  chartData: chartDataType.isRequired,
+  chartData: chartDataType.isRequired
 };
 
 export default withStyles(styles)(TimeChart);

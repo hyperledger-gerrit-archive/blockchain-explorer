@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import moment from 'moment-timezone';
 import {
-  TabContent, TabPane, Nav, NavItem, NavLink,
+  TabContent, TabPane, Nav, NavItem, NavLink
 } from 'reactstrap';
 import classnames from 'classnames';
 import { chartSelectors, chartOperations } from '../../state/redux/charts';
@@ -22,7 +22,7 @@ import {
   getTransactionPerHourType,
   getTransactionPerMinType,
   transactionPerHourType,
-  transactionPerMinType,
+  transactionPerMinType
 } from '../types';
 
 const {
@@ -30,7 +30,7 @@ const {
   blockPerMinSelector,
   currentChannelSelector,
   transactionPerHourSelector,
-  transactionPerMinSelector,
+  transactionPerMinSelector
 } = chartSelectors;
 
 const styles = (theme) => {
@@ -39,8 +39,8 @@ const styles = (theme) => {
   return {
     chart: {
       color: dark ? '#ffffff' : undefined,
-      backgroundColor: dark ? '#453e68' : undefined,
-    },
+      backgroundColor: dark ? '#453e68' : undefined
+    }
   };
 };
 
@@ -48,7 +48,7 @@ export class ChartStats extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: '1',
+      activeTab: '1'
     };
   }
 
@@ -68,7 +68,7 @@ export class ChartStats extends Component {
       getBlocksPerHour,
       getBlocksPerMin,
       getTransactionPerHour,
-      getTransactionPerMin,
+      getTransactionPerMin
     } = this.props;
 
     getBlocksPerMin(currentChannel);
@@ -88,7 +88,7 @@ export class ChartStats extends Component {
         datetime: moment(data.datetime)
           .tz(moment.tz.guess())
           .format('h:mm A'),
-        count: data.count,
+        count: data.count
       };
     });
 
@@ -96,13 +96,13 @@ export class ChartStats extends Component {
 
     return {
       displayData,
-      dataMax,
+      dataMax
     };
   };
 
   toggle = (tab) => {
     this.setState({
-      activeTab: tab,
+      activeTab: tab
     });
   };
 
@@ -113,7 +113,7 @@ export class ChartStats extends Component {
       blockPerMin,
       transactionPerHour,
       transactionPerMin,
-      classes,
+      classes
     } = this.props;
 
     return (
@@ -122,7 +122,7 @@ export class ChartStats extends Component {
           <NavItem>
             <NavLink
               className={classnames({
-                active: activeTab === '1',
+                active: activeTab === '1'
               })}
               onClick={() => {
                 this.toggle('1');
@@ -134,7 +134,7 @@ export class ChartStats extends Component {
           <NavItem>
             <NavLink
               className={classnames({
-                active: activeTab === '2',
+                active: activeTab === '2'
               })}
               onClick={() => {
                 this.toggle('2');

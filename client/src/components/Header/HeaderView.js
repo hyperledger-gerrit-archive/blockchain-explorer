@@ -7,7 +7,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import {
-  Nav, Navbar, NavbarBrand, NavbarToggler, Collapse,
+  Nav, Navbar, NavbarBrand, NavbarToggler, Collapse
 } from 'reactstrap';
 import { HashRouter as Router, NavLink } from 'react-router-dom';
 import Switch from '@material-ui/core/Switch';
@@ -39,7 +39,7 @@ import {
   getTransactionByOrgType,
   getTransactionPerHourType,
   getTransactionPerMinType,
-  refreshType,
+  refreshType
 } from '../types';
 
 const {
@@ -51,7 +51,7 @@ const {
   dashStats,
   changeChannel,
   blockActivity,
-  peerStatus,
+  peerStatus
 } = chartOperations;
 
 const {
@@ -59,7 +59,7 @@ const {
   chaincodeList,
   channels,
   peerList,
-  transactionList,
+  transactionList
 } = tableOperations;
 
 const { currentChannelSelector } = chartSelectors;
@@ -69,7 +69,7 @@ const styles = (theme) => {
   const { type } = theme.palette;
   const dark = type === 'dark';
   const darkNavbar = dark && {
-    background: 'linear-gradient(to right, rgb(236, 233, 252), #4d4575)',
+    background: 'linear-gradient(to right, rgb(236, 233, 252), #4d4575)'
   };
   return {
     logo: {
@@ -77,12 +77,12 @@ const styles = (theme) => {
       height: 50,
       '@media (max-width: 1415px) and (min-width: 990px)': {
         width: 200,
-        height: 40,
-      },
+        height: 40
+      }
     },
     navbarHeader: {
       backgroundColor: '#e8e8e8',
-      ...darkNavbar,
+      ...darkNavbar
     },
     tab: {
       color: dark ? '#242036' : '#000000',
@@ -91,11 +91,11 @@ const styles = (theme) => {
       height: 50,
       margin: 10,
       '&:hover': {
-        color: dark ? '#242036' : '#000000',
+        color: dark ? '#242036' : '#000000'
       },
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        fontSize: '0.85rem',
-      },
+        fontSize: '0.85rem'
+      }
     },
     activeTab: {
       color: '#ffffff',
@@ -104,15 +104,15 @@ const styles = (theme) => {
       marginTop: 20,
       padding: 10,
       '&:hover': {
-        color: '#ffffff',
+        color: '#ffffff'
       },
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        padding: '8%',
-      },
+        padding: '8%'
+      }
     },
     adminButton: {
       paddingTop: 0,
-      marginTop: 0,
+      marginTop: 0
     },
     themeSwitch: {
       height: 50,
@@ -122,11 +122,11 @@ const styles = (theme) => {
       width: 100,
       paddingTop: 0,
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        display: 'flex',
+        display: 'flex'
       },
       '@media (max-width: 990px)': {
-        marginLeft: 0,
-      },
+        marginLeft: 0
+      }
     },
     bell: {
       color: dark ? 'rgb(139, 143, 148)' : '#5f6164',
@@ -134,44 +134,44 @@ const styles = (theme) => {
       margin: 8,
       float: 'none',
       '&:hover': {
-        color: dark ? '#c1d7f0' : '#24272a',
-      },
+        color: dark ? '#c1d7f0' : '#24272a'
+      }
     },
     channel: {
       width: 200,
       margin: 8,
       float: 'none',
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        width: '9em',
+        width: '9em'
       },
     },
     channelLoader: {
       textAlign: 'center',
-      padding: 20,
+      padding: 20
     },
     loader: {
       margin: '0 auto',
-      width: 100,
+      width: 100
     },
     sunIcon: {
       color: dark ? 'rgb(247, 200, 92)' : 'rgb(245, 185, 47)',
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        marginTop: 15,
-      },
+        marginTop: 15
+      }
     },
     moonIcon: {
       color: dark ? '#9cd7f7' : 'rgb(104, 195, 245)',
       '@media (max-width: 1415px) and (min-width: 990px)': {
-        marginTop: 15,
+        marginTop: 15
       },
     },
     toggleIcon: {
       color: dark ? '#242136' : '#58c5c2',
       fontSize: '1.75em',
       '&:focus': {
-        outline: 'none',
-      },
-    },
+        outline: 'none'
+      }
+    }
   };
 };
 
@@ -187,7 +187,7 @@ export class HeaderView extends Component {
       notifications: [],
       isLoading: true,
       modalOpen: false,
-      selectedChannel: {},
+      selectedChannel: {}
     };
   }
 
@@ -199,19 +199,19 @@ export class HeaderView extends Component {
       if (element.channel_genesis_hash === currentChannel) {
         selectedValue = {
           value: element.channel_genesis_hash,
-          label: element.channelname,
+          label: element.channelname
         };
       }
       arr.push({
         value: element.channel_genesis_hash,
-        label: element.channelname,
+        label: element.channelname
       });
     });
 
     this.setState({
       channels: arr,
       isLoading: false,
-      selectedChannel: selectedValue,
+      selectedChannel: selectedValue
     });
 
     this.interVal = setInterval(() => {
@@ -246,7 +246,7 @@ export class HeaderView extends Component {
         } else if (element.channel_genesis_hash === nextProps.currentChannel) {
           selectedValue = {
             value: element.channel_genesis_hash,
-            label: element.channelname,
+            label: element.channelname
           };
         }
       });
@@ -262,7 +262,7 @@ export class HeaderView extends Component {
     this.setState({
       channels: options,
       isLoading: false,
-      selectedChannel: selectedValue,
+      selectedChannel: selectedValue
     });
     if (nextProps.currentChannel !== currentChannel) {
       this.syncData(nextProps.currentChannel);
@@ -273,7 +273,7 @@ export class HeaderView extends Component {
     const { isOpen } = this.state;
     if (window.matchMedia('(max-width:992px)').matches) {
       this.setState({
-        isOpen: !isOpen,
+        isOpen: !isOpen
       });
     }
   };

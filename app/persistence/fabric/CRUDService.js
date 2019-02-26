@@ -3,7 +3,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 const helper = require('../../common/helper');
 
 const logger = helper.getLogger('CRUDService');
@@ -112,11 +111,11 @@ class CRUDService {
   async saveBlock(block) {
     const c = await this.sql
       .getRowByPkOne(`select count(1) as c from blocks where blocknum='${
-        block.blocknum
-      }' and txcount='${block.txcount}'
+      block.blocknum
+    }' and txcount='${block.txcount}'
         and channel_genesis_hash='${block.channel_genesis_hash}' and prehash='${
-  block.prehash
-}' and datahash='${block.datahash}' `);
+      block.prehash
+    }' and datahash='${block.datahash}' `);
     if (c.c == 0) {
       await this.sql.saveRow('blocks', block);
       await this.sql.updateBySql(
@@ -182,11 +181,11 @@ class CRUDService {
   async saveChaincode(chaincode) {
     const c = await this.sql
       .getRowByPkOne(`select count(1) as c from chaincodes where name='${
-        chaincode.name
-      }' and
+      chaincode.name
+    }' and
         channel_genesis_hash='${chaincode.channel_genesis_hash}' and version='${
-  chaincode.version
-}' and path='${chaincode.path}'`);
+      chaincode.version
+    }' and path='${chaincode.path}'`);
     if (c.c == 0) {
       await this.sql.saveRow('chaincodes', chaincode);
     }

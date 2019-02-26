@@ -55,7 +55,9 @@ class Proxy {
         discover_results = await client.initializeChannelFromDiscover(
           channel._name
         );
-      } catch (e) {}
+      } catch (e) {
+        console.log('Error');
+      }
     }
     const peers = [];
     for (const node of nodes) {

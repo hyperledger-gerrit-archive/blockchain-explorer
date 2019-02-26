@@ -1,15 +1,15 @@
-const expect = require('chai').expect;
-const assert = require('assert');
-const chai = require('chai');
+// const expect = require('chai').expect;
+// const assert = require('assert');
+// const chai = require('chai');
 
-const should = chai.should();
-const { spy, stub } = require('sinon');
+// const should = chai.should();
+// const { spy, stub } = require('sinon');
 
 const test = require('tape');
-const readline = require('readline');
+// const readline = require('readline');
 const ArrayList = require('arraylist');
 const StringBuilder = require('string-builder');
-const fs = require('fs');
+// const fs = require('fs');
 const pgtestdb = require('pg-testdb');
 
 const config = require('../explorerconfig.json');

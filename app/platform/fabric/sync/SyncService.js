@@ -2,7 +2,7 @@
     SPDX-License-Identifier: Apache-2.0
 */
 
-const fs = require('fs-extra');
+// const fs = require('fs-extra');
 const grpc = require('grpc');
 const convertHex = require('convert-hex');
 const helper = require('../../../common/helper');

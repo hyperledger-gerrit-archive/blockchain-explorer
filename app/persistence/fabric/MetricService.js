@@ -86,8 +86,8 @@ class MetricService {
           chaincodename: item.chaincodename,
           path: item.path,
           version: item.version,
-          txCount: item.c,
-          channel_genesis_hash: item.channel_genesis_hash
+          txCount: item.c
+          // channel_genesis_hash: item.channel_genesis_hash
         });
       });
     }

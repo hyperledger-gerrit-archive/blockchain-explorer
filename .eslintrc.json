@@ -1,6 +1,29 @@
 {
-  "extends": "airbnb",
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
   "rules": {
-    "comma-dangle": ["error", "never"]
+    "no-unexpected-multiline":"error",
+    "no-unused-expressions": "error",
+    "no-unused-labels": "error",
+    "no-unused-vars": "error",
+    "comma-dangle": ["error", "never"],
+    "no-console": "off",
+    "no-undef": "off"
   }
 }
+
+
+
+
+

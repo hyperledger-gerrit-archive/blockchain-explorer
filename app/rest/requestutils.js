@@ -126,7 +126,7 @@ const orgsArrayToString = function (orgs) {
   return temp;
 };
 const queryDatevalidator = function (from, to) {
-  const today = new Date().toISOString();
+  // const today = new Date().toISOString();
   if (!isNaN(Date.parse(from)) && !isNaN(Date.parse(to))) {
     from = new Date(from).toISOString();
     to = new Date(to).toISOString();

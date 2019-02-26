@@ -7,7 +7,6 @@
  *  January 1, 1970 Universal Coordinated Time (UTC) (or GMT) and the specified date.
  *
  */
-
 function toUTCmilliseconds(dateStr) {
   let startSyncMills = null;
   try {
