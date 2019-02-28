@@ -42,25 +42,50 @@ const platformroutes = async function(app, platform) {
     });
   });
   /** *
-    Login
-    GET /api/register -> /api/register
+    Register
+    POST /api/register -> /api/register
     curl -i 'http://<host>:<port>/api/register/<user>/<password>/<affiliation>/<roles>'
     *
     */
-  app.get(
+  app.post(
     '/api/register/:user/:password/:affiliation/:roles',
     async (req, res) => {
-      console.log('/api/register/:user/:password/:affiliation/:roles');
-      console.log('req.params', req.params);
-      const reqUser = await new User(req.params).asJson();
-      proxy.register(reqUser).then(userInfo => {
-        res.send({
-          status: 200,
-          userInfo: userInfo
+      try {
+        const reqUser = await new User(req.params).asJson();
+        proxy.register(reqUser).then(userInfo => {
+          res.send(userInfo);
         });
-      });
+      } catch (err) {
+        logger.error(err);
+        return res.send({
+          status: 400,
+          message: err.toString()
+        });
+      }
     }
   );
+
+  /** *
+    Enroll
+    POST /api/enroll -> /api/enroll
+    curl -i 'http://<host>:<port>/api/enroll/<user>/<password>/<affiliation>/<roles>'
+    *
+    */
+  app.post('/api/enroll/:user/:password', async (req, res) => {
+    try {
+      const reqUser = await new User(req.params).asJson();
+      proxy.enroll(reqUser).then(userInfo => {
+        res.send(userInfo);
+      });
+    } catch (err) {
+      logger.error(err);
+      return res.send({
+        status: 400,
+        message: err.toString()
+      });
+    }
+  });
+
   /** *
       Block by number
       GET /api/block/getinfo -> /api/block
