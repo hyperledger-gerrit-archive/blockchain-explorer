@@ -47,7 +47,7 @@ const platformroutes = async function(app, platform) {
     curl -i 'http://<host>:<port>/api/register/<user>/<password>/<affiliation>/<roles>'
     *
     */
-  app.get(
+  app.post(
     '/api/register/:user/:password/:affiliation/:roles',
     async (req, res) => {
       console.log('/api/register/:user/:password/:affiliation/:roles');
