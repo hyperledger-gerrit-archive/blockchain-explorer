@@ -1,8 +1,6 @@
 /*
     SPDX-License-Identifier: Apache-2.0
 */
-
-const chaincodeService = require('./service/chaincodeService.js');
 const UserService = require('./service/UserService.js');
 const helper = require('../../common/helper');
 const NetworkService = require('./service/NetworkService.js');
@@ -64,11 +62,11 @@ class Proxy {
     return respose;
   }
 
-  async loadChaincodeSrc(path) {
+  /**async loadChaincodeSrc(path) {
     const respose = chaincodeService.loadChaincodeSrc(path);
     logger.debug('loadChaincodeSrc >> %s', respose);
     return respose;
-  }
+  } */
 
   async getPeersStatus(channel_genesis_hash) {
     const client = await this.platform.getClient();
