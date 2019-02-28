@@ -14,6 +14,12 @@
         },
         "orderer": "300"
       }
+    },
+    "credentialStore": {
+      "path": "./tmp/credentialStore_Org1/credential",
+      "cryptoStore": {
+        "path": "./tmp/credentialStore_Org1/crypto"
+      }
     }
   },
   "channels": {
@@ -32,10 +38,10 @@
       "peers": ["peer0.org1.example.com", "peer1.org1.example.com"],
       "certificateAuthorities": ["ca-org1"],
       "adminPrivateKey": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/5890f0061619c06fb29dea8cb304edecc020fe63f41a6db109f1e227cc1cb2a8_sk"
+        "path": "/home/vagrant/hyperledger/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/5890f0061619c06fb29dea8cb304edecc020fe63f41a6db109f1e227cc1cb2a8_sk"
       },
       "signedCert": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
+        "path": "/home/vagrant/hyperledger/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
       }
     }
   },
@@ -47,7 +53,7 @@
         "ssl-target-name-override": "peer0.org1.example.com"
       },
       "tlsCACerts": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
+        "path": "/home/vagrant/hyperledger/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
       }
     }
   },
@@ -58,7 +64,7 @@
         "verify": false
       },
       "tlsCACerts": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"
+        "path": "/home/vagrant/hyperledger/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"
       },
 
       "caName": "ca-org1"
