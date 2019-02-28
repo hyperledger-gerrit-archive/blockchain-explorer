@@ -22,6 +22,10 @@ const _commonProto = grpc.load(
   `${__dirname}/../../../node_modules/fabric-client/lib/protos/common/common.proto`
 ).common;
 const Constants = require('fabric-client/lib/Constants.js');
+const {
+  X509WalletMixin
+} = require('fabric-network');
+const FabricCAServices = require('fabric-ca-client');
 
 const ROLES = Constants.NetworkConfig.ROLES;
 
@@ -265,57 +269,75 @@ class FabricClient {
   }
 
   //TODO move, or reuse this method to register a user
-  async getRegisteredUser(client_config) {
+  async getRegisteredUser(client_config, user_obj) {
     try {
-      var username = Fabric_Client.getConfigSetting(
-        'enroll-id',
-        'dflt_hlbeuser'
-      );
+      var username = user_obj['user'];
       var userOrg = client_config.client.organization;
-      var client = await this.LoadClientFromConfig(client_config);
-      logger.debug('Successfully initialized the credential stores');
-      // client can now act as an agent for the specified organization
-      // first check to see if the user is already enrolled
-      var user = await this.hfc_client.getUserContext(username, true);
-      if (user && user.isEnrolled()) {
-        logger.info(
-          'Successfully loaded member from persistence [%s]',
-          username
-        );
-      } else {
-        // user was not enrolled, so we will need an admin user object to register
-        logger.info(
-          'User %s was not enrolled, so we will need an admin user object to register',
-          username
-        );
+      var isExist = await this.fabricGateway.wallet.exists(username);
+      var identity;
+      var caURL;
+      var enrollment;
+      var serverCertPath;
 
-        let adminUserObj = await this.hfc_client.setUserContext({
-          username: Fabric_Client.getConfigSetting('admin-username', 'admin'),
-          password: Fabric_Client.getConfigSetting('admin-secret', 'adminpw')
-        });
-        let caClient = this.hfc_client.getCertificateAuthority();
-        let secret = await caClient.register(
-          {
+      if (isExist) {
+        identity = await this.fabricGateway.wallet.export(username);
+      } else {
+        if (this.fabricGateway.fabricCaEnabled) {
+          ({caURL, serverCertPath} = this.fabricGateway.fabricConfig.getCertificateAuthorities());
+          let ca = new FabricCAServices(caURL[0]);
+
+          let adminUserObj = await this.hfc_client.setUserContext({
+            username: this.fabricGateway.fabricConfig.getAdminUser(),
+            password: this.fabricGateway.fabricConfig.getAdminPassword()
+          });
+          let secret = await ca.register(
+            {
+              enrollmentID: username,
+              enrollmentSecret: user_obj['password'],
+              affiliation: [userOrg.toLowerCase(), user_obj['affiliation']].join('.'),
+              role: user_obj['roles'],
+            },
+            adminUserObj
+          );
+          logger.debug('Successfully got the secret for user %s', username);
+          enrollment = await ca.enroll({
             enrollmentID: username,
-            affiliation:
-              userOrg.toLowerCase() +
-              Fabric_Client.getConfigSetting('enroll-affiliation', '')
-          },
-          adminUserObj
+            enrollmentSecret: secret,
+          });
+        } else {
+          // Todo
+        }
+
+        identity = X509WalletMixin.createIdentity(
+          this.fabricGateway.mspId,
+          enrollment.certificate,
+          enrollment.key.toBytes()
         );
-        logger.debug('Successfully got the secret for user %s', username);
-        user = await this.hfc_client.setUserContext({
-          username: username,
-          password: secret
-        });
-        logger.debug(
-          'Successfully enrolled username %s  and setUserContext on the client object',
-          username
-        );
+        // import identity wallet
+        await this.fabricGateway.wallet.import(username, identity);
+
       }
-      if (!user || !user.isEnrolled) {
-        throw new Error('User was not enrolled ');
-      }
+
+      // Set connection options; identity and wallet
+      let connectionOptions = {
+        identity: username,
+        mspId: identity.mspId,
+        wallet: this.fabricGateway.wallet,
+        discovery: { 
+          enabled: true,
+          asLocalhost: this.asLocalhost,
+        },
+        clientTlsIdentity: username,
+        eventHandlerOptions: { commitTimeout: 100 }
+      };
+
+      this.fabricGateway.gateway.disconnect();
+
+      // connect to gateway
+      await this.fabricGateway.gateway.connect(
+        this.fabricGateway.config,
+        connectionOptions
+      );
     } catch (error) {
       logger.error(
         'Failed to get registered user: %s with error: %s',
