@@ -17,8 +17,8 @@ const styles = theme => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     maxWidth: 60,
-    letterSpacing: '2px',
-  },
+    letterSpacing: '2px'
+  }
 });
 
 export class Chaincodes extends Component {
@@ -27,7 +27,7 @@ export class Chaincodes extends Component {
     this.state = {
       dialogOpen: false,
       sourceDialog: false,
-      chaincode: {},
+      chaincode: {}
     };
   }
 
@@ -39,7 +39,7 @@ export class Chaincodes extends Component {
     this.setState({ dialogOpen: false });
   };
 
-  sourceDialogOpen = (chaincode) => {
+  sourceDialogOpen = chaincode => {
     this.setState({ chaincode });
     this.setState({ sourceDialog: true });
   };
@@ -52,67 +52,63 @@ export class Chaincodes extends Component {
     {
       Header: 'Chaincode Name',
       accessor: 'chaincodename',
-      Cell: row => (
-        <a
-          className={classes.hash}
-          onClick={() => this.sourceDialogOpen(row.original)}
-          href="#/chaincodes"
-        >
-          {row.value}
-        </a>
-      ),
-      filterMethod: (filter, rows) => matchSorter(
-        rows,
-        filter.value,
-        { keys: ['chaincodename'] },
-        { threshold: matchSorter.rankings.SIMPLEMATCH },
-      ),
-      filterAll: true,
+      filterMethod: (filter, rows) =>
+        matchSorter(
+          rows,
+          filter.value,
+          { keys: ['chaincodename'] },
+          { threshold: matchSorter.rankings.SIMPLEMATCH }
+        ),
+      filterAll: true
     },
     {
       Header: 'Channel Name',
       accessor: 'channelName',
-      filterMethod: (filter, rows) => matchSorter(
-        rows,
-        filter.value,
-        { keys: ['channelName'] },
-        { threshold: matchSorter.rankings.SIMPLEMATCH },
-      ),
-      filterAll: true,
+      filterMethod: (filter, rows) =>
+        matchSorter(
+          rows,
+          filter.value,
+          { keys: ['channelName'] },
+          { threshold: matchSorter.rankings.SIMPLEMATCH }
+        ),
+      filterAll: true
     },
     {
       Header: 'Path',
       accessor: 'path',
-      filterMethod: (filter, rows) => matchSorter(
-        rows,
-        filter.value,
-        { keys: ['path'] },
-        { threshold: matchSorter.rankings.SIMPLEMATCH },
-      ),
-      filterAll: true,
+      filterMethod: (filter, rows) =>
+        matchSorter(
+          rows,
+          filter.value,
+          { keys: ['path'] },
+          { threshold: matchSorter.rankings.SIMPLEMATCH }
+        ),
+      filterAll: true
     },
     {
       Header: 'Transaction Count',
       accessor: 'txCount',
-      filterMethod: (filter, rows) => matchSorter(
-        rows,
-        filter.value,
-        { keys: ['txCount'] },
-        { threshold: matchSorter.rankings.SIMPLEMATCH },
-      ),
-      filterAll: true,
+      filterMethod: (filter, rows) =>
+        matchSorter(
+          rows,
+          filter.value,
+          { keys: ['txCount'] },
+          { threshold: matchSorter.rankings.SIMPLEMATCH }
+        ),
+      filterAll: true
     },
     {
       Header: 'Version',
       accessor: 'version',
-      filterMethod: (filter, rows) => matchSorter(
-        rows,
-        filter.value,
-        { keys: ['version'] },
-        { threshold: matchSorter.rankings.SIMPLEMATCH },
-      ),
-      filterAll: true,
-    },
+      filterMethod: (filter, rows) =>
+        matchSorter(
+          rows,
+          filter.value,
+          { keys: ['version'] },
+          { threshold: matchSorter.rankings.SIMPLEMATCH }
+        ),
+      filterAll: true
+    }
   ];
 
   render() {
@@ -157,7 +153,7 @@ export class Chaincodes extends Component {
 }
 
 Chaincodes.propTypes = {
-  chaincodeList: chaincodeListType.isRequired,
+  chaincodeList: chaincodeListType.isRequired
 };
 
 export default withStyles(styles)(Chaincodes);

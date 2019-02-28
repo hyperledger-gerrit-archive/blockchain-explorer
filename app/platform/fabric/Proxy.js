@@ -64,11 +64,11 @@ class Proxy {
     return respose;
   }
 
-  async loadChaincodeSrc(path) {
+  /**async loadChaincodeSrc(path) {
     const respose = chaincodeService.loadChaincodeSrc(path);
     logger.debug('loadChaincodeSrc >> %s', respose);
     return respose;
-  }
+  } */
 
   async getPeersStatus(channel_genesis_hash) {
     const client = await this.platform.getClient();
