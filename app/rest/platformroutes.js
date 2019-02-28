@@ -104,37 +104,48 @@ const platformroutes = async function(app, platform) {
   });
 
   /** *
-  Register
-  POST /api/register -> /api/register
-  curl -X POST -H 'Content-Type: application/json' -d '{ 'attrs': '<attrs>', 'affiliation': '<affiliation>', 'enrollmentID': '<enrollmentID>', 'enrollmentSecret': '<enrollmentSecret>', 'maxEnrollments': '<maxEnrollments>', 'role': '<role>' }'  -i 'http://<host>:<port>/api/register'
-  */
-  app.post('/api/register', async (req, res) => {
-    console.log('/api/register');
-    console.log('req.body', req.body);
-    const reqUser = await new User(req.body).asJson();
-    // const userInfo = await proxy.register(reqUser);
-    res.send({
-      status: 200,
-      // userInfo: userInfo
-      userInfo: reqUser
-    });
-  });
+    Register
+    POST /api/register -> /api/register
+    curl -i 'http://<host>:<port>/api/register/<user>/<password>/<affiliation>/<roles>'
+    *
+    */
+  app.post(
+    '/api/register/:user/:password/:affiliation/:roles',
+    async (req, res) => {
+      try {
+        const reqUser = await new User(req.params).asJson();
+        proxy.register(reqUser).then(userInfo => {
+          res.send(userInfo);
+        });
+      } catch (err) {
+        logger.error(err);
+        return res.send({
+          status: 400,
+          message: err.toString()
+        });
+      }
+    }
+  );
 
   /** *
-  Enroll
-  POST /api/enroll -> /api/enroll
-  curl -X POST -H 'Content-Type: application/json' -d '{ 'attr_reqs': '<attr_reqs>', 'csr': '<csr>', 'enrollmentID': '<enrollmentID>', 'enrollmentSecret': '<enrollmentSecret>', 'profile': '<profile>' }' -i 'http://<host>:<port>/api/enroll'
-  */
-  app.post('/api/enroll', async (req, res) => {
-    console.log('/api/enroll');
-    console.log('req.body', req.body);
-    const reqUser = await new User(req.body).asJson();
-    // const userInfo = await proxy.enroll(reqUser);
-    res.send({
-      status: 200,
-      // userInfo: userInfo
-      userInfo: reqUser
-    });
+    Enroll
+    POST /api/enroll -> /api/enroll
+    curl -i 'http://<host>:<port>/api/enroll/<user>/<password>/<affiliation>/<roles>'
+    *
+    */
+  app.post('/api/enroll/:user/:password', async (req, res) => {
+    try {
+      const reqUser = await new User(req.params).asJson();
+      proxy.enroll(reqUser).then(userInfo => {
+        res.send(userInfo);
+      });
+    } catch (err) {
+      logger.error(err);
+      return res.send({
+        status: 400,
+        message: err.toString()
+      });
+    }
   });
 
   /** *

@@ -162,7 +162,7 @@ class FabricGateway {
     return this.mspId;
   }
   async getClient() {
-    return this.client;
+    return this.gateway.getClient();
   }
 
   getTls() {

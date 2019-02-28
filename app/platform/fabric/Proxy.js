@@ -209,6 +209,20 @@ class Proxy {
     return respose;
   }
 
+  async register(reqUser) {
+    const userService = new UserService(this.platform);
+    let response = await userService.register(reqUser);
+    logger.debug('register >> %s', response);
+    return response;
+  }
+
+  async enroll(reqUser) {
+    const userService = new UserService(this.platform);
+    let response = await userService.enroll(reqUser);
+    logger.debug('enroll >> %s', response);
+    return response;
+  }
+
   processSyncMessage(msg) {
     // get message from child process
     // console.debug('Message from child %j', msg);
