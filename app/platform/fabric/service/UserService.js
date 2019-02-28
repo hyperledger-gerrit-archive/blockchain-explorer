@@ -62,6 +62,9 @@ class UserService {
     1. verify if user exists
     2. register user if doesn't exist
     3. depending on the user type use either enrollUserIdentity, or  enrollCaIdentity*/
+    const client = this.platform.getClient();
+    client.getRegisteredUser(client.config, user);
+    return { status: 200 };
   }
   async enrollUserIdentity(user) {
     /*TODO should have the same logic as the method in _enrollUserIdentity of

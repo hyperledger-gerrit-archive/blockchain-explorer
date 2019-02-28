@@ -265,12 +265,9 @@ class FabricClient {
   }
 
   //TODO move, or reuse this method to register a user
-  async getRegisteredUser(client_config) {
+  async getRegisteredUser(client_config, user_obj) {
     try {
-      var username = Fabric_Client.getConfigSetting(
-        'enroll-id',
-        'dflt_hlbeuser'
-      );
+      var username = user_obj['user'];
       var userOrg = client_config.client.organization;
       var client = await this.LoadClientFromConfig(client_config);
       logger.debug('Successfully initialized the credential stores');
@@ -289,17 +286,45 @@ class FabricClient {
           username
         );
 
+        // let identity;
+        // let enrollment;
+
+        // orgMsp, adminPrivateKeyPath, signedCertPath
+        //   = this.fabricGateway.fabricConfig.getOrganizationsConfig();
+
+        // caURL, serverCertPath
+        //   = this.fabricGateway.fabricConfig.getCertificateAuthorities();
+
+        // if (this.fabricGateway.fabricCaEnabled) {
+        //   //TODO best way to verify  if the network has fabric-ca server authorization
+        //   ({ enrollment, identity } = await this.fabricGateway._enrollCaIdentity(
+        //     caURL,
+        //     enrollment,
+        //     identity
+        //   ));
+        // } else {
+        //   // Identity credentials to be stored in the wallet
+        //   // look for signedCert in first-network-connection.json
+        //   identity = await this.fabricGateway._enrollUserIdentity(
+        //     signedCertPath,
+        //     adminPrivateKeyPath,
+        //     identity
+        //   );
+        // }
+
         let adminUserObj = await this.hfc_client.setUserContext({
-          username: Fabric_Client.getConfigSetting('admin-username', 'admin'),
-          password: Fabric_Client.getConfigSetting('admin-secret', 'adminpw')
+          username: this.fabricGateway.fabricConfig.getAdminUser(),
+          password: this.fabricGateway.fabricConfig.getAdminPassword()
         });
         let caClient = this.hfc_client.getCertificateAuthority();
         let secret = await caClient.register(
           {
             enrollmentID: username,
-            affiliation:
-              userOrg.toLowerCase() +
-              Fabric_Client.getConfigSetting('enroll-affiliation', '')
+            enrollmentSecret: user_obj['password'],
+            affiliation: [userOrg.toLowerCase(), user_obj['affiliation']].join(
+              '.'
+            ),
+            role: user_obj['roles']
           },
           adminUserObj
         );

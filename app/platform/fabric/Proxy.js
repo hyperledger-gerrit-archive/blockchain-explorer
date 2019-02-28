@@ -209,6 +209,19 @@ class Proxy {
     return respose;
   }
 
+  async register(reqUser) {
+    const userService = new UserService(this.platform);
+    let response = await userService.register(reqUser);
+    if (!response) {
+      response = {
+        status: false,
+        message: `Failed authentication for user: ${reqUser} `
+      };
+    }
+    logger.debug('login >> %s', response);
+    return response;
+  }
+
   processSyncMessage(msg) {
     // get message from child process
     // console.debug('Message from child %j', msg);
