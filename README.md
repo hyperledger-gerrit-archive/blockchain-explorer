@@ -12,6 +12,8 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, highly maintainable, op
 - [Database Setup](#Database-Setup)
 - [Fabric Network Setup](#Fabric-Network-Setup)
 - [Fabric Configure Hyperledger Explorer](#Fabric-Configure-Hyperledger-Explorer)
+- [Fabcar Sample Configure Hyperledger Explorer](#Fabcar-Sample-Configure-Hyperledger-Explorer)
+- [Balance Transfer Sample Configure Hyperledger Explorer](#Balance-Transfer-Sample-Configure-Hyperledger-Explorer)
 - [Composer Configure Hyperledger Explorer](#Composer-Configure-Hyperledger-Explorer)
 - [Cello Configure Hyperledger Explorer](#Cello-Configure-Hyperledger-Explorer)
 - [Build Hyperledger Explorer](#Build-Hyperledger-Explorer)
@@ -187,6 +189,21 @@ export ADMIN_SECRET="adminpw"
 ```
 
  **or**
+
+<a name="Fabcar-Sample-Configure-Hyperledger-Explorer"/>
+
+## Fabcar Sample Configure Hyperledger Explorer
+
+ Setup Fabcar sample network by following [Fabcar sample network](https://hyperledger-fabric.readthedocs.io/en/release-1.4/understand_fabcar_network.html) from Hyperledger fabric samples.
+- Make sure to set the environment variables ```CORE_PEER_GOSSIP_BOOTSTRAP``` and ```CORE_PEER_GOSSIP_EXTERNAL_ENDPOINT``` for each peer in the docker-compose.yaml file. These settings enable the Fabric discovery service, which is used by Hyperledger Explorer to discover the network topology.
+- Configure Fabcar sample network based on this link [CONFIG-FABCAR-HLEXPLORER.md](CONFIG-FABCAR-HLEXPLORER.md)
+
+<a name="Balance-Transfer-Sample-Configure-Hyperledger-Explorer"/>
+
+## Balance Transfer Sample Configure Hyperledger Explorer
+
+ Balance Transfer Sample network by following [Balance Transfer Sample](https://github.com/hyperledger/fabric-samples/tree/release-1.4/balance-transfer) from Hyperledger fabric samples.
+- Balance Transfer Sample network based on this link [CONFIG-BALANCE-TRANSFER-HLEXPLORER.md](CONFIG-BALANCE-TRANSFER-HLEXPLORER.md)
 
 ## Hyperledger Composer Setup
 

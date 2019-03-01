@@ -346,40 +346,6 @@ const dbroutes = (app, platform) => {
       .catch(err => res.send({ status: 500 }));
   });
 
-  /**
-     Chaincode list
-     GET /chaincodelist -> /api/chaincode
-     curl -i 'http://<host>:<port>/api/chaincode/<channel>'
-     Response:
-     [
-       {
-         'channelName': 'mychannel',
-         'chaincodename': 'mycc',
-         'path': 'github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02',
-         'version': '1.0',
-         'txCount': 0
-       }
-     ]
-   */
-
-  app.get('/api/chaincode/:channel', (req, res) => {
-    const channelName = req.params.channel;
-    if (channelName) {
-      statusMetrics.getTxPerChaincode(channelName, async data => {
-        for (const chaincode of data) {
-          const temp = await proxy.loadChaincodeSrc(chaincode.path);
-          chaincode.source = temp;
-        }
-        res.send({
-          status: 200,
-          chaincode: data
-        });
-      });
-    } else {
-      return requtil.invalidRequest(req, res);
-    }
-  });
-
   /** *Peer Status List
   GET /peerlist -> /api/peersStatus
   curl -i 'http://<host>:<port>/api/peersStatus/<channel>'
