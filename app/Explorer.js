@@ -1,7 +1,8 @@
 /**
  *    SPDX-License-Identifier: Apache-2.0
  */
-const express = require('express');
+
+const Express = require('express');
 const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const compression = require('compression');
@@ -20,7 +21,7 @@ const explorer_error = require('./common/ExplorerMessage').explorer.error;
 
 class Explorer {
   constructor() {
-    this.app = express();
+    this.app = new Express();
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(
