@@ -264,7 +264,7 @@ From new terminal.
 
 - `cd blockchain-explorer/`
 - `./start.sh`  (it will have the backend up).
-- Launch the URL http://localhost:8080 on a browser.
+- Launch the URL http://localhost:8090 on a browser.
 - `./stop.sh`  (it will stop the node server).
 
 From new terminal(If Sync Process in Standalone).
@@ -369,7 +369,7 @@ To push the container to your registry, run:
 
 ## Hyperledger Explorer Swagger
 
-- Once the Hyperledger Explorer has been launched go to http://localhost:8080/api-docs to view the Rust API description
+- Once the Hyperledger Explorer has been launched go to http://localhost:8090/api-docs to view the Rust API description
 
 <a name="Logs"/>
 
