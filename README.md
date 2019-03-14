@@ -6,24 +6,34 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintaied, open so
 
 # Table of Contents    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
-- [Release Notes](#Release-Notes)
-- [Directory Structure](#Directory-Structure)
-- [Dependencies](#Dependencies)
-- [Clone GIT Repository](#Clone-GIT-Repository)
-- [Database Setup](#Database-Setup)
-- [Fabric Network Setup](#Fabric-Network-Setup)
-- [Configure Hyperledger Fabric](#Configure-Hyperledger-Fabric)
-- [Fabcar Sample Configure Hyperledger Explorer](#Fabcar-Sample-Configure-Hyperledger-Explorer)
-- [Balance Transfer Sample Configure Hyperledger Explorer](#Balance-Transfer-Sample-Configure-Hyperledger-Explorer)
-- [Hyperledger Composer Setup](#Hyperledger-Composer-Setup)
-- [Hyperledger Cello Setup](#Hyperledger-Cello-Setup)
-- [Build Hyperledger Explorer](#Build-Hyperledger-Explorer)
-- [Run Hyperledger Explorer](#Run-Hyperledger-Explorer)
-- [Run Hyperledger Explorer using Docker](#Run-Hyperledger-Explorer-using-Docker)
-- [Hyperledger Explorer Swagger](#Hyperledger-Explorer-Swagger)
-- [Logs](#Logs)
-- [Troubleshooting](#Troubleshooting)
-- [License](#License)
+- [1.0 Release Notes](#Release-Notes)
+- [2.0 Directory Structure](#Directory-Structure)
+- [3.0 Dependencies](#Dependencies)
+- [4.0 Clone GIT Repository](#Clone-GIT-Repository)
+- [5.0 Database Setup](#Database-Setup)
+- [6.0 Fabric Network Setup](#Fabric-Network-Setup)
+- [7.0 Configure Hyperledger Fabric](#Configure-Hyperledger-Fabric)
+    - [7.1 Optional: Configure Fabcar Sample](#Configure-Fabcar-Sample)
+    - [7.2 Optional: Configure Balance Transfer Sample](#Configure-Balance-Transfer-Sample)
+- [8.0 Hyperledger Composer Setup](#Hyperledger-Composer-Setup)
+    - [8.1 Configure Hyperledger Explorer for Composer](#Configure-Hyperledger-Explorer-for-Composer)
+- [9.0 Optional: Hyperledger Cello Setup](#Hyperledger-Cello-Setup)
+    - [9.1 Configure Hyperledger Explorer for Cello](#Configure-Hyperledger-Explorer-for-Cello)
+- [10.0 Build Hyperledger Explorer](#Build-Hyperledger-Explorer)
+- [11.0 Run Hyperledger Explorer](#Run-Hyperledger-Explorer)
+- [12.0 Optional: Run Hyperledger Explorer Using Docker](#Run-Hyperledger-Explorer-using-Docker)
+    - [12.1 Non Interactive Deployment Assumptions](#Docker-Non-Interactive-Deployment-Assumptions)
+    - [12.2 Docker Repository](#Docker-Docker-Repository)
+    - [12.3 Deploy Explorer Using Docker](#Docker-Deploy-Explorer-Using-Docker)
+    - [12.4 Join Existing Docker Network](#Docker-Join-Existing-Docker-Network)
+    - [12.5 Stopping Docker Containers](#Docker-Stopping-Docker-Containers)
+    - [12.6 Removing Docker Containers and Clean Images](#Docker-Removing-Docker-Containers-and-Clean-Images)
+- [13.0 NPM Utility Scripts to Dockerise Application](#NPM-Utility-Scripts-to-Dockerize-Application)
+- [14.0 Run Hyperledger Explorer Using Docker Compose](#Run-Hyperledger-Explorer-Using-Docker-Compose)
+- [15.0 Hyperledger Explorer Swagger](#Hyperledger-Explorer-Swagger)
+- [16.0 Logs](#Logs)
+- [17.0 Troubleshooting](#Troubleshooting)
+- [18.0 License](#License)
 
 
 
@@ -35,13 +45,13 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintaied, open so
 | --                                                          | --                                                               | --                                                |
 | <b>[v0.3.9.1](release_notes/v0.3.9.1.md)</b> (Feb 28, 2019) | [v1.4](https://hyperledger-fabric.readthedocs.io/en/release-1.4) | [8.11.x](https://nodejs.org/en/download/releases) |
 | <b>[v0.3.9](release_notes/v0.3.9.md)</b> (Feb 7, 2019)      | [v1.4](https://hyperledger-fabric.readthedocs.io/en/release-1.4) | [8.11.x](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.8](release_notes/v0.3.8.md)</b> (Dec 13, 2018)     | [v1.3](https://hyperledger-fabric.readthedocs.io/en/release-1.3) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.7](release_notes/v0.3.7.md)</b> (Sep 21, 2018)     | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.6.1](release_notes/v0.3.6.1.md)</b> (Sep 21, 2018) | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.6](release_notes/v0.3.6.md)</b> (Sep 6, 2018)      | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.5.1](release_notes/v0.3.5.1.md)</b> (Sep 21, 2018) | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.5](release_notes/v0.3.5.md)</b> (Aug 24, 2018)     | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [???](https://nodejs.org/en/download/releases) |
-| <b>[v0.3.4](release_notes/v0.3.4.md)</b> (Jul 13, 2018)     | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [???](https://nodejs.org/en/download/releases) |
+| <b>[v0.3.8](release_notes/v0.3.8.md)</b> (Dec 13, 2018)     | [v1.3](https://hyperledger-fabric.readthedocs.io/en/release-1.3) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.7](release_notes/v0.3.7.md)</b> (Sep 21, 2018)     | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.6.1](release_notes/v0.3.6.1.md)</b> (Sep 21, 2018) | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.6](release_notes/v0.3.6.md)</b> (Sep 6, 2018)      | [v1.2](https://hyperledger-fabric.readthedocs.io/en/release-1.2) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.5.1](release_notes/v0.3.5.1.md)</b> (Sep 21, 2018) | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.5](release_notes/v0.3.5.md)</b> (Aug 24, 2018)     | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [8.x.x](https://nodejs.org/en/download/releases)  |
+| <b>[v0.3.4](release_notes/v0.3.4.md)</b> (Jul 13, 2018)     | [v1.1](https://hyperledger-fabric.readthedocs.io/en/release-1.1) | [8.x.x](https://nodejs.org/en/download/releases)  |
 
 
 
@@ -78,12 +88,12 @@ blockchain-explorer
 Following are the software dependencies required to install and run hyperledger explorer:
 * Nodejs 8.11.x (Note that v9.x is not yet supported)
 * PostgreSQL 9.5 or greater
-* jq [https://stedolan.github.io/jq/]
+* jq (https://stedolan.github.io/jq)
 * Linux-based operating system, such as Ubuntu or MacOS
 
 Verified Docker versions supported:
-* Docker 17.06.2-ce [https://www.docker.com/community-edition]   CHECK LINK  RECOMMEND Docker greater than 18.09.2
-* Docker Compose 1.14.0 [https://docs.docker.com/compose/]
+* Docker CE 18.09.2 or later (https://hub.docker.com/search/?type=edition&offering=community&operating_system=linux)
+* Docker Compose 1.14.0 (https://docs.docker.com/compose)
 
 
 
@@ -186,16 +196,15 @@ On another terminal:
 	- Change "fabric-path" to your fabric network disk path in the first-network.json file: <br>`/blockchain-explorer/app/platform/fabric/connection-profile/first-network.json`
 	- Provide the full disk path to the adminPrivateKey config option, it ussually ends with "_sk", for example:<br>
 	`"/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/aaacd899a6362a5c8cc1e6f86d13bfccc777375365bbda9c710bb7119993d71c_sk"`
-
 	- "adminUser" is the the admin user of the network, in this case it's fabric CA or an identity user.
     - "adminPassword" is the password for the admin user.
 	- "enableAuthentication" is a flag to enable authentication using a login page, setting to false will skip authentication.
 
 
 
-<a name="Fabcar-Sample-Configure-Hyperledger-Explorer" />
+<a name="Configure-Fabcar-Sample" />
 
-# 7.1 Optional: Fabcar Sample Configure Hyperledger Explorer    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+# 7.1 Optional: Configure Fabcar Sample    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 Setup Fabcar sample network by following [Fabcar Sample Network](https://hyperledger-fabric.readthedocs.io/en/release-1.4/understand_fabcar_network.html) from Hyperledger fabric samples.
 - Make sure to set the environment variables ```CORE_PEER_GOSSIP_BOOTSTRAP``` and ```CORE_PEER_GOSSIP_EXTERNAL_ENDPOINT``` for each peer in the docker-compose.yaml file. These settings enable the Fabric discovery service, which is used by Hyperledger Explorer to discover the network topology.
@@ -203,8 +212,9 @@ Setup Fabcar sample network by following [Fabcar Sample Network](https://hyperle
 
 
 
-<a name="Balance-Transfer-Sample-Configure-Hyperledger-Explorer" />
-# 7.2 Optional: Balance Transfer Sample Configure Hyperledger Explorer    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="Configure-Balance-Transfer-Sample" />
+
+# 7.2 Optional: Configure Balance Transfer Sample    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
  Balance Transfer Sample network by following [Balance Transfer Sample](https://github.com/hyperledger/fabric-samples/tree/release-1.4/balance-transfer) from Hyperledger fabric samples.
 - Balance Transfer Sample network based on this link [CONFIG-BALANCE-TRANSFER-HLEXPLORER.md](CONFIG-BALANCE-TRANSFER-HLEXPLORER.md)
@@ -218,7 +228,10 @@ Setup Fabcar sample network by following [Fabcar Sample Network](https://hyperle
  Setup your own network using Composer [Build your network](https://hyperledger.github.io/composer/latest/installing/development-tools) from Hyperledger Composer. Once you setup the network, please modify the values in `/blockchain-explorer/app/platform/fabric/config.json` accordingly.
 
 
-## 8.1 Composer Configure Hyperledger Explorer    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+<a name="Configure-Hyperledger-Explorer-for-Composer" />
+
+## 8.1 Configure Hyperledger Explorer for Composer    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 On another terminal.
 
@@ -242,7 +255,10 @@ If you are connecting to a non TLS fabric peer, please modify "network-id.client
  Setup your fabric network using [Setup Cello Platform](https://cello.readthedocs.io/en/latest/setup/setup/) from Hyperledger Cello. Once you setup the network, please modify the values in `/blockchain-explorer/app/platform/fabric/config.json` accordingly.
 
 
-## 9.1 Cello Configure Hyperledger Explorer    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+<a name="Configure-Hyperledger-Explorer-for-Cello" />
+
+## 9.1 Optional: Configure Hyperledger Explorer for Cello    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 On another terminal.
 
@@ -326,7 +342,7 @@ From new terminal (if Sync Process in Standalone).
 
 <a name="Run-Hyperledger-Explorer-using-Docker" />
 
-# 12.0 Optional: Run Hyperledger Explorer using Docker    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+# 12.0 Optional: Run Hyperledger Explorer Using Docker    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 There is also an automated deployment of the **Hyperledger Explorer** available via **docker** given the following requirements are met:
 
@@ -335,7 +351,9 @@ There is also an automated deployment of the **Hyperledger Explorer** available 
 
 
 
-## 12.1 Non interactive deployment assumptions    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="Docker-Non-Interactive-Deployment-Assumptions" />
+
+## 12.1 Non Interactive Deployment Assumptions    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 * By default, the deployment script uses the **192.168.10.0/24** virtual network, and needs to be available with no overlapping IPs (this means you can't have physical computers on that network nor other docker containers running). In case of overlappings, edit the script and change target network and container targets IPs.
 * By default both services (frontend and database) will run on same machine, but script modifications is allowed to run on separate machines just changing target DB IP on frontend container.
 * Crypto material is correctly loaded under `examples/$network/crypto`
@@ -343,14 +361,18 @@ There is also an automated deployment of the **Hyperledger Explorer** available 
 
 
 
-## 12.2 Docker    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="Docker-Docker-Repository" />
+
+## 12.2 Docker Repository   <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 * Hyperledger Explorer docker repository `https://hub.docker.com/r/hyperledger/explorer/`
 * Hyperledger Explorer PostgreSQL docker repository `https://hub.docker.com/r/hyperledger/explorer-db`
 
 
 
-## 12.3 Steps to deploy using Docker    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="Docker-Deploy-Explorer-Using-Docker" />
+
+## 12.3 Deploy Explorer Using Docker    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 From a new terminal:
 
@@ -369,72 +391,78 @@ Note: the example with additional information can be found at [examples/net1](./
 
 
 
-## 12.4 Joining existing Docker network    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="Docker-Join-Existing-Docker-Network" />
+
+## 12.4 Joining Existing Docker Network    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 If the Blockchain network is deployed in the Docker, you may pass network name as second parameter to join that network
 (docker_network in the example below):
 - `./deploy_explorer.sh dockerConfig docker_network`
 
 
-## 12.5 Steps to stop containers    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+<a name="Docker-Stopping-Docker-Containers" />
+
+## 12.5 Stopping Docker Containers    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 - `./deploy_explorer.sh --down`
 
 
-## 12.6 Steps to remove containers and clean images    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+<a name="Docker-Removing-Docker-Containers-and-Clean-Images" />
+
+## 12.6 Removing Docker Containers and Clean Images    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 - `./deploy_explorer.sh --clean`
 
 
 
-# 13.0 NPM utility scripts to Dockerise application    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+<a name="NPM-Utility-Scripts-to-Dockerize-Application" />
+
+# 13.0 NPM Utility Scripts to Dockerize Application    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 Set the `DOCKER_REGISTRY` variable to the Container Registry you will use and login to that registry if you want to store your container there.
 
 To build the container (auto-tagged as `latest`), run:
-
-```
-npm run docker_build
-```
+    ```
+    npm run docker_build
+    ```
 
 To tag the container with your registry and the NPM package version, run:
-
-```
-npm run docker_tag
-```
-
+    ```
+    npm run docker_tag
+    ```
 
 To push the container to your registry, run:
-
-```
-npm run docker_push
-```
-
+    ```
+    npm run docker_push
+    ```
 
 
-# 14.0 Run Hyperledger Explorer using Docker-Compose    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+<a name="Run-Hyperledger-Explorer-Using-Docker-Compose" />
+
+# 14.0 Run Hyperledger Explorer Using Docker Compose    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 * Modify docker-compose.yaml to align with your environment
-  * networks > mynetwork.com > external > name
-  * services > explorer.mynetwork.com > volumes
-    * Connection profile path (ex. ./examples/net1/config.json)
-    * Directory path for crypto artifacts of fabric network (ex. ./examples/net1/crypto)
-* Run the following to start up explore and explorer-db services:
+    * networks > mynetwork.com > external > name
+    * services > explorer.mynetwork.com > volumes
+      * Connection profile path (ex. ./examples/net1/config.json)
+      * Directory path for crypto artifacts of fabric network (ex. ./examples/net1/crypto)
 
-	```
-	cd /some/where/blockchain-explorer
-	docker-compose up -d
-	```
+* Run the following to start up explore and explorer-db services:
+    ```
+    cd /blockchain-explorer
+    docker-compose up -d
+    ```
 
 * To stop services without removing persistent data, run the following:
+    ```
+    docker-compose down
+    ```
 
-	```
-	docker-compose down
-	```
+* In this docker-compose.yaml, two named volumes are allocated for persistent data (for Postgres data and user credential provided by fabric-ca), if you would like to clear these named volumes, run the following:
+    ```
+    docker-compose down -v
+    ```
 
-* In this docker-compose.yaml, 2 named volumes are allocated for persistent data (for Postgres data and user credential provided by fabric-ca)
-  * If you would like to clear these named volumes, run the following:
-  
-	```
-	docker-compose down -v
-	```
 
 
 <a name="Hyperledger-Explorer-Swagger" />
@@ -454,7 +482,6 @@ npm run docker_push
 
 
 
-
 <a name="Troubleshooting" />
 
 # 17.0 Troubleshooting    <!-- do not remove this comment, ensure there is a blank line before each heading -->
@@ -468,4 +495,3 @@ npm run docker_push
 # 18.0 License    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 Hyperledger Explorer Project source code is released under the Apache 2.0 license. The README.md, CONTRIBUTING.md files, and files in the "images", "__snapshots__" folders are licensed under the Creative Commons Attribution 4.0 International License. You may obtain a copy of the license, titled CC-BY-4.0, at http://creativecommons.org/licenses/by/4.0/.
-
