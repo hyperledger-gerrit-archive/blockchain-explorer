@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ $(id -un) = 'postgres' ]; then
-  PSQL="psql"
-else
-  PSQL="sudo -u postgres psql"
-fi
-
 echo "Copying ENV variables into temp file..."
 node processenv.js
 if [ $( jq .DATABASE_USERNAME /tmp/process.env.json) == null ]; then
@@ -29,11 +23,18 @@ echo "PASSWD=${PASSWD}"
 if [ -f /tmp/process.env.json ] ; then
     rm /tmp/process.env.json
 fi
-echo "Executing SQL scripts..."
+echo "Executing SQL scripts, OS="$OSTYPE
+
 case $OSTYPE in
-darwin*) ${PSQL} postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./explorerpg.sql ;
-${PSQL} postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./updatepg.sql ;;
-linux*) ${PSQL} -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./explorerpg.sql ;
+darwin*) psql postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./explorerpg.sql ;
+psql postgres -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./updatepg.sql ;;
+linux*)
+if [ $(id -un) = 'postgres' ]; then
+  PSQL="psql"
+else
+  PSQL="sudo -u postgres psql"
+fi;
+${PSQL} -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./explorerpg.sql ;
 ${PSQL} -v dbname=$DATABASE -v user=$USER -v passwd=$PASSWD -f ./updatepg.sql ;;
 esac
 
