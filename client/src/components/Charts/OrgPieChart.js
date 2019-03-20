@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { PieChart, Pie, Tooltip, Legend } from 'recharts';
 import { transactionByOrgType } from '../types';
+import { sha256, sha224 } from 'js-sha256';
 
 const styles = theme => {
   const { type } = theme.palette;
@@ -33,11 +34,26 @@ const styles = theme => {
   };
 };
 
-function getRandomColor() {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  return `rgb(${r},${g},${b})`;
+function intConversion(str) {
+  let value = 0;
+  for (let i = 0; i < str.length; i++) {
+    value = str.charCodeAt(i) + ((value << 5) - value);
+  }
+  return value;
+}
+
+function getRGBColor(i) {
+  const c = (i & 0x00ffffff).toString(16).toUpperCase();
+  return '#' + '00000'.substring(0, 6 - c.length) + c;
+}
+
+function convertSha256(str) {
+  const shaString = sha256(str);
+  return shaString;
+}
+
+export function getOrgColor(org) {
+  return getRGBColor(intConversion(convertSha256(org)));
 }
 
 export class OrgPieChart extends Component {
@@ -70,11 +86,12 @@ export class OrgPieChart extends Component {
       temp.push({
         value: parseInt(element.count, 10),
         name: element.creator_msp_id,
-        fill: getRandomColor()
+        fill: getOrgColor('test')
       });
     });
     this.setState({ data: temp });
   };
+
   render() {
     const { data } = this.state;
     const { classes } = this.props;
