@@ -6,6 +6,7 @@ import types from './types';
 
 const initialState = {
   user: '',
+  token: null,
   error: '',
   networks: [],
   registered: '',
@@ -24,7 +25,8 @@ const authReducer = (state = initialState, action) => {
     case types.LOGOUT: {
       return {
         ...state,
-        user: ''
+        user: '',
+        token: null
       };
     }
     case types.ERROR: {

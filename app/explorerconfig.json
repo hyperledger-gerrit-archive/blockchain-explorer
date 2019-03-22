@@ -13,5 +13,8 @@
     "platform": "fabric",
     "blocksSyncTime": "1"
   },
-  "jwtSecret": "a secret phrase!!"
+  "jwt": {
+    "secret": "a secret phrase!!",
+    "expiresIn": "2 days"
+  }
 }

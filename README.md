@@ -11,6 +11,7 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintained, open s
 - [3.0 Dependencies](#Dependencies)
 - [4.0 Clone GIT Repository](#Clone-GIT-Repository)
 - [5.0 Database Setup](#Database-Setup)
+    - [5.1 Authorization Configuration](#Authorization-Configuration)
 - [6.0 Fabric Network Setup](#Fabric-Network-Setup)
 - [7.0 Configure Hyperledger Fabric](#Configure-Hyperledger-Fabric)
     - [7.1 Optional: Configure Fabcar Sample](#Configure-Fabcar-Sample)
@@ -156,7 +157,25 @@ Connect to the PostgreSQL database and run DB status commands:
 - `\l`  View created fabricexplorer database.
 - `\d`  View created tables.
 
+<a name="Authorization-Configuration" />
 
+# 5.1 Authorization Configuration    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+- `cd blockchain-explorer/app`
+- Modify explorerconfig.json to update Authorization (JWT) settings.
+
+<pre>
+"jwt": {
+    "secret" : "a secret phrase!!",
+    "expiresIn": "2 days"
+}
+</pre>
+
+`jwt`:
+
+* `secret`: secret string to sign the payload.
+* `expiresIn`: expressed in seconds or a string describing a time span [zeit/ms](https://github.com/zeit/ms).
+  > Eg: `60`, `"2 days"`, `"10h"`, `"7d"`. A numeric value is interpreted as a seconds count. If you use a string be sure you provide the time units (days, hours, etc), otherwise milliseconds unit is used by default (`"120"` is equal to `"120ms"`).
 
 <a name="Fabric-Network-Setup" />
 

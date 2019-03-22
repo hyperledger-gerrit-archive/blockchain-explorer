@@ -1,11 +1,16 @@
 // @ts-check
 
+const { promisify } = require('util');
+
 const jwt = require('jsonwebtoken');
+
 const PassportLocalStrategy = require('passport-local').Strategy;
 
 const User = require('../platform/fabric/models/User');
 
 const config = require('../explorerconfig.json');
+
+const jwtSignAsync = promisify(jwt.sign);
 
 const strategy = function(platform) {
   const proxy = platform.getProxy();
@@ -29,8 +34,9 @@ const strategy = function(platform) {
         sub: userInfo.user
       };
 
-      // create a token string
-      const token = jwt.sign(payload, config.jwtSecret);
+      const token = await jwtSignAsync(payload, config.jwt.secret, {
+        expiresIn: config.jwt.expiresIn
+      });
 
       const data = {
         message: 'logged in',

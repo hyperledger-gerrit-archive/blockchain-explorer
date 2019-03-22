@@ -44,6 +44,9 @@ export const deleteRequest = (uri, payload) =>
 export const withPromiseCallback = (resolve, reject) => (error, response) => {
   if (error) {
     console.error(error);
+    if (response.status === 401) {
+      Auth.deauthenticateUser();
+    }
     reject({ error });
   } else {
     resolve(response.body);
