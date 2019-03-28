@@ -18,7 +18,8 @@
     "request": "^2.83.0",
     "sinon": "^5.1.0",
     "string-builder": "^0.1.6",
-    "tape": "^4.9.1"
+    "tape": "^4.9.1",
+    "nyc": "^13.3.0"
   },
   "nyc": {
     "check-coverage": true,
@@ -26,25 +27,25 @@
     "extension": [
       ".js"
     ],
-    "lines": 85,
-    "functions": 85,
-    "statements": 85,
-    "branches": 85,
+    "lines": 10,
+    "functions": 10,
+    "statements": 10,
+    "branches": 10,
     "watermarks": {
       "lines": [
-        85,
+        50,
         100
       ],
       "functions": [
-        85,
+        50,
         100
       ],
       "branches": [
-        85,
+        50,
         100
       ],
       "statements": [
-        85,
+        50,
         100
       ]
     }
