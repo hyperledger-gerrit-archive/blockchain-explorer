@@ -67,7 +67,7 @@ class Composition:
         command = ["up", "-d"]
         if force_recreate:
             command += ["--force-recreate"]
-        cas = ["ca.example.com", "ca.org1.example.com", "ca.org2.example.com"]
+        cas = ["ca.org1.example.com", "ca.org2.example.com"]
         for ca in cas:
             self.setFabricCaEnv(ca)
         self.issueCommand(command + components)
