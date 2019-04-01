@@ -4,6 +4,7 @@
 const UserService = require('./service/UserService.js');
 const helper = require('../../common/helper');
 const NetworkService = require('./service/NetworkService.js');
+const OperationsService = require('./service/OperationsService.js');
 
 const logger = helper.getLogger('Proxy');
 
@@ -32,6 +33,21 @@ class Proxy {
     return response;
   }
 
+  async getOperationsServiceConfig(networkName) {
+    const operationsService = new OperationsService(this.platform);
+    let response = await operationsService.getOperationsServiceConfig(
+      networkName
+    );
+    if (!response) {
+      response = {
+        status: false,
+        message: `Failed to get getOperationsServiceConfig`
+      };
+    }
+    logger.debug('getOperationsServiceConfig >> %s', response);
+    return response;
+  }
+
   async networkList() {
     const networkService = new NetworkService(this.platform);
     let response = await networkService.networkList();
@@ -50,7 +66,9 @@ class Proxy {
     const channel_genesis_hash = client.getChannelGenHash(channel.getName());
     let respose;
     if (channel_genesis_hash) {
-      respose = { currentChannel: channel_genesis_hash };
+      respose = {
+        currentChannel: channel_genesis_hash
+      };
     } else {
       respose = {
         status: 1,
@@ -61,12 +79,6 @@ class Proxy {
     logger.debug('getCurrentChannel >> %j', respose);
     return respose;
   }
-
-  /**async loadChaincodeSrc(path) {
-    const respose = chaincodeService.loadChaincodeSrc(path);
-    logger.debug('loadChaincodeSrc >> %s', respose);
-    return respose;
-  } */
 
   async getPeersStatus(channel_genesis_hash) {
     const client = await this.platform.getClient();
@@ -80,7 +92,9 @@ class Proxy {
         discover_results = await client.initializeChannelFromDiscover(
           channel._name
         );
-      } catch (e) {}
+      } catch (e) {
+        logger.debug('getPeersStatus >> ', e);
+      }
     }
 
     const peers = [];
@@ -149,7 +163,10 @@ class Proxy {
       }
     }
     for (const org_id of organizations) {
-      rows.push({ count: '0', creator_msp_id: org_id });
+      rows.push({
+        count: '0',
+        creator_msp_id: org_id
+      });
     }
     return rows;
   }
@@ -237,12 +254,12 @@ class Proxy {
           client.initializeNewChannel(msg.channel_name);
         } else {
           logger.error(
-            'Channel name should pass to proces the notification from child process'
+            'Channel name should pass to process the notification from child process'
           );
         }
       } else {
         logger.error(
-          'Network name and client name should pass to proces the notification from child process'
+          'Network name and client name should pass to process the notification from child process'
         );
       }
     } else if (
@@ -258,12 +275,12 @@ class Proxy {
           client.initializeChannelFromDiscover(msg.channel_name);
         } else {
           logger.error(
-            'Channel name should pass to proces the notification from child process'
+            'Channel name should pass to process the notification from child process'
           );
         }
       } else {
         logger.error(
-          'Network name and client name should pass to proces the notification from child process'
+          'Network name and client name should pass to process the notification from child process'
         );
       }
     } else if (fabric_const.NOTITY_TYPE_BLOCK === msg.notify_type) {

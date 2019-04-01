@@ -16,6 +16,7 @@
     "ajv": "^5.5.2",
     "app-root-path": "^2.0.1",
     "asn1.js": "^5.0.1",
+    "axios": "^0.18.0",
     "body-parser": "^1.17.2",
     "child_process": "^1.0.2",
     "classnames": "^2.2.6",
@@ -41,6 +42,7 @@
     "pg": "^7.4.1",
     "prettyjson": "^1.2.1",
     "prop-types": "^15.6.2",
+    "save": "^2.3.3",
     "stomp-broker-js": "^0.1.3",
     "stompjs": "^2.3.3",
     "swagger-ui-express": "^3.0.9",
@@ -66,7 +68,7 @@
       "prettier --single-quote --write",
       "git add"
     ],
-    "**/*.{js,jsx,css,md}": [
+    "**/*.{js,jsx,css}": [
       "eslint",
       "git add"
     ]

@@ -18,6 +18,7 @@ const localLoginStrategy = require('./passport/local-login');
 const authroutes = require('./rest/authroutes');
 const dbroutes = require('./rest/dbroutes');
 const platformroutes = require('./rest/platformroutes');
+const opsserviceroutes = require('./rest/opsserviceroutes');
 
 const authCheckMiddleware = require('./middleware/auth-check');
 
@@ -30,7 +31,11 @@ class Explorer {
   constructor() {
     this.app = new Express();
     this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(
+      bodyParser.urlencoded({
+        extended: true
+      })
+    );
     this.app.use(passport.initialize());
     this.app.use(
       '/api-docs',
@@ -72,7 +77,7 @@ class Explorer {
 
       passport.use('local-login', localLoginStrategy(platform));
 
-      // // initializing the platfrom
+      // initializing the platform
       await platform.initialize();
 
       this.app.use('/api', authCheckMiddleware);
@@ -87,6 +92,7 @@ class Explorer {
       // initializing the rest app services
       await dbroutes(apirouter, platform);
       await platformroutes(apirouter, platform);
+      await opsserviceroutes(apirouter, platform);
 
       this.app.use('/auth', authrouter);
       this.app.use('/api', apirouter);
