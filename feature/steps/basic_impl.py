@@ -345,7 +345,7 @@ def step_impl(context):
 
 @when(u'I locally execute the command "{command}" saving the results as "{key}"')
 def step_impl(context, command, key):
-    # This is a workaround to allow sending piped commands to behave without conflicting with the pipes in the table. 
+    # This is a workaround to allow sending piped commands to behave without conflicting with the pipes in the table.
     command = command.replace("!", "|")
     if not hasattr(context, "command_result"):
         context.command_result = {}

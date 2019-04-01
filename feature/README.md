@@ -15,7 +15,7 @@ Feature: Bootstrapping Hyperledger Explorer
         When I make a POST request to "auth/login" with parameters
         |user  |password   |network        |
         |test  |test       |first-network  |
-        Then the response status code should equal 200 
+        Then the response status code should equal 200
         Then the response structure should equal "loginResp"
         Then JSON at path ".success" should equal true
         Then JSON at path ".user.message" should equal "logged in"
@@ -25,7 +25,7 @@ Feature: Bootstrapping Hyperledger Explorer
         Given I want to reuse "token" parameter
         Given I set Authorization header to "context.token"
         When I make a GET request to "api/channels"
-        Then the response status code should equal 200 
+        Then the response status code should equal 200
         Then the response structure should equal "channelsResp"
         Then JSON at path ".channels" should equal ["mychannel"]
 ```
@@ -64,20 +64,20 @@ $ apt-get install virtualenv
 $ cd /some/where/blockchain-explorer/feature
 $ virtualenv e2e-test
 $ source e2e-test/bin/activate
-(e2e-test) $ 
+(e2e-test) $
 ```
 
 ## Install required packages
 
 ```
-# At /some/where/blockchain-explorer/feature on virtual env 
+# At /some/where/blockchain-explorer/feature on virtual env
 (e2e-test) $ pip install -r requirement.txt
 ```
 
 # Run test scenarios
 
 ```
-# At /some/where/blockchain-explorer/feature on virtual env 
+# At /some/where/blockchain-explorer/feature on virtual env
 (e2e-test) $ behave ./explorer.feature
 ```
 
