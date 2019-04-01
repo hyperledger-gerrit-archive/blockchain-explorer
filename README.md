@@ -13,6 +13,7 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintained, open s
 - [5.0 Database Setup](#Database-Setup)
     - [5.1 Authorization Configuration](#Authorization-Configuration)
 - [6.0 Fabric Network Setup](#Fabric-Network-Setup)
+    - [6.1 Configure operations service ](#Config-Operations-Service-Hyperledger-Explorer)
 - [7.0 Configure Hyperledger Fabric](#Configure-Hyperledger-Fabric)
     - [7.1 Optional: Configure Fabcar Sample](#Configure-Fabcar-Sample)
     - [7.2 Optional: Configure Balance Transfer Sample](#Configure-Balance-Transfer-Sample)
@@ -187,6 +188,12 @@ Connect to the PostgreSQL database and run DB status commands:
 - Make sure to set the environment variables `CORE_PEER_GOSSIP_BOOTSTRAP` and `CORE_PEER_GOSSIP_EXTERNAL_ENDPOINT` for each peer in the docker-compose.yaml file. These settings enable the Fabric discovery service, which is used by Hyperledger Explorer to discover the network topology.
 
 
+<a name ="Config-Operations-Service-Hyperledger-Explorer">
+
+ # 6.1 Configure operations service Config-Operations-Service-Hyperledger-Explorer     <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+- Please visit the [CONFIG-OPERATIONS-SERVICE-HLEXPLORER.md](CONFIG-OPERATIONS-SERVICE-HLEXPLORER.md) to configure operations service
+
 
 <a name="Configure-Hyperledger-Fabric" />
 
@@ -311,7 +318,13 @@ On another terminal:
 - `npm test -- -u --coverage`
 - `npm run build`
 
+Or
 
+- `./main.sh install` 
+    - to install, run tests, and build project
+- `./main.sh clean`
+    - to clean the /node_modules, client/node_modules client/build, client/coverage, app/test/node_modules
+   directories
 
 <a name="Run-Hyperledger-Explorer" />
 

@@ -14,7 +14,7 @@ Scenario: Bring up explorer with tls-disabled fabric network and retrieve channe
     When I make a POST request to "auth/login" with parameters
     |user  |password   |network        |
     |test  |test       |first-network  |
-    Then the response status code should equal 200 
+    Then the response status code should equal 200
     Then the response structure should equal "loginResp"
     Then JSON at path ".success" should equal true
     Then JSON at path ".user.message" should equal "logged in"
@@ -24,6 +24,6 @@ Scenario: Bring up explorer with tls-disabled fabric network and retrieve channe
     Given I want to reuse "token" parameter
     Given I set Authorization header to "context.token"
     When I make a GET request to "api/channels"
-    Then the response status code should equal 200 
+    Then the response status code should equal 200
     Then the response structure should equal "channelsResp"
     Then JSON at path ".channels" should equal ["mychannel"]

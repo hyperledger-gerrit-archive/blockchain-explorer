@@ -37,7 +37,7 @@
       "mspid": "Org1MSP",
       "fullpath": true,
       "adminPrivateKey": {
-        "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/3289e9776e5efd28353fd79fafa9a09feb46c689e712ba274b453ec064036c82_sk"
+        "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/868edff66b8eb4bcbc3bde0682cd6932ea2164bd22c63477eef686d70f8bd2b8_sk"
       },
       "signedCert": {
         "path": "/fabric-path/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
@@ -54,6 +54,35 @@
       "grpcOptions": {
         "ssl-target-name-override": "peer0.org1.example.com"
       }
+    }
+  },
+
+  "operationsservice": {
+    "targets": {
+      "orderers": [
+        {
+          "name": "orderer.example.com",
+          "url": "http://localhost:8443"
+        }
+      ],
+      "peers": [
+        {
+          "name": "peer0.org1.example.com",
+          "url": "http://localhost:9443"
+        },
+        {
+          "name": "peer1.org1.example.com",
+          "url": "http://localhost:9444"
+        },
+        {
+          "name": "peer0.org2.example.com",
+          "url": "http://localhost:9445"
+        },
+        {
+          "name": "peer1.org2.example.com",
+          "url": "http://localhost:9446"
+        }
+      ]
     }
   }
 }

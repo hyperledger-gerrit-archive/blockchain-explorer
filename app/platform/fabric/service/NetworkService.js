@@ -1,4 +1,9 @@
-let config = require('../../../platform/fabric/config.json');
+/**
+ *    SPDX-License-Identifier: Apache-2.0
+ */
+
+let helper = require('../../../common/helper');
+const logger = helper.getLogger('NetworkService');
 
 class NetworkService {
   constructor(platform) {
@@ -14,6 +19,7 @@ class NetworkService {
       networklist.push(value);
     }
 
+    logger.log('Network list ', networklist);
     return networklist;
   }
 }
