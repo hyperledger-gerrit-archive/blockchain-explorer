@@ -9,7 +9,6 @@ const logger = helper.getLogger('FabricClient');
 const ExplorerError = require('../../common/ExplorerError');
 const BlockDecoder = require('fabric-client/lib/BlockDecoder');
 const User = require('fabric-client/lib/User.js');
-const channelService = require('./service/channelService.js');
 const FabricUtils = require('./utils/FabricUtils.js');
 const FabricGateway = require('../../platform/fabric/gateway/FabricGateway');
 const FabricConfig = require('../fabric/FabricConfig');
@@ -593,25 +592,6 @@ class FabricClient {
     await user.setEnrollment(importedKey, signedCertPEM.toString(), opts.mspid);
     logger.debug('then user');
     return user;
-  }
-
-  async createChannel(artifacts) {
-    const respose = await channelService.createChannel(
-      artifacts,
-      this.hfc_client
-    );
-    return respose;
-  }
-
-  async joinChannel(channelName, peers, orgName) {
-    const respose = await channelService.joinChannel(
-      channelName,
-      peers,
-      orgName,
-      this.hfc_client,
-      this.client_config.peers
-    );
-    return respose;
   }
 
   getChannelNames() {

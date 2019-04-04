@@ -2,7 +2,7 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-const requtil = require('./requestutils');
+const requtil = require('./../../../rest/requestutils');
 const axios = require('axios');
 
 const opsserviceroutes = async function(router, platform) {

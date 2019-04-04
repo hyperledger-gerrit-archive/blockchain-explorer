@@ -133,7 +133,11 @@
           "ssl",
           "hlbeuser",
           "dflt",
-          "adminpw"
+          "adminpw",
+          "jwt",
+          "networklist",
+          "req",
+          "adminroutes"
         ],
         "skipIfMatch": ["http://[^s]*"],
         "skipWordIfMatch": ["^foobar.*$"],

@@ -55,12 +55,31 @@ $ ./build_docker_image.sh
 $ apt-get install python python-pip
 ```
 
+### For macOS
+
+ macOS comes with Python so there's a chance pip is already installed on your machine, verify the version
+```
+$ python --version
+$ pip --version
+```
+
+
 ## Setup virtualenv
 
 ### For Linux (Ubuntu)
 
 ```
 $ apt-get install virtualenv
+$ cd /some/where/blockchain-explorer/feature
+$ virtualenv e2e-test
+$ source e2e-test/bin/activate
+(e2e-test) $
+```
+
+### For macOS
+
+```
+$ pip install virtualenv
 $ cd /some/where/blockchain-explorer/feature
 $ virtualenv e2e-test
 $ source e2e-test/bin/activate
