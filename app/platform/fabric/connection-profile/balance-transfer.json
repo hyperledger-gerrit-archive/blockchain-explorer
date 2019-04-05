@@ -32,10 +32,10 @@
       "peers": ["peer0.org1.example.com", "peer1.org1.example.com"],
       "certificateAuthorities": ["ca-org1"],
       "adminPrivateKey": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/5890f0061619c06fb29dea8cb304edecc020fe63f41a6db109f1e227cc1cb2a8_sk"
+        "path": "fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/5890f0061619c06fb29dea8cb304edecc020fe63f41a6db109f1e227cc1cb2a8_sk"
       },
       "signedCert": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
+        "path": "fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
       }
     }
   },
@@ -47,7 +47,7 @@
         "ssl-target-name-override": "peer0.org1.example.com"
       },
       "tlsCACerts": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
+        "path": "fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
       }
     }
   },
@@ -58,10 +58,39 @@
         "verify": false
       },
       "tlsCACerts": {
-        "path": "/fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"
+        "path": "fabric-path/fabric-samples/balance-transfer/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem"
       },
 
       "caName": "ca-org1"
+    }
+  },
+
+  "operationsservice": {
+    "targets": {
+      "orderers": [
+        {
+          "name": "orderer.example.com",
+          "url": "http://localhost:8443"
+        }
+      ],
+      "peers": [
+        {
+          "name": "peer0.org1.example.com",
+          "url": "http://localhost:9443"
+        },
+        {
+          "name": "peer1.org1.example.com",
+          "url": "http://localhost:9444"
+        },
+        {
+          "name": "peer0.org2.example.com",
+          "url": "http://localhost:9445"
+        },
+        {
+          "name": "peer1.org2.example.com",
+          "url": "http://localhost:9446"
+        }
+      ]
     }
   }
 }

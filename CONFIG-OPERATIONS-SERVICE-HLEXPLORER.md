@@ -8,7 +8,7 @@
 
   #### Sample configuration for 'fabric-samples/first-network'
 
-   - Modify <fabric-path>/fabric-samples/first-network/base/docker-compose-base.yaml file to add operations service per each orderrer, and each peer, and restart your fabric network in order to have operations service brodcasting metrics, and other info. Please visit provided [docker-compose-base-sample.yaml](blockchain-explorer/app/platform/fabric/artifacts/config-samples/first-network/docker-compose-base-sample.yaml) sample.
+   - Modify <fabric-path>/fabric-samples/first-network/base/docker-compose-base.yaml file to add operations service per each orderrer, and each peer, and restart your fabric network in order to have operations service brodcasting metrics, and other info. Please visit provided [docker-compose-base-sample.yaml](app/platform/fabric/artifacts/fabric-config-samples/first-network/docker-compose-base-sample.yaml) sample.
 
 
    - Orderer sample configuration
@@ -25,7 +25,7 @@
 
     **Note that each peer, and orderer need to have a different port, and it available  within your environment.
 
-- Modify blockchain-explorer/app/platform/fabric/connection-profile/first-network.json to add operations service to fabric-samples/first-network connection profile, list all the targeted orderers, and peers you need to get metrics, and other info.
+  - Modify blockchain-explorer/app/platform/fabric/connection-profile/first-network.json to add operations service to fabric-samples/first-network connection profile, list all the targeted orderers, and peers you need to get metrics, and other info.
 
     **Note that this is a non TLS configuration for the operations service
 
@@ -52,8 +52,12 @@
           "url": "http://localhost:9446"
         }
       ]
+     }
     }
-  }
-  ```
+    ```
+
+  #### Sample configuration for 'fabric-samples/blalance-transfer'
+
+  - Similar configuration as for 'fabric-samples/first-network'
 
 
