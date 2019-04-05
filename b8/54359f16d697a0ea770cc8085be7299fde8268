@@ -1,0 +1,8 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Atsushi Neki <AtsushiN@fast.au.fujitsu.com>
+Code-Review+2: Vinita Chinoy <vinitachinoy@yahoo.com>
+Submitted-by: Vinita Chinoy <vinitachinoy@yahoo.com>
+Submitted-at: Fri, 05 Apr 2019 15:05:10 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/30745
+Project: blockchain-explorer
+Branch: refs/heads/min-config-rel-4.0
