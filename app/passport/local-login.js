@@ -1,5 +1,9 @@
 // @ts-check
 
+/*
+    SPDX-License-Identifier: Apache-2.0
+*/
+
 const { promisify } = require('util');
 
 const jwt = require('jsonwebtoken');

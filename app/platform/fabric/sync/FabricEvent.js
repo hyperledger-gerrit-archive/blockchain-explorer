@@ -66,9 +66,18 @@ class FabricEvent {
         channel_name
       );
     } else {
-      // if channel event hub is not defined then create new channel event hub
-      const channel = this.client.hfc_client.getChannel(channel_name);
-      this.createChannelEventHub(channel);
+      /* if channel event hub is not defined then create new channel event hub,
+      this may happen when a new channel is created, and explorer is trying to get it 
+      */
+      try {
+        const channel = this.client.hfc_client.getChannel(channel_name);
+        if (channel) {
+          this.createChannelEventHub(channel);
+        }
+      } catch (err) {
+        logger.error('Failed to get the channel ', err);
+        console.error('Failed to get the channel ', err);
+      }
       return false;
     }
   }
@@ -99,6 +108,12 @@ class FabricEvent {
       const status = this.isChannelEventHubConnected(channel_name);
       if (status) {
         this.disconnectChannelEventHub(channel_name);
+      } else {
+        logger.debug(
+          'disconnectEventHubs(), no connection found ',
+          channel_name,
+          eventHub
+        );
       }
     }
   }

@@ -1,3 +1,7 @@
+/*
+ *SPDX-License-Identifier: Apache-2.0
+ */
+
 const path = require('path');
 const fs = require('fs-extra');
 const sha = require('js-sha256');
@@ -20,10 +24,12 @@ async function createFabricClient(client_configs, client_name, persistence) {
     '************ Initializing fabric client for [%s]************',
     client_name
   );
-  await client.initialize(client_configs, persistence);
-  return client;
-
-  throw new ExplorerError(explorer_error.ERROR_2014);
+  try {
+    await client.initialize(client_configs, persistence);
+    return client;
+  } catch (err) {
+    throw new ExplorerError(explorer_error.ERROR_2014);
+  }
 }
 
 async function createDetachClient(client_configs, client_name, persistence) {
@@ -74,239 +80,6 @@ function processTLS_URL(client_config) {
   return client_config;
 }
 
-function validateClientConfig(client_config) {
-  logger.debug('Client configuration >> %j ', client_config);
-  let message = !client_config.version
-    ? 'Client network version is not defined in configuration'
-    : null;
-  if (message) {
-    logger.error(message);
-    return false;
-  }
-  message = !client_config.client
-    ? 'Client is not defined in configuration'
-    : !client_config.client.organization
-    ? 'Client organization is not defined in configuration'
-    : !client_config.client.channel
-    ? 'Client default channel is not defined in configuration '
-    : !(
-        client_config.client.credentialStore &&
-        client_config.client.credentialStore.path
-      )
-    ? 'Client credential store path is not defined in configuration '
-    : !(
-        client_config.client.credentialStore.cryptoStore &&
-        client_config.client.credentialStore.cryptoStore.path
-      )
-    ? 'Client crypto store path is not defined in configuration '
-    : null;
-
-  if (message) {
-    logger.error(message);
-    return false;
-  }
-
-  message = !client_config.channels
-    ? 'Channels is not defined in configuration'
-    : !client_config.channels[client_config.client.channel]
-    ? `Default channel [${
-        client_config.client.channel
-      }] is not defined in configuration`
-    : null;
-
-  if (message) {
-    logger.error(message);
-    return false;
-  }
-
-  for (const channel_name in client_config.channels) {
-    message = !(
-      client_config.channels[channel_name].peers &&
-      Object.keys(client_config.channels[channel_name].peers).length > 0
-    )
-      ? `Default peer is not defined for channel [${channel_name}] in configuration`
-      : !client_config.peers
-      ? 'Peers is not defined in configuration'
-      : !client_config.peers[
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        ]
-      ? `Default channel peers [${
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        }] is not defined in configuration`
-      : !(
-          !client_config.client.tlsEnable ||
-          (client_config.peers[
-            Object.keys(client_config.channels[channel_name].peers)[0]
-          ].tlsCACerts &&
-            client_config.peers[
-              Object.keys(client_config.channels[channel_name].peers)[0]
-            ].tlsCACerts.path)
-        )
-      ? `TLS CA Certs path is not defined default peer [${
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        }] in configuration`
-      : !client_config.peers[
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        ].url
-      ? `URL is not defined default peer [${
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        }] in configuration`
-      : !client_config.peers[
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        ].eventUrl
-      ? `Event URL is not defined default peer [${
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        }] in configuration`
-      : !(
-          client_config.peers[
-            Object.keys(client_config.channels[channel_name].peers)[0]
-          ].grpcOptions &&
-          client_config.peers[
-            Object.keys(client_config.channels[channel_name].peers)[0]
-          ].grpcOptions['ssl-target-name-override']
-        )
-      ? `Server hostname is not defined default peer [${
-          Object.keys(client_config.channels[channel_name].peers)[0]
-        }] in configuration`
-      : null;
-
-    if (message) {
-      logger.error(message);
-      return false;
-    }
-  }
-
-  message = !client_config.organizations
-    ? 'Organizations is not defined in configuration'
-    : !client_config.organizations[client_config.client.organization]
-    ? `Client organization [${
-        client_config.client.organization
-      }] is not defined in configuration`
-    : !(
-        client_config.organizations[client_config.client.organization]
-          .signedCert &&
-        client_config.organizations[client_config.client.organization]
-          .signedCert.path
-      )
-    ? `Client organization signed Cert path for [${
-        client_config.client.organization
-      }] is not defined in configuration`
-    : null;
-
-  if (message) {
-    logger.error(message);
-    return false;
-  }
-
-  for (const org_name in client_config.organizations) {
-    message = !client_config.organizations[org_name].mspid
-      ? `Organization mspid for [${org_name}] is not defined in configuration`
-      : !(
-          client_config.organizations[org_name].adminPrivateKey &&
-          client_config.organizations[org_name].adminPrivateKey.path
-        )
-      ? `Organization admin private key path for [${org_name}] is not defined in configuration`
-      : null;
-
-    if (message) {
-      logger.error(message);
-      return false;
-    }
-    message = !client_config.peers
-      ? 'Peers is not defined in configuration'
-      : !(
-          !client_config.client.tlsEnable ||
-          (client_config.peers[
-            Object.keys(
-              client_config.channels[client_config.client.channel].peers
-            )[0]
-          ].tlsCACerts &&
-            client_config.peers[
-              Object.keys(
-                client_config.channels[client_config.client.channel].peers
-              )[0]
-            ].tlsCACerts.path)
-        )
-      ? `TLS CA Certs path is not defined default peer [${
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        }] in configuration`
-      : !client_config.peers[
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        ].url
-      ? `URL is not defined default peer [${
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        }] in configuration`
-      : !client_config.peers[
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        ].eventUrl
-      ? `Event URL is not defined default peer [${
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        }] in configuration`
-      : !(
-          client_config.peers[
-            Object.keys(
-              client_config.channels[client_config.client.channel].peers
-            )[0]
-          ].grpcOptions &&
-          client_config.peers[
-            Object.keys(
-              client_config.channels[client_config.client.channel].peers
-            )[0]
-          ].grpcOptions['ssl-target-name-override']
-        )
-      ? `Server hostname is not defined default peer [${
-          Object.keys(
-            client_config.channels[client_config.client.channel].peers
-          )[0]
-        }] in configuration`
-      : null;
-  }
-
-  for (const peer_name in client_config.peers) {
-    message = !client_config.peers[peer_name].url
-      ? `Peer URL for [${peer_name}] is not defined in configuration`
-      : null;
-    if (message) {
-      logger.error(message);
-      return false;
-    }
-  }
-
-  message = !client_config.orderers
-    ? 'Orderers is not defined in configuration'
-    : !Object.keys(client_config.orderers).length
-    ? 'Default orderer is not defined in configuration'
-    : !client_config.orderers[Object.keys(client_config.orderers)[0]].url
-    ? 'Default orderer URL is not defined in configuration'
-    : null;
-
-  if (message) {
-    logger.error(message);
-    return false;
-  }
-
-  for (const ord_name in client_config.orderers) {
-    message = !client_config.orderers[ord_name].url
-      ? `Orderer URL for [${ord_name}] is not defined in configuration`
-      : null;
-    if (message) {
-      logger.error(message);
-      return false;
-    }
-  }
-  return true;
-}
-
 async function setAdminEnrolmentPath(network_configs) {
   for (const network_name in network_configs) {
     network_configs[network_name] = setOrgEnrolmentPath(
@@ -330,7 +103,7 @@ function setOrgEnrolmentPath(network_config) {
         );
         if (organization.adminPrivateKey) {
           const privateKeyPath = organization.adminPrivateKey.path;
-          var files = fs.readdirSync(privateKeyPath);
+          const files = fs.readdirSync(privateKeyPath);
           if (files && files.length > 0) {
             organization.adminPrivateKey.path = path.join(
               privateKeyPath,
@@ -341,7 +114,7 @@ function setOrgEnrolmentPath(network_config) {
         // setting admin private key as first file from signcerts dir
         if (organization.signedCert) {
           const signedCertPath = organization.signedCert.path;
-          var files = fs.readdirSync(signedCertPath);
+          const files = fs.readdirSync(signedCertPath);
           if (files && files.length > 0) {
             organization.signedCert.path = path.join(signedCertPath, files[0]);
           }
@@ -357,7 +130,7 @@ function setOrgEnrolmentPath(network_config) {
   return network_config;
 }
 
-async function generateBlockHash(block_header) {
+async function getBlockHash(block_header) {
   const result = await generateBlockHash(block_header);
   return result;
 }
@@ -430,6 +203,6 @@ exports.generateBlockHash = generateBlockHash;
 exports.createFabricClient = createFabricClient;
 exports.getBlockTimeStamp = getBlockTimeStamp;
 exports.generateDir = generateDir;
-exports.generateBlockHash = generateBlockHash;
+exports.getBlockHash = getBlockHash;
 exports.getPEMfromConfig = getPEMfromConfig;
 exports.createDetachClient = createDetachClient;

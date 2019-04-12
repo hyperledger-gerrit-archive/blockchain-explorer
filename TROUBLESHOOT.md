@@ -466,6 +466,80 @@ Related Information:
 #### Related Information:
     HL Explorer support for HL Fabric 1.3
 
+### Problem Description:  Received discovery error:access denied error
+
+#### Background Information:
+    2019-04-09T18:52:42.477Z - error: [Channel.js]: Channel:mychannel received discovery error:access denied
+    2019-04-09T18:52:42.478Z - error: [Channel.js]: Error: Channel:mychannel Discovery error:access denied
+
+   [2019-04-09 14:52:42.442] [DEBUG] FabricClient - Set client [firstnetwork] default channel as  >> mychannel
+   [2019-04-09 14:52:42.478] [ERROR] FabricClient - Error: Failed to discover ::Error: Channel:mychannel Discovery error:access denied
+    at Channel._initialize (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/fabric-network/node_modules/fabric-client/lib/Channel.js:347:11)
+    at <anonymous>
+   [2019-04-09 14:52:42.478] [DEBUG] FabricClient - this.defaultPeer  peer0.org1.example.com
+   [2019-04-09 14:52:42.490] [ERROR] FabricClient - { Error: 2 UNKNOWN: access denied: channel [] creator org [Org1MSP]
+    at Object.exports.createStatusError (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/common.js:87:15)
+    at Object.onReceiveStatus (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:1188:28)
+    at InterceptingListener._callNext (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:564:42)
+    at InterceptingListener.onReceiveStatus (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:614:8)
+    at callback (/Users/USER_ID/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:841:24)
+    code: 2,
+
+#### Possible cause:
+    The "wallet" crypto is incorrect, or outdated
+#### Possible solution:
+    Delete directory "wallet" located in blockchain-explorer directory, and restart explorer $./start.sh
+
+#### Related Information:
+    HL Explorer support for HL Fabric 1.4
+
+### Problem Description:  error: [Remote.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+
+#### Background Information:
+        at Object.exports.createStatusError (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/common.js:87:15)
+        at ClientDuplexStream._emitStatusIfDone (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client.js:235:26)
+        at ClientDuplexStream._receiveStatus (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client.js:213:8)
+        at Object.onReceiveStatus (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:1290:15)
+        at InterceptingListener._callNext (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:564:42)
+        at InterceptingListener.onReceiveStatus (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:614:8)
+        at /Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/grpc/src/client_interceptors.js:1110:18
+    code: 14,
+    metadata: Metadata { _internal_repr: {} },
+    details: 'Connect Failed' }
+    2019-04-10T17:41:35.140Z - error: [Remote.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    2019-04-10T17:41:35.141Z - error: [Channel.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    2019-04-10T17:41:38.148Z - error: [Remote.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    SyncServices.synchNetworkConfigToDB client  first-network
+    <<<<<<<<<<<<<<<<<<<<<<<<<< Synchronizer Error >>>>>>>>>>>>>>>>>>>>>
+    Error: "orderer" request parameter is missing and there are no orderers defined on this channel in the common connection profile
+        at Client.getTargetOrderer (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/fabric-network/node_modules/fabric-client/lib/Client.js:1770:12)
+        at Channel.getGenesisBlock (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/node_modules/fabric-network/node_modules/fabric-client/lib/Channel.js:1060:39)
+        at FabricClient.getGenesisBlock (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/app/platform/fabric/FabricClient.js:530:40)
+        at SyncServices.synchNetworkConfigToDB (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/app/platform/fabric/sync/SyncService.js:50:34)
+        at SyncPlatform.initialize (/Users/nfrunza/workspace/EXPLORER-MIN-CONFIG/blockchain-explorer/app/platform/fabric/sync/SyncPlatform.js:97:40)
+        at <anonymous>
+        at process._tickCallback (internal/process/next_tick.js:189:7)
+    <<<<<<<<<<<<<<<<<<<<<<<<<< Closing client processor >>>>>>>>>>>>>>>>>>>>>
+    initializeChannelFromDiscover  mychannel
+    initializeChannelFromDiscover  mychannel
+    2019-04-10T17:42:18.841Z - error: [Remote.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    2019-04-10T17:42:18.841Z - error: [Channel.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    2019-04-10T17:42:18.843Z - error: [Remote.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    2019-04-10T17:42:18.843Z - error: [Channel.js]: Error: Failed to connect before the deadline URL:grpcs://localhost:7051
+    Received kill signal, shutting down gracefully
+    <<<<<<<<<<<<<<<<<<<<<<<<<< Closing explorer  >>>>>>>>>>>>>>>>>>>>>
+    Closed out connections
+
+#### Possible cause:
+    Fabric network could be down
+#### Possible solution:
+    Start you fabric network
+
+#### Related Information:
+    HL Explorer support for HL Fabric 1.4
+
+
+
 ### Docker Troubleshooting commands
     List your networks
     $docker network ls

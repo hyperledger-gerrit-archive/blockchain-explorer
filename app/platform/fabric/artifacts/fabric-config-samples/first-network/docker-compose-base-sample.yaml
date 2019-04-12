@@ -26,6 +26,11 @@ services:
       - ORDERER_KAFKA_VERBOSE=true
       - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443  # operation RESTful API
       - ORDERER_METRICS_PROVIDER=prometheus  # prometheus will pull metrics from orderer via /metrics RESTful API
+      - ORDERER_OPERATIONS_TLS_ENABLED=false
+      - ORDERER_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS/var/hyperledger/orderer/tls/ca.crt
+      - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=false
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
@@ -50,6 +55,11 @@ services:
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9443  # operation RESTful API
       - CORE_METRICS_PROVIDER=prometheus  # prometheus will pull metrics from orderer via /metrics RESTful API
+      - CORE_OPERATIONS_TLS_ENABLED=false
+      - CORE_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.key
+      - CORE_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.crt
+      - CORE_OPERATIONS_TLS_CLIENTROOTCAS/var/hyperledger/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+      - CORE_OPERATIONS_TLS_CLIENTAUTHREQUIRED=false
     volumes:
         - /var/run/:/host/var/run/
         - ../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -71,6 +81,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_OPERATIONS_TLS_ENABLED=false
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9444  # operation RESTful API
       - CORE_METRICS_PROVIDER=prometheus  # prometheus will pull metrics from orderer via /metrics RESTful API
     volumes:
@@ -95,6 +106,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
+      - CORE_OPERATIONS_TLS_ENABLED=false
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9445  # operation RESTful API
       - CORE_METRICS_PROVIDER=prometheus  # prometheus will pull metrics from orderer via /metrics RESTful API
     volumes:
@@ -118,6 +130,7 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.example.com:7051
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
+      - CORE_OPERATIONS_TLS_ENABLED=false
       - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9446  # operation RESTful API
       - CORE_METRICS_PROVIDER=prometheus  # prometheus will pull metrics from orderer via /metrics RESTful API
     volumes:
