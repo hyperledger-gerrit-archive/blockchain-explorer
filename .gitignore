@@ -26,3 +26,4 @@ tmp/wallet/*
 wallet/*
 *.swp
 package-lock.json
+ssl-certs/*

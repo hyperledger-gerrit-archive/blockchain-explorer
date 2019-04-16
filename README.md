@@ -22,6 +22,7 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintained, open s
 - [9.0 Optional: Hyperledger Cello Setup](#Hyperledger-Cello-Setup)
     - [9.1 Configure Hyperledger Explorer for Cello](#Configure-Hyperledger-Explorer-for-Cello)
 - [10.0 Build Hyperledger Explorer](#Build-Hyperledger-Explorer)
+    - [10.1 Optional: Configure Hyperledger Explorer for HTTPS](#Config-https-Hyperledger-Explorer)
 - [11.0 Run Hyperledger Explorer](#Run-Hyperledger-Explorer)
 - [12.0 Optional: Run Hyperledger Explorer Using Docker](#Run-Hyperledger-Explorer-using-Docker)
     - [12.1 Docker Repository](#Docker-Docker-Repository)
@@ -321,6 +322,12 @@ Or
 - `./main.sh clean`
     - to clean the /node_modules, client/node_modules client/build, client/coverage, app/test/node_modules
    directories
+
+<a name="Config-https-Hyperledger-Explorer" />
+
+# 10.1 Optional: Configure Hyperledger Explorer for HTTPS    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+ - Configure Hyperledger Explorer for HTTPS based on this link [CONFIG-HTTPS-HLEXPLORER.md](CONFIG-HTTPS-HLEXPLORER.md)
 
 <a name="Run-Hyperledger-Explorer" />
 

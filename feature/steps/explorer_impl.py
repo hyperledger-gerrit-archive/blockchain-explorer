@@ -21,7 +21,7 @@ def start_explorer_impl(context):
                                                                 startContainers=False)
     else:
         context.composition_explorer.composeFilesYaml = composeFiles
-    
+
     if hasattr(context, "composition"):
         env = context.composition.getEnv()
         for key,value in env.items():
