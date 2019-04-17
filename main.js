@@ -9,6 +9,8 @@
  */
 
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const url = require('url');
 const WebSocket = require('ws');
 const appconfig = require('./appconfig.json');
@@ -20,22 +22,27 @@ const path = require('path');
 const Explorer = require('./app/Explorer');
 const ExplorerError = require('./app/common/ExplorerError');
 
+const sslEnabled = process.env.SSL_ENABLED || appconfig.sslEnabled;
+const sslCertsPath = process.env.SSL_CERTS_PATH || appconfig.sslCertsPath;
 const host = process.env.HOST || appconfig.host;
 const port = process.env.PORT || appconfig.port;
+const protocol = sslEnabled ? 'https' : 'http';
 
 class Broadcaster extends WebSocket.Server {
   constructor(server) {
-    super({ server });
+    super({
+      server
+    });
     this.on('connection', function connection(ws, req) {
       const location = url.parse(req.url, true);
-      this.on('message', (message) => {
-        console.log('received: %s', message);
+      this.on('message', message => {
+        console.log('received: %s, %s', location, message);
       });
     });
   }
 
   broadcast(data) {
-    this.clients.forEach((client) => {
+    this.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
         logger.debug('Broadcast >> %j', data);
         console.log('Broadcast >> %j', data);
@@ -49,8 +56,20 @@ let server;
 let explorer;
 async function startExplorer() {
   explorer = new Explorer();
+
   //= =========== web socket ==============//
-  server = http.createServer(explorer.getApp());
+  const sslPath = path.join(__dirname, sslCertsPath);
+  console.debug(sslEnabled, sslCertsPath, sslPath);
+
+  if (sslEnabled) {
+    const options = {
+      key: fs.readFileSync(sslPath + '/privatekey.pem').toString(),
+      cert: fs.readFileSync(sslPath + '/certificate.pem').toString()
+    };
+    server = https.createServer(options, explorer.getApp());
+  } else {
+    server = http.createServer(explorer.getApp());
+  }
   const broadcaster = new Broadcaster(server);
   await explorer.initialize(broadcaster);
   explorer.getApp().use(express.static(path.join(__dirname, 'client/build')));
@@ -60,7 +79,9 @@ async function startExplorer() {
   // ============= start server =======================
   server.listen(port, () => {
     console.log('\n');
-    console.log(`Please open web browser to access ：http://${host}:${port}/`);
+    console.log(
+      `Please open web browser to access ：${protocol}://${host}:${port}/`
+    );
     console.log('\n');
     console.log(`pid is ${process.pid}`);
     console.log('\n');
@@ -70,7 +91,7 @@ async function startExplorer() {
 startExplorer();
 
 let connections = [];
-server.on('connection', (connection) => {
+server.on('connection', connection => {
   connections.push(connection);
   connection.on(
     'close',
@@ -80,7 +101,7 @@ server.on('connection', (connection) => {
 
 // this function is called when you want the server to die gracefully
 // i.e. wait for existing connections
-const shutDown = function (exitCode) {
+const shutDown = function(exitCode) {
   console.log('Received kill signal, shutting down gracefully');
   server.close(() => {
     explorer.close();
@@ -100,7 +121,7 @@ const shutDown = function (exitCode) {
   setTimeout(() => connections.forEach(curr => curr.destroy()), 5000);
 };
 
-process.on('unhandledRejection', (up) => {
+process.on('unhandledRejection', up => {
   console.log(
     '<<<<<<<<<<<<<<<<<<<<<<<<<< Explorer Error >>>>>>>>>>>>>>>>>>>>>'
   );
@@ -113,7 +134,7 @@ process.on('unhandledRejection', (up) => {
     shutDown(1);
   }, 2000);
 });
-process.on('uncaughtException', (up) => {
+process.on('uncaughtException', up => {
   console.log(
     '<<<<<<<<<<<<<<<<<<<<<<<<<< Explorer Error >>>>>>>>>>>>>>>>>>>>>'
   );

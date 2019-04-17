@@ -67,7 +67,7 @@ class FabricEvent {
       );
     } else {
       /* if channel event hub is not defined then create new channel event hub,
-      this may happen when a new channel is created, and explorer is trying to get it 
+      this may happen when a new channel is created, and explorer is trying to get it
       */
       try {
         const channel = this.client.hfc_client.getChannel(channel_name);

@@ -150,7 +150,10 @@
           "signcerts",
           "tmp",
           "Asn",
-          "der"
+          "der",
+          "shouhewu",
+          "pem",
+          "privatekey"
         ],
         "skipIfMatch": ["http://[^s]*"],
         "skipWordIfMatch": ["^foobar.*$"],
