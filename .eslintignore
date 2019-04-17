@@ -4,5 +4,5 @@
 **/client/src/services/__mocks__/**
 **/app/test/**
 **/app/persistence/fabric/postgreSQL/db/**
-
+**/app/platform/fabric/e2e-test/**
 
