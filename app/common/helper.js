@@ -27,7 +27,7 @@ exports.readAllFiles = readAllFiles;
 function readAllFiles(dir) {
   const files = fs.readdirSync(dir);
   const certs = [];
-  files.forEach((file_name) => {
+  files.forEach(file_name => {
     const file_path = path.join(dir, file_name);
     const data = fs.readFileSync(file_path);
     certs.push(data);
@@ -36,50 +36,59 @@ function readAllFiles(dir) {
 }
 
 /*
-Please assign the logger with the filename for the application logging
-and assign the logger with "pgservice" for database logging for any filename. Please find an example below.
+Please assign the logger with the file name for the application logging and assign the logger with "pgservice" 
+for database logging for any file name. Please find an example below.
+
 To stacktrace, please pass the error.stack object to the logger. If there is no error.stack object pass in a
 string with description.
 
 var helper = require("./app/helper");
 var logger = helper.getLogger("main");
 logger.setLevel('INFO');
-
-
 */
 
-var getLogger = function (moduleName) {
+var getLogger = function(moduleName) {
+  var logger;
+
   if (moduleName == 'pgservice') {
-    var logger = log4js.getLogger('pgservice');
+    logger = log4js.getLogger('pgservice');
   } else {
     appList.push(moduleName);
-    var logger = log4js.getLogger(moduleName);
+    logger = log4js.getLogger(moduleName);
   }
+
   var appLog = 'logs/app/app.log';
   var dbLog = 'logs/db/db.log';
+
   if (process.env.SYNC_LOG_PATH) {
-    var appLog = `${process.env.SYNC_LOG_PATH}/app/app.log`;
-    var dbLog = `${process.env.SYNC_LOG_PATH}/db/db.log`;
+    appLog = `${process.env.SYNC_LOG_PATH}/app/app.log`;
+    dbLog = `${process.env.SYNC_LOG_PATH}/db/db.log`;
   }
+
   fs.ensureFileSync(appLog);
   fs.ensureFileSync(dbLog);
+
   log4js.configure({
     appenders: [
       {
         type: 'dateFile',
         filename: appLog,
+        // eslint-disable-next-line spellcheck/spell-checker
         pattern: '-yyyy-MM-dd',
         category: appList
       },
       {
         type: 'dateFile',
         filename: dbLog,
+        // eslint-disable-next-line spellcheck/spell-checker
         pattern: '-yyyy-MM-dd',
         category: ['pgservice']
       }
     ]
   });
+
   logger.setLevel('DEBUG');
+
   return logger;
 };
 
