@@ -51,28 +51,6 @@ const platformroutes = async function(router, platform) {
       .catch(err => res.send({ status: 500, error: err }));
   });
 
-  /** *Peer Status List
-  GET /peerlist -> /peersStatus
-  curl -i 'http://<host>:<port>/peersStatus/<channel>'
-  Response:
-  [
-    {
-      'requests': 'grpcs://127.0.0.1:7051',
-      'server_hostname': 'peer0.org1.example.com'
-    }
-  ]
-  */
-  router.get('/peersStatus/:channel', (req, res) => {
-    const channelName = req.params.channel;
-    if (channelName) {
-      proxy.getPeersStatus(channelName).then(data => {
-        res.send({ status: 200, peers: data });
-      });
-    } else {
-      return requtil.invalidRequest(req, res);
-    }
-  });
-
   /** *
   Block by number
   GET /block/getinfo -> /block
