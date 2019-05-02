@@ -67,7 +67,7 @@ const register = user => dispatch =>
         return resp.message;
       } else {
         dispatch(registerAction({ ...user, ...resp }));
-        return resp.message;
+        return 'Registered Successfully';
       }
     })
     .catch(error => {
