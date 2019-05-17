@@ -2,42 +2,68 @@
  *    SPDX-License-Identifier: Apache-2.0
  */
 
-import Login from './Login';
+import Enzyme, { shallow, mount } from 'enzyme';
+import { unwrap } from '@material-ui/core/test-utils';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Adapter from 'enzyme-adapter-react-16';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { Login } from './Login';
+
+Enzyme.configure({ adapter: new Adapter() });
+
+const ComponentNaked = unwrap(Login);
+
+describe('<Login />', () => {
+	it('with shallow', () => {
+		const wrapper = shallow(<ComponentNaked classes={{}} />);
+		console.log('shallow', wrapper.debug());
+	});
+
+	it('with mount', () => {
+		const wrapper = mount(
+			<MuiThemeProvider theme={createMuiTheme()}>
+				<Login classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapper.exists()).toBe(true);
+		console.log('mount', wrapper.debug());
+	});
+});
 
 const setup = () => {
-  const props = {
-    classes: {
-      avatar: 'avatar',
-      form: 'form',
-      container: 'container',
-      paper: 'paper',
-      submit: 'submit'
-    }
-  };
-  const wrapper = shallow(<Login {...props} />);
+	const props = {
+		classes: {
+			avatar: 'avatar',
+			form: 'form',
+			container: 'container',
+			paper: 'paper',
+			submit: 'submit'
+		}
+	};
+	const wrapper = shallow(<Login {...props} />);
 
-  return {
-    wrapper,
-    props
-  };
+	return {
+		wrapper,
+		props
+	};
 };
 
 describe('Login', () => {
-  test('Login component should render', () => {
-    const { wrapper } = setup();
-    expect(wrapper.exists()).toBe(true);
-  });
+	test('Login component should render', () => {
+		const { wrapper } = setup();
+		expect(wrapper.exists()).toBe(true);
+	});
 
-  test('Login state should pass values', () => {
-    const { wrapper } = setup();
-    wrapper.setState({
-      user: 'admin',
-      password: 'adminpw',
-      network: 'first-network',
-      networks: ['first-network', 'balance-transfer'],
-      isLoading: 'true'
-    });
-    wrapper.update();
-    expect(wrapper.exists()).toBe(true);
-  });
+	test('Login state should pass values', () => {
+		const { wrapper } = setup();
+		wrapper.setState({
+			user: 'admin',
+			password: 'adminpw',
+			network: 'first-network',
+			networks: ['first-network', 'balance-transfer'],
+			isLoading: 'true'
+		});
+		wrapper.update();
+		expect(wrapper.exists()).toBe(true);
+	});
 });

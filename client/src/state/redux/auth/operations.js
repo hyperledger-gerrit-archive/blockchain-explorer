@@ -6,7 +6,6 @@ import { post, get } from '../../../services/request';
 
 import {
 	login as loginAction,
-	logout as logoutAction,
 	network as networkAction,
 	register as registerAction,
 	error as errorAction
@@ -27,19 +26,6 @@ const login = ({ user, password }, network) => dispatch =>
 			// eslint-disable-next-line no-console
 			console.error(error);
 			dispatch(errorAction(error));
-		});
-
-const logout = () => dispatch =>
-	post('/auth/logout', {})
-		.then(() => {
-			Auth.deauthenticateUser();
-			dispatch(logoutAction());
-		})
-		.catch(error => {
-			// TODO: keeping till api service implemented
-			// eslint-disable-next-line no-console
-			console.error(error);
-			dispatch(logoutAction());
 		});
 
 const network = () => dispatch =>
@@ -79,7 +65,6 @@ const register = user => dispatch =>
 
 export default {
 	login,
-	logout,
 	network,
 	register
 };

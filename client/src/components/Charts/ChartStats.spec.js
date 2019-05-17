@@ -1,8 +1,16 @@
 /**
  *    SPDX-License-Identifier: Apache-2.0
  */
-
+import Enzyme, { shallow, mount } from 'enzyme';
+import { unwrap } from '@material-ui/core/test-utils';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Adapter from 'enzyme-adapter-react-16';
+import { createMuiTheme } from '@material-ui/core/styles';
 import { ChartStats } from './ChartStats';
+
+Enzyme.configure({ adapter: new Adapter() });
+
+const ComponentNaked = unwrap(ChartStats);
 
 jest.useFakeTimers();
 
@@ -214,10 +222,10 @@ describe('ChartStats', () => {
 
 	test('setInterval called', () => {
 		const { props } = setup();
-		const { getBlocksPerHour } = props;
+		const { getBlocksPerMin } = props;
 		expect(setInterval).toHaveBeenCalled();
 		jest.runOnlyPendingTimers();
-		expect(getBlocksPerHour).toHaveBeenCalled();
+		expect(getBlocksPerMin).toHaveBeenCalled();
 		expect(setInterval).toHaveBeenLastCalledWith(expect.any(Function), 60000);
 	});
 
@@ -313,5 +321,22 @@ describe('ChartStats', () => {
 		expect(getBlocksPerMin).toHaveBeenCalled();
 		expect(getTransactionPerHour).toHaveBeenCalled();
 		expect(getTransactionPerMin).toHaveBeenCalled();
+	});
+});
+
+describe('<ChartStats />', () => {
+	it('with shallow', () => {
+		const wrapperone = shallow(<ComponentNaked classes={{}} />);
+		console.log('shallow', wrapperone.debug());
+	});
+
+	it('with mount', () => {
+		const wrapperone = mount(
+			<MuiThemeProvider theme={createMuiTheme()}>
+				<ChartStats classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapperone.exists()).toBe(true);
+		console.log('mount', wrapperone.debug());
 	});
 });

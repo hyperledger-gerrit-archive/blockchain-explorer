@@ -41,19 +41,6 @@ describe('Auth', () => {
 			done();
 		});
 
-		test('post logout', async done => {
-			nock(/\w*(\W)/g)
-				.matchHeader('Authorization', /Bearer.*/)
-				.post(`/auth/logout`)
-				.reply(200);
-
-			const expectedActions = [{ type: types.LOGOUT }];
-			const store = mockStore(initialState, expectedActions);
-
-			await store.dispatch(operations.logout());
-			done();
-		});
-
 		test('Register', async done => {
 			nock(/\w*(\W)/g)
 				.post(`/auth/REGISTER`)

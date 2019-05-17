@@ -22,13 +22,6 @@ const authReducer = (state = initialState, action) => {
 				...action.payload
 			};
 		}
-		case types.LOGOUT: {
-			return {
-				...state,
-				user: '',
-				token: null
-			};
-		}
 		case types.ERROR: {
 			return {
 				...state,

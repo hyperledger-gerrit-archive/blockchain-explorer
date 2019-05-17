@@ -4,8 +4,18 @@
 
 import _ from 'lodash';
 import React from 'react';
+import Enzyme, { shallow, mount } from 'enzyme';
+import { unwrap } from '@material-ui/core/test-utils';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Adapter from 'enzyme-adapter-react-16';
+import { createMuiTheme } from '@material-ui/core/styles';
 import { TimeChart } from './TimeChart';
 
+Enzyme.configure({ adapter: new Adapter() });
+
+const ComponentNaked = unwrap(TimeChart);
+
+jest.useFakeTimers();
 const setup = () => {
 	const props = {
 		classes: {
@@ -69,5 +79,22 @@ describe('TimeChart', () => {
 			}
 		}
 		expect(propsMatch).toBe(true);
+	});
+});
+
+describe('<TimeChart />', () => {
+	it('with shallow', () => {
+		const wrapperone = shallow(<ComponentNaked chartData={{}} classes={{}} />);
+		console.log('shallow', wrapperone.debug());
+	});
+
+	it('with mount', () => {
+		const wrapperone = mount(
+			<MuiThemeProvider theme={createMuiTheme()}>
+				<TimeChart chartData={{}} classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapperone.exists()).toBe(true);
+		console.log('mount', wrapperone.debug());
 	});
 });

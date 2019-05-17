@@ -5,30 +5,26 @@
 import types from './types';
 
 export const login = user => ({
-  type: types.LOGIN,
-  payload: user
-});
-
-export const logout = () => ({
-  type: types.LOGOUT
+	type: types.LOGIN,
+	payload: user
 });
 
 export const network = networks => ({
-  type: types.NETWORK,
-  payload: networks
+	type: types.NETWORK,
+	payload: networks
 });
 
 export const error = error => ({
-  type: types.ERROR,
-  payload: error
+	type: types.ERROR,
+	payload: error
 });
 
 export const register = registered => ({
-  type: types.REGISTER,
-  payload: registered
+	type: types.REGISTER,
+	payload: registered
 });
 
 export const enroll = enrolled => ({
-  type: types.ENROLL,
-  payload: enrolled
+	type: types.ENROLL,
+	payload: enrolled
 });
