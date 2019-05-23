@@ -32,6 +32,7 @@ Feature: Bootstrapping Hyperledger Explorer
 #     Then JSON at path ".channels" should equal ["mychannel"]
 
 @basic
+@sanitycheck
 # @doNotDecompose
 Scenario Outline: [<network-type>] Bring up explorer with fabric-samples/<network-type> and send requests to the basic REST API functions successfully
     # Start a fabric network by using fabric-samples/<network-type>
@@ -144,7 +145,7 @@ Scenario: [balance-transfer] Register a new user successfully
     Then the response status code should equal 200
     Then the response structure should equal "registerResp"
     Then the response parameter "status" should equal 400
-    Then the response parameter "message" should equal "failed to register with Error: Username already exist"
+    Then the response parameter "message" should equal "Error: already exists"
 
 @basic
 # @doNotDecompose
@@ -175,7 +176,7 @@ Scenario: [first-network] Not supported to register a new user
     Then the response status code should equal 200
     Then the response structure should equal "registerResp"
     Then the response parameter "status" should equal 400
-    Then the response parameter "message" should equal "failed to register with Error: Not supported user registration without CA"
+    Then the response parameter "message" should equal "Error: did not register with CA"
 
 @bugfix
 # @doNotDecompose
