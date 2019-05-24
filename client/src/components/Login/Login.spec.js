@@ -27,6 +27,15 @@ describe('<Login />', () => {
 		);
 		expect(wrapper.exists()).toBe(true);
 	});
+
+	it('Mount with dark', () => {
+		const wrapper = mount(
+			<MuiThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+				<Login classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapper.exists()).toBe(true);
+	});
 });
 
 const setup = () => {

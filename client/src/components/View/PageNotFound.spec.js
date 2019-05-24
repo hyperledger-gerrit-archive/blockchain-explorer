@@ -8,31 +8,32 @@ import { unwrap } from '@material-ui/core/test-utils';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Adapter from 'enzyme-adapter-react-16';
 import { createMuiTheme } from '@material-ui/core/styles';
-import ChaincodeForm from './ChaincodeForm';
+import { PageNotFound } from './PageNotFound';
 
 Enzyme.configure({ adapter: new Adapter() });
 
-const ComponentNaked = unwrap(ChaincodeForm);
+const ComponentNaked = unwrap(PageNotFound);
 
-describe('<ChaincodeForm />', () => {
+describe('<PageNotFound />', () => {
 	it('with shallow', () => {
 		const wrapper = shallow(<ComponentNaked classes={{}} />);
+		console.log('shallow', wrapper.debug());
 		expect(wrapper.exists()).toBe(true);
 	});
 
 	it('with mount', () => {
 		const wrapper = mount(
 			<MuiThemeProvider theme={createMuiTheme()}>
-				<ChaincodeForm classes={{}} />
+				<PageNotFound classes={{}} />
 			</MuiThemeProvider>
 		);
 		expect(wrapper.exists()).toBe(true);
 	});
 
-	it('mount with dark', () => {
+	it('pagenotfound mount with dark', () => {
 		const wrapper = mount(
 			<MuiThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
-				<ChaincodeForm classes={{}} />
+				<PageNotFound classes={{}} />
 			</MuiThemeProvider>
 		);
 		expect(wrapper.exists()).toBe(true);

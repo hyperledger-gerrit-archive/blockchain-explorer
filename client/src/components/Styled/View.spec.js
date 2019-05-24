@@ -27,4 +27,13 @@ describe('<View />', () => {
 		);
 		expect(wrapper.exists()).toBe(true);
 	});
+
+	it('with dark mount', () => {
+		const wrapper = mount(
+			<MuiThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+				<View classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapper.exists()).toBe(true);
+	});
 });

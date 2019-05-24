@@ -28,4 +28,13 @@ describe('<FooterView />', () => {
 		);
 		expect(wrapper.exists()).toBe(true);
 	});
+
+	it('with mount', () => {
+		const wrapper = mount(
+			<MuiThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+				<FooterView />
+			</MuiThemeProvider>
+		);
+		expect(wrapper.exists()).toBe(true);
+	});
 });

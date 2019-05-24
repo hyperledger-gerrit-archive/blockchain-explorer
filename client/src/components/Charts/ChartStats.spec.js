@@ -338,4 +338,13 @@ describe('<ChartStats />', () => {
 		);
 		expect(wrapperone.exists()).toBe(true);
 	});
+
+	it('mount with dark', () => {
+		const wrapperone = mount(
+			<MuiThemeProvider theme={createMuiTheme({ palette: { type: 'dark' } })}>
+				<ChartStats classes={{}} />
+			</MuiThemeProvider>
+		);
+		expect(wrapperone.exists()).toBe(true);
+	});
 });
