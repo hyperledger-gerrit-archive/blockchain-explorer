@@ -62,43 +62,69 @@ node ('hyp-x') { // trigger build on x86_64 node
           }
          }
 
-// Run npm tests
-    stage("NPM Tests") {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
-            try {
-                dir("${ROOTDIR}") {
-                sh '''
-                    npm config set prefix ~/npm && npm install -g mocha
-                    npm install chai && npm install
-                    cd app/test && npm install
-                    npm run test
-                    cd ../../client && npm install
-                    echo "--------> npm tests with code coverage"
-                    npm run test:ci -- -u --coverage && npm run build
-                '''
-                 }
-               }
-            catch (err) {
-                 failure_stage = "npm tests"
-                 currentBuild.result = 'FAILURE'
-                 throw err
-            }
-        }
-    }
+// // Run npm tests
+//     stage("NPM Tests") {
+//         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+//             try {
+//                 dir("${ROOTDIR}") {
+//                 sh '''
+//                     npm config set prefix ~/npm && npm install -g mocha
+//                     npm install chai && npm install
+//                     cd app/test && npm install
+//                     npm run test
+//                     cd ../../client && npm install
+//                     echo "--------> npm tests with code coverage"
+//                     npm run test:ci -- -u --coverage && npm run build
+//                 '''
+//                  }
+//                }
+//             catch (err) {
+//                  failure_stage = "npm tests"
+//                  currentBuild.result = 'FAILURE'
+//                  throw err
+//             }
+//         }
+//     }
 
-    // Run npm tests
-    stage("E2E Tests for Sanity-check") {
+//     // Run E2E tests for REST APIs
+//     stage("E2E Tests for Sanity-check") {
+//         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+//             try {
+//                 dir("${ROOTDIR}") {
+//                 sh '''
+//                     npm install
+//                     npm run e2e-test-sanitycheck:ci
+//                 '''
+//                  }
+//                }
+//             catch (err) {
+//                  failure_stage = "e2e tests"
+//                  currentBuild.result = 'FAILURE'
+//                  throw err
+//             }
+//         }
+//     }
+
+    // Run E2E tests for GUI
+    stage("E2E Tests for GUI") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
             try {
                 dir("${ROOTDIR}") {
                 sh '''
+                    whoami
+                    mkdir extract
+                    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                    apt-get download openjdk-11-jre-headless
+                    dpkg -x openjdk-11-jre-headless* extract
+                    dpkg -x google-chrome-stable_current_amd64.deb extract
+                    export PATH=$PATH:$PWD/extract/opt/google/chrome:$PWD/extract/usr/lib/jvm/java-11-openjdk-amd64/bin
                     npm install
-                    npm run e2e-test-sanitycheck:ci
+                    npm run e2e-gui-test:ci
                 '''
                  }
                }
             catch (err) {
-                 failure_stage = "e2e tests"
+                 failure_stage = "e2e tests for GUI"
                  currentBuild.result = 'FAILURE'
                  throw err
             }
