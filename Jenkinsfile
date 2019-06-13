@@ -62,43 +62,62 @@ node ('hyp-x') { // trigger build on x86_64 node
           }
          }
 
-// Run npm tests
-    stage("NPM Tests") {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
-            try {
-                dir("${ROOTDIR}") {
-                sh '''
-                    npm config set prefix ~/npm && npm install -g mocha
-                    npm install chai && npm install
-                    cd app/test && npm install
-                    npm run test
-                    cd ../../client && npm install
-                    echo "--------> npm tests with code coverage"
-                    npm run test:ci -- -u --coverage && npm run build
-                '''
-                 }
-               }
-            catch (err) {
-                 failure_stage = "npm tests"
-                 currentBuild.result = 'FAILURE'
-                 throw err
-            }
-        }
-    }
+// // Run npm tests
+//     stage("NPM Tests") {
+//         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+//             try {
+//                 dir("${ROOTDIR}") {
+//                 sh '''
+//                     npm config set prefix ~/npm && npm install -g mocha
+//                     npm install chai && npm install
+//                     cd app/test && npm install
+//                     npm run test
+//                     cd ../../client && npm install
+//                     echo "--------> npm tests with code coverage"
+//                     npm run test:ci -- -u --coverage && npm run build
+//                 '''
+//                  }
+//                }
+//             catch (err) {
+//                  failure_stage = "npm tests"
+//                  currentBuild.result = 'FAILURE'
+//                  throw err
+//             }
+//         }
+//     }
+
+    // // Run npm tests
+    // stage("E2E Tests for Sanity-check") {
+    //     wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+    //         try {
+    //             dir("${ROOTDIR}") {
+    //             sh '''
+    //                 npm install
+    //                 npm run e2e-test-sanitycheck:ci
+    //             '''
+    //              }
+    //            }
+    //         catch (err) {
+    //              failure_stage = "e2e tests"
+    //              currentBuild.result = 'FAILURE'
+    //              throw err
+    //         }
+    //     }
+    // }
 
     // Run npm tests
-    stage("E2E Tests for Sanity-check") {
+    stage("E2E Tests of GUI for Sanity-check") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
             try {
                 dir("${ROOTDIR}") {
                 sh '''
                     npm install
-                    npm run e2e-test-sanitycheck:ci
+                    npm run e2e-gui-test:ci
                 '''
                  }
                }
             catch (err) {
-                 failure_stage = "e2e tests"
+                 failure_stage = "e2e tests for GUI"
                  currentBuild.result = 'FAILURE'
                  throw err
             }
