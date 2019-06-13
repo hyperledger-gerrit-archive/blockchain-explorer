@@ -92,6 +92,11 @@
 		"e2e-test-run": "cd app/platform/fabric/e2e-test; . ./e2e-test/bin/activate && behave explorer.feature",
 		"e2e-test-run-sanitycheck": "cd app/platform/fabric/e2e-test; . ./e2e-test/bin/activate && behave --tags=@sanitycheck --stop --no-skipped explorer.feature",
 		"e2e-test": "run-s e2e-test-check-tool e2e-test-check-img e2e-test-setup-env e2e-test-setup-img e2e-test-run",
-		"e2e-test-sanitycheck:ci": "cross-env PATH=$PATH:$PWD/fabric-samples/bin run-s e2e-test-setup-tool:ci e2e-test-check-tool e2e-test-check-img e2e-test-setup-env e2e-test-setup-img e2e-test-run-sanitycheck"
+		"e2e-test-sanitycheck:ci": "cross-env PATH=$PATH:$PWD/fabric-samples/bin run-s e2e-test-setup-tool:ci e2e-test-check-tool e2e-test-check-img e2e-test-setup-env e2e-test-setup-img e2e-test-run-sanitycheck",
+		"e2e-gui-test-setup-env": "cd client; npm install",
+		"e2e-gui-test-setup": "./client/e2e-setup.sh",
+		"e2e-gui-test-run": "cd client; npx wdio",
+		"e2e-gui-test": "run-s e2e-gui-test-setup e2e-gui-test-run",
+		"e2e-gui-test:ci": "run-s e2e-test-setup-img e2e-gui-test-setup-env e2e-gui-test-setup e2e-gui-test-run"
 	}
 }
