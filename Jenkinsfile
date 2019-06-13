@@ -86,7 +86,7 @@ node ('hyp-x') { // trigger build on x86_64 node
         }
     }
 
-    // Run npm tests
+    // Run E2E tests for REST APIs
     stage("E2E Tests for Sanity-check") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
             try {
@@ -99,6 +99,25 @@ node ('hyp-x') { // trigger build on x86_64 node
                }
             catch (err) {
                  failure_stage = "e2e tests"
+                 currentBuild.result = 'FAILURE'
+                 throw err
+            }
+        }
+    }
+
+    // Run E2E tests for GUI
+    stage("E2E Tests for GUI") {
+        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+            try {
+                dir("${ROOTDIR}") {
+                sh '''
+                    npm install
+                    npm run e2e-gui-test:ci
+                '''
+                 }
+               }
+            catch (err) {
+                 failure_stage = "e2e tests for GUI"
                  currentBuild.result = 'FAILURE'
                  throw err
             }
