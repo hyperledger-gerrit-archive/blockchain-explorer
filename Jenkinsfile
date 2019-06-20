@@ -68,6 +68,9 @@ node ('hyp-x') { // trigger build on x86_64 node
             try {
                 dir("${ROOTDIR}") {
                 sh '''
+                    easy_install --version
+                    python -V
+                    pip -V
                     npm config set prefix ~/npm && npm install -g mocha
                     npm install chai && npm install
                     cd app/test && npm install
