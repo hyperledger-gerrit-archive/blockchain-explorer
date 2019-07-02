@@ -6,6 +6,8 @@ import ReactTable from '../Styled/Table';
 import { Transactions } from './Transactions';
 import TransactionView from '../View/TransactionView';
 
+jest.useFakeTimers();
+
 const setup = () => {
 	const props = {
 		classes: {
@@ -414,5 +416,85 @@ describe('Transactions', () => {
 		];
 		wrapper.setProps({ currentChannel });
 		expect(spy).toHaveBeenCalledTimes(1);
+	});
+
+	test('clearInterval gets called in componentWillReceiveProps when inteval has already been set', () => {
+		const { wrapper } = setup();
+		const instance = wrapper.instance();
+		instance.interval = 1;
+		wrapper.setState({ search: true });
+		const spy = jest.spyOn(instance, 'searchTransactionList');
+
+		const currentChannel = [
+			{
+				currentChannel: 'MyChannel'
+			}
+		];
+
+		wrapper.setProps({ currentChannel });
+
+		expect(clearInterval).toHaveBeenCalled();
+		expect(spy).toHaveBeenCalledTimes(1);
+
+		jest.advanceTimersByTime(70000);
+
+		expect(spy).toHaveBeenCalledTimes(2);
+	});
+
+	test('calls componentWillUnmount', () => {
+		const { wrapper } = setup();
+		const instance = wrapper.instance();
+		const spy = jest.spyOn(instance, 'componentWillUnmount');
+
+		wrapper.unmount();
+
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(clearInterval).toHaveBeenCalled();
+	});
+
+	test('rendered when some of list items are selected', () => {
+		const { wrapper } = setup();
+		const instance = wrapper.instance();
+		instance.interval = 1;
+		const selected = { orgs: ['org_a'] };
+		const options = { options: ['org_a', 'org_b', 'org_c'] };
+		wrapper.setState(selected);
+		wrapper.setState(options);
+
+		const header = wrapper.find('.dropdown-heading-value');
+		expect(header.text()).toContain(selected.orgs.join(','));
+	});
+
+	test('rendered when all of list items are selected', () => {
+		const { wrapper } = setup();
+		const instance = wrapper.instance();
+		instance.interval = 1;
+		const selected = { orgs: ['org_a', 'org_b', 'org_c'] };
+		const options = { options: ['org_a', 'org_b', 'org_c'] };
+		wrapper.setState(selected);
+		wrapper.setState(options);
+
+		const header = wrapper.find('.dropdown-heading-value');
+		expect(header.text()).toContain('All Orgs Selected');
+	});
+
+	test('search transaction of specified orgs', () => {
+		const { props, wrapper } = setup();
+		const instance = wrapper.instance();
+		wrapper.setState({ orgs: ['org_a', 'org_b'] });
+		wrapper.setState({ search: true });
+		const spy = jest.spyOn(instance, 'searchTransactionList');
+
+		const currentChannel = [
+			{
+				currentChannel: 'MyChannel'
+			}
+		];
+		wrapper.setProps({ currentChannel });
+		expect(spy).toHaveBeenCalledTimes(1);
+		expect(props.getTransactionListSearch).toHaveBeenCalled();
+		expect(props.getTransactionListSearch.mock.calls[0][1]).toContain(
+			'&&orgs=org_a&&orgs=org_b'
+		);
 	});
 });
