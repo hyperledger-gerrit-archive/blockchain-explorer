@@ -20,15 +20,19 @@ def enableTls(context, tlsEnabled, projectName=None):
     context.composition.environ["ORDERER_GENERAL_TLS_ENABLED"] = convertBoolean(tlsEnabled)
     context.composition.environ["CORE_PEER_TLS_ENABLED"] = convertBoolean(tlsEnabled)
     context.composition.environ["FABRIC_CA_SERVER_TLS_ENABLED"] = convertBoolean(tlsEnabled)
+    context.composition.environ["FABRIC_CA_SERVER_TLS_OPTION"] = ""
+    if tlsEnabled:
+        context.composition.environ["FABRIC_CA_SERVER_TLS_OPTION"] = "--tls.enabled"
 
 
 class ContainerData:
-    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports):
+    def __init__(self, containerName, ipAddress, envFromInspect, composeService, ports, containerID):
         self.containerName = containerName
         self.ipAddress = ipAddress
         self.envFromInspect = envFromInspect
         self.composeService = composeService
         self.ports = ports
+        self.containerID = containerID
 
     def getEnv(self, key):
         """
@@ -64,7 +68,7 @@ class Composition:
         return servicesList
 
     def up(self, force_recreate=True, components=[]):
-        command = ["up", "-d"]
+        command = ["--no-ansi","up", "-d"]
         if force_recreate:
             command += ["--force-recreate"]
         cas = ["ca.org1.example.com", "ca.org2.example.com"]
@@ -100,12 +104,18 @@ class Composition:
         command = ["network", "connect", str(self.projectName)+"_behave"]
         self.issueCommand(command, components)
 
-    def docker_exec(self, command, components=[]):
+    def docker_exec(self, command, components=[], returnError=False):
         results = {}
+        error = None
         updatedCommand = " ".join(command)
         for component in components:
             execCommand = ["exec", component, updatedCommand]
-            results[component] = self.issueCommand(execCommand, [])
+            if returnError:
+                results[component], err = self.issueCommand(execCommand, [], returnError=returnError)
+            else:
+                results[component] = self.issueCommand(execCommand, [])
+        if returnError:
+            return results, err
         return results
 
     def parseComposeFilesArg(self, composeFileArgs):
@@ -132,16 +142,14 @@ class Composition:
             fileLoc = ofileLoc
         else:
             fileLoc = pfileLoc
-        assert os.path.exists(fileLoc),'File "{0}" does not exist'.format(fileLoc)
+        assert os.path.exists(fileLoc),'Dirs "{0}" and "{1} do not exist'.format(ofileLoc, pfileLoc)
         filename = self.lookForKeyFile(fileLoc)
 
         keyVals = []
         fullOrg = name[1].split('.')
         org = fullOrg[0]
 
-        self.environ['FABRIC_CA_SERVER_{}_TLS_KEYFILE'.format(org.upper())] = '/var/hyperledger/fabric-ca-server/ca/{}'.format(filename)
         self.environ['FABRIC_CA_SERVER_{}_CA_KEYFILE'.format(org.upper())] = '/var/hyperledger/fabric-ca-server/ca/{}'.format(filename)
-
         #copy keyfile to msp/keystore
         if not os.path.exists("{0}../msp/keystore".format(fileLoc)):
             os.mkdir("{0}../msp/keystore".format(fileLoc))
@@ -205,7 +213,11 @@ class Composition:
                 break
         return container
 
-    def issueCommand(self, command, components=[]):
+    def getIPFromName(self, containerName, containerList):
+        container = self.getContainerFromName(containerName, containerList)
+        return container.ipAddress
+
+    def issueCommand(self, command, components=[], returnError=False):
         componentList = []
         useCompose = True
         # Some commands need to be run using "docker" and not "docker-compose"
@@ -250,11 +262,15 @@ class Composition:
                     raise Exception(_error)
         except:
             err = "Error occurred {0}: {1}".format(cmd, sys.exc_info()[1])
+            print(err)
             output = err
 
         # Don't rebuild if ps command
         if command[0] !="ps" and command[0] !="config":
             self.rebuildContainerData()
+
+        if returnError:
+            return str(output), _error
         return str(output)
 
     def updateContainerEnviron(self, container_name, keyValList):
@@ -303,12 +319,13 @@ class Composition:
                                            container_ipaddress,
                                            container_env,
                                            container_compose_service,
-                                           container_ports)
+                                           container_ports,
+                                           containerID)
             self.containerDataList.append(container_data)
 
     def decompose(self):
         self.issueCommand(["unpause"], self.refreshContainerIDs())
-        self.issueCommand(["down"])
+        self.issueCommand(["--no-ansi","down"])
         self.issueCommand(["kill"])
         self.issueCommand(["rm", "-f"])
         env = self.getEnv()

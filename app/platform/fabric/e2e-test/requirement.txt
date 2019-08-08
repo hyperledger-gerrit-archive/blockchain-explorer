@@ -25,3 +25,4 @@ cython
 psutil
 assertpy
 behave_rest
+interruptingcow

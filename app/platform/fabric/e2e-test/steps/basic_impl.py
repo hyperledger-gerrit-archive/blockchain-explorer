@@ -7,10 +7,13 @@
 from behave import *
 import time
 import os
-import uuid
+import re
+import sys
 import subprocess
+import json
 from shutil import copyfile
 import common_util
+from interruptingcow import timeout as ic_timeout
 import compose_util
 import orderer_util
 import config_util
@@ -23,6 +26,110 @@ import database_util
 @then(u'I wait "{seconds}" seconds')
 def step_impl(context, seconds):
     time.sleep(float(seconds))
+
+@given(u'I wait up to "{seconds:d}" seconds for deploy to complete')
+@when(u'I wait up to "{seconds:d}" seconds for deploy to complete')
+@then(u'I wait up to "{seconds:d}" seconds for deploy to complete')
+def step_impl(context, seconds):
+    wait_impl(context, seconds, "peer0.org1.example.com")
+
+@given(u'I wait up to "{seconds:d}" seconds for deploy to complete on peer "{peer}"')
+@when(u'I wait up to "{seconds:d}" seconds for deploy to complete on peer "{peer}"')
+@then(u'I wait up to "{seconds:d}" seconds for deploy to complete on peer "{peer}"')
+def wait_impl(context, seconds, peer):
+    chaincode_container = "{0}-{1}-{2}-{3}".format(context.projectName,
+                                                   peer,
+                                                   context.chaincode['name'],
+                                                   context.chaincode.get("version", 0))
+    if context.newlifecycle:
+        peerParts = peer.split('.')
+        org = '.'.join(peerParts[1:])
+        packageId = context.packageId.get(org, "0")
+
+        pat = r"{}:(?P<hash>.*)".format(context.chaincode['name'])
+        pkgMatch = re.match(pat, packageId)
+        if pkgMatch is None:
+            pat = r"(?P<label>.*):(?P<hash>.*)"
+            pkgMatch = re.match(pat, packageId)
+            assert pkgMatch is not None, "The packageId is not formatted as expected: '{}'".format(packageId)
+            pkgLabel = pkgMatch.groupdict()['label']
+            print("Using the label '{0}' instead of the name '{1}'".format(pkgLabel, context.chaincode['name']))
+        pkgRes = pkgMatch.groupdict()['hash']
+
+        chaincode_container = "{0}-{1}-{2}-{3}".format(context.projectName,
+                                                       peer,
+                                                       context.chaincode['name'],
+                                                       pkgRes)
+    context.interface.wait_for_deploy_completion(context, chaincode_container, seconds)
+
+@given(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed on peer "{peer}"')
+@when(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed on peer "{peer}"')
+@then(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed on peer "{peer}"')
+def committed_impl(context, seconds, peer, verifyError=True):
+    user = "Admin"
+    peerParts = peer.split('.')
+    org = '.'.join(peerParts[1:])
+
+    assert "Error occurred" not in context.result[peer], "There was an error in the chaincode commit: {}".format(context.result[peer])
+    #assert "chaincode definition not agreed to by this org" not in context.result[peer], "There was an error in the chaincode commit: {}".format(context.result[peer])
+
+    # Now wait for the chaincode to be committed
+    try:
+        count = 0
+        ret = context.interface.list_chaincode(context, peer, user, list_type="querycommitted")
+        with ic_timeout(seconds, exception=Exception):
+            while context.chaincode["name"] not in ret[peer] and count <= seconds:
+                ret = context.interface.list_chaincode(context, peer, user, list_type="querycommitted")
+                time.sleep(1)
+                count = count + 1
+    except:
+        print("Error occurred: {0}".format(sys.exc_info()[1]))
+    finally:
+        if verifyError:
+            assert context.chaincode["name"] in ret[peer], "The chaincode {0} has not been committed\n{1}".format(context.chaincode['name'], ret)
+        else:
+            context.result[peer] = ret[peer]
+            print(context.result[peer])
+
+@given(u'I wait up to "{seconds:d}" seconds for the chaincode to attempt to be committed on peer "{peer}"')
+@when(u'I wait up to "{seconds:d}" seconds for the chaincode to attempt to be committed on peer "{peer}"')
+@then(u'I wait up to "{seconds:d}" seconds for the chaincode to attempt to be committed on peer "{peer}"')
+def step_impl(context, seconds, peer):
+    committed_impl(context, seconds, peer, verifyError=False)
+
+@given(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed')
+@when(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed')
+@then(u'I wait up to "{seconds:d}" seconds for the chaincode to be committed')
+def step_impl(context, seconds):
+    committed_impl(context, seconds, "peer0.org1.example.com")
+
+@given(u'I wait up to "{seconds:d}" seconds for instantiation to complete')
+@when(u'I wait up to "{seconds:d}" seconds for instantiation to complete')
+@then(u'I wait up to "{seconds:d}" seconds for instantiation to complete')
+def step_impl(context, seconds):
+    ret = {}
+    count = 0
+    try:
+        with ic_timeout(int(seconds), exception=RuntimeError):
+            ret = context.interface.list_chaincode(context, "peer0.org1.example.com", "Admin", list_type="instantiated")
+            print(ret)
+            while context.chaincode['name'] not in ret["peer0.org1.example.com"]:
+                with ic_timeout(5, exception=RuntimeError):
+                    #while context.chaincode['name'] not in ret["peer0.org1.example.com"]:
+                    while count < 5 and context.chaincode['name'] not in ret["peer0.org1.example.com"]:
+                        ret = context.interface.list_chaincode(context, "peer0.org1.example.com", "Admin", list_type="instantiated")
+                        print(ret)
+                        time.sleep(1)
+                        count = count + 1
+    except:
+        print("Error occurred: {0}".format(sys.exc_info()[1]))
+    finally:
+        assert "peer0.org1.example.com" in ret, "Error occurred: {0}".format(sys.exc_info()[1])
+        assert context.chaincode['name'] in ret["peer0.org1.example.com"], "The chaincode {0} has not been instantiated\n{1}".format(context.chaincode['name'], ret)
+
+@given(u'I want to use the new chaincode lifecycle')
+def step_impl(context):
+    context.newlifecycle = True
 
 @given(u'I use the {language} SDK interface')
 def step_impl(context, language):
@@ -40,6 +147,9 @@ def step_impl(context, toolCommand):
 
 @given(u'I compose "{composeYamlFile}"')
 def compose_impl(context, composeYamlFile, projectName=None, startContainers=True):
+    if hasattr(context, "projectName"):
+        projectName = context.projectName
+
     if not hasattr(context, "composition"):
         context.composition = compose_util.Composition(context, composeYamlFile,
                                            projectName=projectName,
@@ -73,15 +183,16 @@ def bootstrapped_impl(context, ordererType, database, tlsEnabled=False, timeout=
 
     # Should TLS be enabled
     context.tls = tlsEnabled
-    compose_util.enableTls(context, tlsEnabled)
+    projectName = None
+    if hasattr(context, "projectName"):
+        projectName = context.projectName
+    compose_util.enableTls(context, tlsEnabled, projectName=projectName)
 
     # Perform bootstrap process
     context.ordererProfile = config_util.PROFILE_TYPES.get(ordererType, "SampleInsecureSolo")
     channelID = context.interface.SYS_CHANNEL_ID
-    if hasattr(context, "composition"):
-        context.projectName = context.composition.projectName
-    elif not hasattr(context, "projectName"):
-        context.projectName = str(uuid.uuid1()).replace('-','')
+
+    testConfigs, context = config_util.makeProjectConfigDir(context, returnContext=True)
 
     # Determine number of orderers
     numOrderers = 1
@@ -92,8 +203,10 @@ def bootstrapped_impl(context, ordererType, database, tlsEnabled=False, timeout=
     if ouEnabled:
         config_util.buildCryptoFile(context, 2, 2, numOrderers, 2, ouEnable=ouEnabled)
         config_util.generateCrypto(context, "./configs/{0}/crypto.yaml".format(context.projectName))
+        # config_util.generateCrypto(context, "./{0}/crypto.yaml".format(testConfigs))
     else:
         config_util.generateCrypto(context)
+
     config_util.generateConfig(context, channelID, config_util.CHANNEL_PROFILE, context.ordererProfile)
 
     compose_impl(context, context.composeFile, projectName=context.projectName)
@@ -104,7 +217,7 @@ def wait_for_bootstrap_completion(context, timeout):
     peers = context.interface.get_peers(context)
     brokers = []
     try:
-        with common_util.Timeout(timeout):
+        with ic_timeout(timeout, exception=RuntimeError):
             common_util.wait_until_in_log(peers, "Starting profiling server with listenAddress = 0.0.0.0:6060")
 
             # Check Kafka logs
@@ -141,7 +254,6 @@ def step_impl(context):
 @given(u'I bootstrap a fabric-ca server')
 def step_impl(context):
     bootstrap_fca_impl(context, False)
-
 
 @given(u'I have a fabric-ca bootstrapped fabric network of type {ordererType} using state-database {database} with tls')
 def step_impl(context, ordererType, database):
@@ -202,9 +314,34 @@ def step_impl(context, ordererType, database):
 def step_impl(context, database):
     bootstrapped_impl(context, "solo", database, True)
 
+@given(u'I changed the "{capType}" capability to version "{capVersion}"')
+def step_impl(context, capType, capVersion):
+    context = config_util.changeCapabilities(context, capType, capVersion)
+
 @when(u'a user defines a couchDB index named {indexName} with design document name "{docName}" containing the fields "{fields}" to the chaincode at path "{path}"')
 def step_impl(context, indexName, docName, fields, path):
-    database_util.generateIndex(indexName, docName, fields, path)
+    database_util.generateIndex(context, indexName, docName, fields, path)
+
+@when('an admin generates a collections file named "{fileName}" for chaincode named "{name}" at path "{path}" with policy {policy}')
+def step_impl(context, fileName, name, path, policy):
+    if not hasattr(context, "chaincode"):
+        context.chaincode = {}
+
+    print(context.chaincode)
+    context.chaincode['name'] = name
+    context.chaincode['path'] = path
+    context.chaincode['policy'] = policy
+    config_util.generateCollections(context, fileName)
+
+@when('an admin generates a collections file named "{fileName}" for chaincode named "{name}" with policy {policy}')
+def step_impl(context, fileName, name, policy):
+    if not hasattr(context, "chaincode"):
+        context.chaincode = {}
+
+    print(context.chaincode)
+    context.chaincode['name'] = name
+    context.chaincode['policy'] = policy
+    config_util.generateCollections(context, fileName)
 
 @given(u'I have a bootstrapped fabric network of type {ordererType} with tls')
 def step_impl(context, ordererType):
@@ -345,7 +482,7 @@ def step_impl(context):
 
 @when(u'I locally execute the command "{command}" saving the results as "{key}"')
 def step_impl(context, command, key):
-    # This is a workaround to allow sending piped commands to behave without conflicting with the pipes in the table.
+    # This is a workaround to allow sending piped commands to behave without conflicting with the pipes in the table. 
     command = command.replace("!", "|")
     if not hasattr(context, "command_result"):
         context.command_result = {}
@@ -378,7 +515,7 @@ def add_org_impl(context, orgMSP, channelName):
     config_util.buildCryptoFile(context, 1, 2, 0, 2, orgMSP=orgMSP)
     config_util.generateCrypto(context, "{0}/crypto.yaml".format(configDir))
     config_util.generateCryptoDir(context, 1, 2, 0, 2, tlsExist=context.tls, orgMSP=orgMSP)
-    args = config_util.getNewOrg(context, orgMSP)
+    args = config_util.getNewOrg(context, orgMSP, channelName)
     updated_config = config_util.addNewOrg(context, args, "Application", channelName)
 
     update_impl(context, 'peer', channelName, updated_config, userName='Admin')
@@ -399,6 +536,12 @@ def del_org_impl(context, orgMSP, channelName):
 @when(u'an {component} admin updates the {channelName} channel config with {args}')
 def step_impl(context, component, channelName, args):
     update_impl(context, component, channelName, args, userName='Admin')
+
+@when(u'an admin updates the "{capType}" capabilities in the channel config to version "{capVers}"')
+def step_impl(context, capType, capVers):
+    config_util.changeCapabilities(context, capType, capVers)
+    updated = config_util.updateCapabilityConfig(context, context.interface.TEST_CHANNEL_ID, capType, capVers)
+    update_impl(context, 'peer', context.interface.TEST_CHANNEL_ID, args=updated, userName='Admin')
 
 @when(u'an admin updates the channel config with {args}')
 def step_impl(context, args):
@@ -431,7 +574,7 @@ def step_impl(context, org):
     max_waittime=15
     waittime=5
     try:
-        with common_util.Timeout(max_waittime):
+        with ic_timeout(max_waittime, exception=RuntimeError):
             while not common_util.get_leadership_status(context.initial_non_leader[org]):
                 time.sleep(waittime)
     finally:
@@ -444,7 +587,7 @@ def step_impl(context, org):
 
 @then(u'the logs on {component} contains "{data}" within {timeout:d} seconds')
 def step_impl(context, component, data, timeout):
-    with common_util.Timeout(timeout):
+    with ic_timeout(timeout, exception=RuntimeError):
         common_util.wait_until_in_log([component], data)
 
 @then(u'the logs on {component} contains {data}')

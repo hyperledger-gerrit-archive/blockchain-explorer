@@ -8,7 +8,7 @@ import os
 import json
 
 
-def generateIndex(indexName, docName, fieldStr, path):
+def generateIndex(context, indexName, docName, fieldStr, path):
     fields = fieldStr.split(",")
     fieldData = []
     for field in fields:
@@ -24,7 +24,8 @@ def generateIndex(indexName, docName, fieldStr, path):
                  "type": "json"}
 
     # Use the chaincode paths that are in the submodules or current repo
-    modified_path = path.replace('github.com/hyperledger/', '../').replace('fabric-test/', '../fabric-test/')
+    modified_path = path.replace('github.com/hyperledger/', '../').replace('fabric-test/', '../fabric-test/').replace("test-config", context.projectName)
+    print(modified_path)
 
     indexLoc = "{0}/META-INF/statedb/couchdb/indexes/".format(modified_path)
     if not os.path.exists(indexLoc):

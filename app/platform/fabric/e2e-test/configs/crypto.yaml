@@ -8,6 +8,7 @@ OrdererOrgs:
   - Name: ExampleCom
     Domain: example.com
     CA:
+      Hostname: ca
       SANS:
         - localhost
     Specs:
@@ -20,12 +21,13 @@ PeerOrgs:
     Domain: org1.example.com
     EnableNodeOUs: false
     CA:
+      Hostname: ca
       SANS:
         - localhost
     Template:
       Count: 2
       SANS:
-        - localhost
+        - 0.0.0.0
     Users:
       Count: 1
 
@@ -33,11 +35,12 @@ PeerOrgs:
     Domain: org2.example.com
     EnableNodeOUs: false
     CA:
+      Hostname: ca
       SANS:
         - localhost
     Template:
       Count: 2
       SANS:
-        - localhost
+        - 0.0.0.0
     Users:
       Count: 1

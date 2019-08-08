@@ -27,19 +27,11 @@ Capabilities:
     # supported by both.  Set the value of the capability to true to require it.
     Global: &ChannelCapabilities
         V1_3: true
-        # (V1_2 not defined in fabric)
-        # Note: older ones are superceded, e.g. V1_3 capabilities include V1_1.
-        # Thus, those like V1_1 need not be set if V1_3 or later is set true.
-        # But keep them, to allow disabling V1_3 when bringing up a new test
-        # network, if desired, possibly in anticipation of an upgrade test.
-        V1_1: true
 
     # Orderer capabilities apply only to the orderers, and may be safely
     # manipulated without concern for upgrading peers.  Set the value of the
     # capability to true to require it.
     Orderer: &OrdererCapabilities
-        # (V1_3 not defined in fabric)
-        # (V1_2 not defined in fabric)
         V1_1: true
 
     # Application capabilities apply only to the peer network, and may be safely
@@ -47,14 +39,6 @@ Capabilities:
     # capability to true to require it.
     Application: &ApplicationCapabilities
         V1_3: true
-        V1_2: true
-        # Note: older ones are superceded, e.g. V1_2 capabilities include V1_1.
-        # Thus, older ones like V1_1 need not be set if we set V1_2 or later.
-        # But keep them all; that would allow tester to override and disable
-        # newer ones like Capabilities.Global.V1_3 and
-        # Capabilities.Application.V1_3 when bringing up a new test network,
-        # if desired, possibly in anticipation of an upgrade test.
-        V1_1: true
 
 ################################################################################
 #
@@ -74,13 +58,16 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('example.com.member')"
+                Rule: OR('example.com.member')
             Writers:
                 Type: Signature
-                Rule: "OR('example.com.member')"
+                Rule: OR('example.com.member')
             Admins:
                 Type: Signature
-                Rule: "OR('example.com.admin')"
+                Rule: OR('example.com.admin')
+            Endorsement:
+                Type: Signature
+                Rule: OR('example.com.member')
 
     - &Org1ExampleCom
         Name: Org1ExampleCom
@@ -93,13 +80,16 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('org1.example.com.member')"
+                Rule: OR('org1.example.com.member')
             Writers:
                 Type: Signature
-                Rule: "OR('org1.example.com.member')"
+                Rule: OR('org1.example.com.member')
             Admins:
                 Type: Signature
-                Rule: "OR('org1.example.com.admin')"
+                Rule: OR('org1.example.com.admin')
+            Endorsement:
+                Type: Signature
+                Rule: OR('org1.example.com.member')
 
     - &Org2ExampleCom
         Name: Org2ExampleCom
@@ -112,13 +102,16 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('org2.example.com.member')"
+                Rule: OR('org2.example.com.member')
             Writers:
                 Type: Signature
-                Rule: "OR('org2.example.com.member')"
+                Rule: OR('org2.example.com.member')
             Admins:
                 Type: Signature
-                Rule: "OR('org2.example.com.admin')"
+                Rule: OR('org2.example.com.admin')
+            Endorsement:
+                Type: Signature
+                Rule: OR('org2.example.com.member')
 
 ################################################################################
 #
@@ -133,48 +126,23 @@ Orderer: &OrdererDefaults
     # Orderer Type: The orderer implementation to start.
     # Available types are "solo" and "kafka".
     OrdererType: solo
-
     Addresses:
         - orderer0.example.com:7050
 
-    # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
-
-    # Batch Size: Controls the number of messages batched into a block.
     BatchSize:
-
-        # Max Message Count: The maximum number of messages to permit in a
-        # batch.
         MaxMessageCount: 10
-
-        # Absolute Max Bytes: The absolute maximum number of bytes allowed for
-        # the serialized messages in a batch. If the "kafka" OrdererType is
-        # selected, set 'message.max.bytes' and 'replica.fetch.max.bytes' on the
-        # Kafka brokers to a value that is larger than this one.
         AbsoluteMaxBytes: 98 MB
-
-        # Preferred Max Bytes: The preferred maximum number of bytes allowed for
-        # the serialized messages in a batch. A message larger than the
-        # preferred max bytes will result in a batch larger than preferred max
-        # bytes.
         PreferredMaxBytes: 512 KB
 
-    # Max Channels is the maximum number of channels to allow on the ordering
-    # network. When set to 0, this implies no maximum number of channels.
     MaxChannels: 0
-
     Kafka:
-        # Brokers: A list of Kafka brokers to which the orderer connects. Edit
-        # this list to identify the brokers of the ordering service.
-        # NOTE: Use IP:port notation.
         Brokers:
             - kafka0:9092
             - kafka1:9092
             - kafka2:9092
             - kafka3:9092
 
-    # Organizations is the list of orgs which are defined as participants on
-    # the orderer side of the network.
     Organizations:
 
     # Policies defines the set of policies at this level of the config tree
@@ -183,18 +151,18 @@ Orderer: &OrdererDefaults
     Policies:
         Readers:
             Type: ImplicitMeta
-            Rule: "ANY Readers"
+            Rule: ANY Readers
         Writers:
             Type: ImplicitMeta
-            Rule: "ANY Writers"
+            Rule: ANY Writers
         Admins:
             Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
+            Rule: MAJORITY Admins
         # BlockValidation specifies what signatures must be included in the block
         # from the orderer for the peer to validate it.
         BlockValidation:
             Type: ImplicitMeta
-            Rule: "ANY Writers"
+            Rule: ANY Writers
 
     # Capabilities describes the orderer level capabilities, see the
     # dedicated Capabilities section elsewhere in this file for a full
@@ -215,18 +183,17 @@ Channel: &ChannelDefaults
     # For Channel policies, their canonical path is
     #   /Channel/<PolicyName>
     Policies:
-        # Who may invoke the 'Deliver' API
         Readers:
             Type: ImplicitMeta
-            Rule: "ANY Readers"
+            Rule: ANY Readers
         # Who may invoke the 'Broadcast' API
         Writers:
             Type: ImplicitMeta
-            Rule: "ANY Writers"
+            Rule: ANY Writers
         # By default, who may modify elements at this config level
         Admins:
             Type: ImplicitMeta
-            Rule: "MAJORITY Admins"
+            Rule: MAJORITY Admins
 
 
     # Capabilities describes the channel level capabilities, see the
@@ -253,6 +220,17 @@ Application: &ApplicationDefaults
         #
         # User's can override these defaults with their own policy mapping by defining the
         # mapping under ACLs in their channel definition
+
+        #---New Lifecycle System Chaincode (_lifecycle) function to policy mapping for access control--#
+
+        # ACL policy for _lifecycle's "CommitChaincodeDefinition" function
+        _lifecycle/CommitChaincodeDefinition: /Channel/Application/Writers
+
+        # ACL policy for _lifecycle's "QueryChaincodeDefinition" function
+        _lifecycle/QueryChaincodeDefinition: /Channel/Application/Readers
+
+        # ACL policy for _lifecycle's "QueryNamespaceDefinitions" function
+        _lifecycle/QueryNamespaceDefinitions: /Channel/Application/Readers
 
         #---Lifecycle System Chaincode (lscc) function to policy mapping for access control---#
 
@@ -329,6 +307,12 @@ Application: &ApplicationDefaults
         Admins:
             Type: ImplicitMeta
             Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "ANY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "ANY Endorsement"
 
     # Capabilities describes the application level capabilities, see the
     # dedicated Capabilities section elsewhere in this file for a full
@@ -366,6 +350,22 @@ Profiles:
                 - *ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
         Consortiums:
             SampleConsortium:
                 Organizations:
@@ -393,6 +393,22 @@ Profiles:
                 - *ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
         Consortiums:
             SampleConsortium:
                 Organizations:
@@ -416,6 +432,22 @@ Profiles:
                 - *ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
         Consortiums:
             SampleConsortium:
                 Organizations:
@@ -434,9 +466,26 @@ Profiles:
                 - *ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
 
     # SysTestChannel defines a channel for use with the System Test Orgs
     SysTestChannel:
+        <<: *ChannelDefaults
         Capabilities:
             <<: *ChannelCapabilities
         Consortium: SampleConsortium
@@ -447,11 +496,28 @@ Profiles:
                 - *Org2ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
 
     # SampleSingleMSPChannel defines a channel with only the sample org as a
     # member.  It is designed to be used in conjunction with SampleSingleMSPSolo
     # and SampleSingleMSPKafka orderer profiles
     SampleSingleMSPChannel:
+        <<: *ChannelDefaults
         Capabilities:
             <<: *ChannelCapabilities
         Consortium: SampleConsortium
@@ -462,4 +528,71 @@ Profiles:
                 - *Org2ExampleCom
             Capabilities:
                 <<: *ApplicationCapabilities
+            Policies:
+                Readers:
+                  Type: ImplicitMeta
+                  Rule: ANY Readers
+                Writers:
+                  Type: ImplicitMeta
+                  Rule: ANY Writers
+                Admins:
+                  Type: ImplicitMeta
+                  Rule: MAJORITY Admins
+                LifecycleEndorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+                Endorsement:
+                  Type: ImplicitMeta
+                  Rule: ANY Endorsement
+
+    SampleMultiNodeEtcdRaft:
+        <<: *ChannelDefaults
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            OrdererType: etcdraft
+            EtcdRaft:
+                Consenters:
+                - Host: orderer.example.com
+                  Port: 7050
+                  ClientTLSCert: ./ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+                  ServerTLSCert: ./ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+                - Host: orderer2.example.com
+                  Port: 7050
+                  ClientTLSCert: ./ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+                  ServerTLSCert: ./ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+                - Host: orderer3.example.com
+                  Port: 7050
+                  ClientTLSCert: ./ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+                  ServerTLSCert: ./ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+                - Host: orderer4.example.com
+                  Port: 7050
+                  ClientTLSCert: ./ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+                  ServerTLSCert: ./ordererOrganizations/example.com/orderers/orderer4.example.com/tls/server.crt
+                - Host: orderer5.example.com
+                  Port: 7050
+                  ClientTLSCert: ./ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
+                  ServerTLSCert: ./ordererOrganizations/example.com/orderers/orderer5.example.com/tls/server.crt
+            Addresses:
+                - orderer.example.com:7050
+                - orderer2.example.com:7050
+                - orderer3.example.com:7050
+                - orderer4.example.com:7050
+                - orderer5.example.com:7050
+
+            Organizations:
+                - *ExampleCom
+            Capabilities:
+                <<: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *ExampleCom
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Org1ExampleCom
+                    - *Org2ExampleCom
+
 

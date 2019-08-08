@@ -31,6 +31,7 @@ services:
         environment:
             - FABRIC_CA_HOME=/var/hyperledger/fabric-ca-server
             - FABRIC_CA_SERVER_HOME=/var/hyperledger/fabric-ca-server
+            - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
             - FABRIC_CA_SERVER_TLS_ENABLED=${FABRIC_CA_SERVER_TLS_ENABLED}
             - FABRIC_CA_SERVER_DEBUG=true
         ports:
@@ -61,7 +62,7 @@ services:
             - ORDERER_GENERAL_TLS_CERTIFICATE=${ORDERER_GENERAL_TLS_CERTIFICATE}
             - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/tls/ca.crt]
             - ORDERER_TLS_CLIENTAUTHREQUIRED=${ORDERER_TLS_CLIENTAUTHREQUIRED}
-            - ORDERER_TLS_CLIENTROOTCAS_FILES=/var/hyperledger/users/Admin@example.com/tls/ca.crt
+            - ORDERER_TLS_CLIENTROOTCAS_FILES=/var/hyperledger/tls/ca.crt
             - ORDERER_TLS_CLIENTCERT_FILE=/var/hyperledger/users/Admin@example.com/tls/client.crt
             - ORDERER_TLS_CLIENTKEY_FILE=/var/hyperledger/users/Admin@example.com/tls/client.key
         volumes:
@@ -101,6 +102,7 @@ services:
             - CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/tls/ca.crt
         volumes:
             - /var/run/:/host/var/run/
+            #- ../configs/${CORE_PEER_NETWORKID}:/var/hyperledger
             - ../../../common:/opt/gopath/src/github.com/hyperledger/fabric/common
             - ../../../vendor:/opt/gopath/src/github.com/hyperledger/fabric/vendor
             - ../configs:/var/hyperledger/configs

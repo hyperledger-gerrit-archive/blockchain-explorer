@@ -5,13 +5,13 @@ from behave import *
 import time
 import os
 import sys
-import uuid
 import compose_util
 import common_util
 import config_util
 import shutil
 import subprocess
 import requests
+from interruptingcow import timeout as ic_timeout
 
 FNULL = open(os.devnull, 'w')
 
@@ -50,7 +50,7 @@ def start_firstnetwork_impl(context):
     # config_util.generateConfig(context, "byfn-sys-channel", "TwoOrgsChannel", "TwoOrgsOrdererGenesis")
     # shutil.copyfile("{0}/configs/{1}/byfn-sys-channel.tx".format(curpath, context.projectName), "{0}/configs/{1}/channel.tx".format(curpath, context.projectName))
     timeout=120
-    with common_util.Timeout(timeout):
+    with ic_timeout(int(timeout), exception=RuntimeError)   :
         if not hasattr(context, "composition"):
             context.composition = compose_util.Composition(context, composeFiles,
                                                                     projectName=context.projectName,
