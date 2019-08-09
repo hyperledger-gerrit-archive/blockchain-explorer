@@ -2,6 +2,6 @@
 	"sslEnabled": false,
 	"sslCertsPath": "ssl-certs",
 	"host": "localhost",
-	"port": "8080",
+	"port": "9090",
 	"license": "Apache-2.0"
 }
