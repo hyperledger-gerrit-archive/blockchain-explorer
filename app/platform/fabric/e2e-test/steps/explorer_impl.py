@@ -38,7 +38,7 @@ def start_explorer_impl(context):
 @given(u'I start first-network')
 def start_firstnetwork_impl(context):
     curpath = os.path.realpath('.')
-    composeFiles = ["%s/fabric-samples/first-network/docker-compose-cli.yaml" % (curpath)]
+    composeFiles = ["%s/fabric-samples/first-network/docker-compose-explorer.yaml" % (curpath)]
     config_util.makeProjectConfigDir(context)
 
     shutil.copyfile("{0}/fabric-samples/first-network/crypto-config.yaml".format(curpath), "{0}/configs/{1}/crypto-config.yaml".format(curpath, context.projectName))
@@ -59,18 +59,32 @@ def start_firstnetwork_impl(context):
             context.composition.composeFilesYaml = composeFiles
             context.composition.up()
         context.compose_containers = context.composition.collectServiceNames()
-
         common_util.wait_until_in_log(["cli"], "Query successful on peer1.org2 on channel ")
 
 def generateCryptoArtifacts(context, channelID):
+    curpath = os.path.realpath('.')
     testConfigs = config_util.makeProjectConfigDir(context)
     updated_env = config_util.updateEnviron(context)
     try:
         command = ["../../fabric-samples/first-network/byfn.sh", "generate", "-c", channelID]
-        return subprocess.call(command, cwd=testConfigs, env=updated_env, stdout=FNULL, stderr=subprocess.STDOUT)
-        #return subprocess.check_output(command, env=updated_env)
+        subprocess.call(command, cwd=testConfigs, env=updated_env, stderr=subprocess.STDOUT)
     except:
-        print("Unable to inspect orderer config data: {0}".format(sys.exc_info()[1]))
+        print("Unable to generate crypto artifacts: {0}".format(sys.exc_info()[1]))
+
+    try:
+        shutil.rmtree("{0}/fabric-samples/first-network/crypto-config".format(curpath), ignore_errors=True)
+        shutil.copytree("{0}/crypto-config".format(testConfigs), "{0}/fabric-samples/first-network/crypto-config".format(curpath))
+        shutil.copytree("{0}/crypto-config/peerOrganizations".format(testConfigs), "{0}/peerOrganizations".format(testConfigs))
+        shutil.copytree("{0}/crypto-config/ordererOrganizations".format(testConfigs), "{0}/ordererOrganizations".format(testConfigs))
+    except:
+        print("Unable to copy crypto artifacts: {0}".format(sys.exc_info()[1]))
+
+    try:
+        shutil.rmtree("{0}/fabric-samples/first-network/channel-artifacts".format(curpath), ignore_errors=True)
+        shutil.copytree("{0}/channel-artifacts".format(testConfigs), "{0}/fabric-samples/first-network/channel-artifacts".format(curpath))
+    except:
+        print("Unable to copy channel artifacts: {0}".format(sys.exc_info()[1]))
+
 
 @given(u'I start balance-transfer')
 def start_balancetransfer_impl(context):
