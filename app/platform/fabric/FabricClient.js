@@ -601,14 +601,78 @@ class FabricClient {
 	 * @memberof FabricClient
 	 */
 	async getGenesisBlock(channel) {
-		const defaultOrderer = this.getDefaultOrderer();
-		const request = {
-			orderer: defaultOrderer,
-			txId: this.getHFC_Client().newTransactionID(true) // Get an admin based transactionID
-		};
-		const genesisBlock = await channel.getGenesisBlock(request);
-		const block = BlockDecoder.decodeBlock(genesisBlock);
-		return block;
+		let genesisBlock = null;
+		let defaultOrderer;
+		try {
+			defaultOrderer = this.getDefaultOrderer();
+			const request = {
+				orderer: defaultOrderer,
+				txId: this.getHFC_Client().newTransactionID(true) // Get an admin based transactionID
+			};
+			console.log('calling channel.getGenesisBlock : 1');
+			genesisBlock = await channel.getGenesisBlock(request);
+			console.log('calling channel.getGenesisBlock : 2');
+		} catch (error) {
+			console.log('handling error : 1');
+			// TODO in case of the failure, should terminate explorer?
+			this.setOffline(channel, defaultOrderer);
+			console.log('handling error : 2');
+			const neworderer = this.switchOrderer(channel);
+			console.log('handling error : 3');
+			console.log(neworderer);
+			if (neworderer == null) {
+				logger.error('No reachable orderer');
+				return null;
+			}
+			this.setDefaultOrderer(neworderer);
+			const genesisBlockDecoded = await this.getGenesisBlock(channel);
+			if (genesisBlockDecoded == null) {
+				logger.error(error);
+			} else {
+				return genesisBlockDecoded;
+			}
+		}
+		if (genesisBlock) {
+			console.log('genesisBlock: ');
+			console.log(genesisBlock);
+			const block = BlockDecoder.decodeBlock(genesisBlock);
+			return block;
+		}
+		return null;
+	}
+
+	setOffline(channel, orderer) {
+		if (orderer) {
+			console.log(orderer.getName(), orderer.getUrl());
+			if (channel._discovery_results.orderers) {
+				for (const mspid in channel._discovery_results.orderers) {
+					const endpoints = channel._discovery_results.orderers[mspid].endpoints;
+					endpoints.forEach((value, i) => {
+						console.log('%d: %s', i, value);
+						if (orderer.getName().split(':')[0] === value.host) {
+							console.log('Toggle offline :', value.host);
+							channel._discovery_results.orderers[mspid].endpoints[i]._offline = true;
+						}
+					});
+				}
+			}
+		}
+	}
+
+	switchOrderer(channel) {
+		let neworderer = null;
+		if (channel._discovery_results.orderers) {
+			for (const mspid in channel._discovery_results.orderers) {
+				const endpoints = channel._discovery_results.orderers[mspid].endpoints;
+				for (const value of endpoints) {
+					if (value._offline === undefined) {
+						console.log('Switch orderer :', value.host);
+						neworderer = channel.getOrderer(`${value.host}:${value.port}`);
+					}
+				}
+			}
+		}
+		return neworderer;
 	}
 
 	/**
@@ -843,6 +907,7 @@ class FabricClient {
 	 * @memberof FabricClient
 	 */
 	setDefaultOrderer(defaultOrderer) {
+		logger.info('Set default orderer : ' + defaultOrderer.getName());
 		this.defaultOrderer = defaultOrderer;
 	}
 
