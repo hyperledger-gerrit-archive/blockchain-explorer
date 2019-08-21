@@ -88,7 +88,7 @@ node ('hyp-x') { // trigger build on x86_64 node
 
     // Run npm tests
     stage("E2E Tests for Sanity-check") {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+        // wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
             try {
                 dir("${ROOTDIR}") {
                 sh '''
@@ -103,12 +103,12 @@ node ('hyp-x') { // trigger build on x86_64 node
                 currentBuild.result = 'FAILURE'
                 throw err
             }
-        }
+        // }
     }
 
     // Run npm tests
     stage("E2E Tests of GUI for Sanity-check") {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+        // wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
             try {
                 dir("${ROOTDIR}") {
                 sh '''
@@ -122,7 +122,7 @@ node ('hyp-x') { // trigger build on x86_64 node
                     currentBuild.result = 'FAILURE'
                     throw err
             }
-        }
+        // }
     }
 
       // Docs HTML Report
