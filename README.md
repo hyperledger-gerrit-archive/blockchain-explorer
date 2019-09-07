@@ -7,6 +7,7 @@
 [rocketchat-image]:https://open.rocket.chat/images/join-chat.svg
 [![Build Status](https://jenkins.hyperledger.org/buildStatus/icon?job=blockchain-explorer-merge-x86_64)](https://jenkins.hyperledger.org/view/fabric/job/blockchain-explorer-merge-x86_64)
 [![CII Best Practice](https://bestpractices.coreinfrastructure.org/projects/2710/badge)](https://bestpractices.coreinfrastructure.org/projects/2710)
+[![Documentation Status](https://readthedocs.org/projects/blockchain-explorer/badge/?version=latest)](https://blockchain-explorer.readthedocs.io/en/latest/?badge=latest)
 
 <!-- badges -->
 
@@ -42,7 +43,8 @@ Hyperledger Explorer is a simple, powerful, easy-to-use, well maintained, open s
 - [14.0 Hyperledger Explorer Swagger](#Hyperledger-Explorer-Swagger)
 - [15.0 Logs](#Logs)
 - [16.0 Troubleshooting](#Troubleshooting)
-- [17.0 License](#License)
+- [17.0 Testing](#Testing)
+- [18.0 License](#License)
 
 
 
@@ -168,7 +170,11 @@ Connect to the PostgreSQL database and run DB status commands:
 - `\l`  View created fabricexplorer database.
 - `\d`  View created tables.
 
+<<<<<<< HEAD   (2ad8b2 Merge "Add CODEOWNERS")
 If your Postgresql configured with TLS, read link [how to configure connection to Postgresql with TLS](./app/persistence/postgreSQL/CONFIGURE-TLS-CONNECTION-TO-POSTGRESQL.md) 
+=======
+If your Postgresql configured with TLS, read link [how to configure connection to Postgresql with TLS](./app/persistence/postgreSQL/CONFIGURE-TLS-CONNECTION-TO-POSTGRESQL.md)
+>>>>>>> BRANCH (e2d278 BE-690 Switch orderer when losing connection)
 
 <a name="Authorization-Configuration" />
 
@@ -325,6 +331,10 @@ On another terminal:
 - `./main.sh clean`
     - to clean the /node_modules, client/node_modules client/build, client/coverage, app/test/node_modules
    directories
+- `./main.sh test`
+    - to test REST API, and UI components
+    - to generate code coverage report
+
 
 Or
 
@@ -335,7 +345,7 @@ Or
 - `npm run test`
 - `cd client/`
 - `npm install`
-- `npm test -- -u --coverage`
+- `npm run test:ci -- -u --coverage`
 - `npm run build`
 
 <a name="Config-https-Hyperledger-Explorer" />
@@ -389,6 +399,7 @@ From new terminal (if Sync Process in Standalone).
 - `./syncstop.sh`  (it will stop the sync node).
 
 - If the Hyperledger Explorer was used previously in your browser be sure to clear the cache before relaunching.
+- If Hyperledger Fabric network is deployed on other machine, please toggle DISCOVERY_AS_LOCALHOST in start.sh / syncstart.sh to 'false'.
 
 
 
@@ -550,9 +561,25 @@ To push the container to your registry, run:
 - Please visit the [TROUBLESHOOT.md](TROUBLESHOOT.md) to view the Troubleshooting TechNotes for Hyperledger Explorer.
 
 
+<a name="Testing" />
+
+# 17.0 Testing    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+
+* Unit test
+
+* End-to-End test
+
+  * For REST API
+
+    - Please visit the [README.md](./app/platform/fabric/e2e-test/README.md) to view the End-To-End Testing TechNotes for Hyperledger Explorer REST API.
+
+  * For GUI
+
+    - Please visit the [README.md](./client/test/E2E-TEST-README.md) to view the End-To-End Testing TechNotes for Hyperledger Explorer GUI.
+
 
 <a name="License" />
 
-# 17.0 License    <!-- do not remove this comment, ensure there is a blank line before each heading -->
+# 18.0 License    <!-- do not remove this comment, ensure there is a blank line before each heading -->
 
 Hyperledger Explorer Project source code is released under the Apache 2.0 license. The README.md, CONTRIBUTING.md files, and files in the "images", "__snapshots__" folders are licensed under the Creative Commons Attribution 4.0 International License. You may obtain a copy of the license, titled CC-BY-4.0, at http://creativecommons.org/licenses/by/4.0/.
