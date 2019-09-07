@@ -59,6 +59,7 @@ class PgService {
 				key: fs.readFileSync(`${dbCertsPath}/db-certs/client-key.pem`).toString(),
 				cert: fs.readFileSync(`${dbCertsPath}/db-certs/client-cert.pem`).toString()
 			};
+<<<<<<< HEAD   (2ad8b2 Merge "Add CODEOWNERS")
 
 			/*
 			 * don't log entire config, it contains sensitive information!
@@ -77,6 +78,19 @@ class PgService {
 		}:${this.pgconfig.port}/${this.pgconfig.database}`;
 
 		logger.info(`connecting to Postgresql ${connectionString}`);
+=======
+		}
+
+		const connectionString = `postgres://${this.pgconfig.username}:******@${
+			this.pgconfig.host
+		}:${this.pgconfig.port}/${this.pgconfig.database}`;
+
+		logger.info(
+			`connecting to Postgresql ${connectionString} ssl details: ${
+				this.pgconfig.ssl
+			}`
+		);
+>>>>>>> BRANCH (e2d278 BE-690 Switch orderer when losing connection)
 
 		this.client = new Client(this.pgconfig);
 
