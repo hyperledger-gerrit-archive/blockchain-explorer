@@ -111,7 +111,7 @@ pygments_style = None
 #
 #html_theme = 'alabaster'
 html_theme = 'sphinx_rtd_theme'
-# html_theme = 'sphinxdoc'
+#html_theme = 'sphinxdoc'
 # html_theme = 'traditional'
 # html_theme = 'bizstyle'
 # html_theme = 'haiku'
