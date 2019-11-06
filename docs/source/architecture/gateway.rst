@@ -9,7 +9,8 @@ Due to the fact that Hyperledger Fabric network channel can constantly change, t
 different organizations in the network, will come and go, the need of reconfiguration for the Hyperledger Explorer becomes very difficult to maintain
 and get real time updates of the fabric network.
 
-Hypeledger Explorer took another approach to connect to Hyperledger Fabric after the introduction of the "fabric-network" module by the
-`Hyperledger Fabric SDK for NodeJS <https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.html>`__.
+After the introduction of the "fabric-network" module by the
+`Hyperledger Fabric SDK for NodeJS <https://fabric-sdk-node.github.io/release-1.4/module-fabric-network.html>`__. Hyperledger Explorer uses
+Gateway, and a connection profile to connect to the fabric network. Read more about `Gateway <https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/gateway.html>`__.
 
 .. TODO
