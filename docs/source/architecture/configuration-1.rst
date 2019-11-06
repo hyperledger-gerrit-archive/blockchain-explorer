@@ -2,10 +2,10 @@
 .. SPDX-License-Identifier: Apache-2.0
 
 
-Configuration
+Configuration using Gateway
 ===========================================
 
-One of the requirements to receive blocks, transactions, and config properties from Hyperledger Fabric blockchain is to configure Hyperledger Explorer
+One of the requirements to connect to a Hyperledger Fabric network to receive blocks, transactions, and other is to configure Hyperledger Explorer
 to be able to connect to the default fabric network. For this we tried to have a minimal as possible configuration by taking advantage of the latest
 Hyperledger Fabric `Service Discovery <https://hyperledger-fabric.readthedocs.io/en/release-1.4/discovery-overview.html>`__,
 and `Gateway <https://hyperledger-fabric.readthedocs.io/en/release-1.4/developapps/gateway.html>`__.
@@ -71,7 +71,4 @@ Modify config.json to point to your first-network network `connection-profile <h
 .. toctree::
    :maxdepth: 1
 
-
-   dbconfig
-   hlfabricconfig
    syncconfig

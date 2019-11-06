@@ -26,13 +26,14 @@ Main components of the HLExplorer back end can be listed as:
 .. toctree::
    :maxdepth: 1
 
+
+   webserver
    restapi
    gateway
    dbservices
    metrics
    synchronizer
    websockets
-   configuration
    logs
 
 

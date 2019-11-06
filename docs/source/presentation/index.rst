@@ -52,7 +52,7 @@ the block details accessed from the provided link.
 
 Dark theme screen
 -----------------
-The dark theme mode it is another view of the Hyperledger Explorer, there can be some potential benefits by switching to it.
+The dark theme mode is another view of the Hyperledger Explorer, there can be some potential benefits by switching to it.
 
 .. raw:: html
      :file: ./hl_dark_theme.html
