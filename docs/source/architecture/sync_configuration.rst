@@ -47,13 +47,13 @@ Configuration
     .. tab-container:: run_standalone
         :title: Run host (Standalone)
 
-							   .. code-block:: json
+							  * From new terminal (if Sync Process in Standalone).
 
-														{
-															"sync": {
-															"type": "host"
-															}
-														}
+										* cd blockchain-explorer/
+
+										* ./syncstart.sh (it will have the sync node up).
+
+										* ./syncstop.sh (it will stop the sync node).
 
 
     .. tab-container:: run_local
